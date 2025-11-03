@@ -1,0 +1,52 @@
+.header-toolbar {
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+  font-size: 1.3rem;
+  gap: 8px;
+}
+
+.logo-text {
+  display: none;
+}
+
+@media (min-width: 600px) {
+  .logo-text {
+    display: inline;
+  }
+}
+
+.spacer {
+  flex: 1;
+}
+
+a[mat-button] {
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.auth-btn {
+  border: 2px solid white !important;
+  font-weight: 500;
+}
+
+a[routerLinkActive="active"] {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
