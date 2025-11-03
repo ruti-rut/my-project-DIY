@@ -69,11 +69,11 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/projectByCategory")
-    public ResponseEntity<Map<Long, List<ProjectListDTO>>> getHomeProjects() {
-        Map<Long, List<ProjectListDTO>> homeProjects = homeService.getLatestProjectsPerCategory();
-        return ResponseEntity.ok(homeProjects);
-    }
+//    @GetMapping("/projectByCategory")
+//    public ResponseEntity<Map<Long, List<ProjectListDTO>>> getHomeProjects() {
+//        Map<Long, List<ProjectListDTO>> homeProjects = homeService.getLatestProjectsPerCategory();
+//        return ResponseEntity.ok(homeProjects);
+//    }
     @GetMapping("/allProjects")
     public List<ProjectListDTO> getAllProjects() {
         return projectMapper.toProjectListDTOList(projectRepository.findAll());
