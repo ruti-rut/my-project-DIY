@@ -12,6 +12,6 @@ export class ChallengeService {
   constructor(private _httpClient: HttpClient) { }
 
   getAllChallenge(): Observable<ChallengeListDTO[]> {
-    return this._httpClient.get<ChallengeListDTO[]>(`${this.apiUrl}/allChallenge`);
+    return this._httpClient.get<ChallengeListDTO[]>(`${this.apiUrl}/allChallenges`);
   }
 }

@@ -15,11 +15,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/challenge")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:57816")
 
 public class ChallengeController {
-    private final ChallengeMapper challengeMapper;
     ChallengeRepository challengeRepository;
+    ChallengeMapper challengeMapper;
 
     public ChallengeController(ChallengeRepository challengeRepository, ChallengeMapper challengeMapper) {
         this.challengeRepository = challengeRepository;
