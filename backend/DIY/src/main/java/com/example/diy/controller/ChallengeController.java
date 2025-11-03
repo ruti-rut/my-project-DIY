@@ -28,7 +28,7 @@ public class ChallengeController {
 
     @GetMapping("/allChallenges")
     public ResponseEntity<List<ChallengeListDTO>> getAllChallenges() {
-        List<Challenge> list = challengeRepository.findAllChallenges();
+        List<Challenge> list = challengeRepository.findAll();
         if (list != null) {
             return new ResponseEntity<>(challengeMapper.toChallengeListDTOList(list), HttpStatus.OK);
         }
