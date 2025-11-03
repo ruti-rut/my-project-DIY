@@ -1,7 +1,7 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
-import { HomePageComponent } from './home-page/home-page';
-import { AddProjectComponent } from './add-project/add-project.component';
+import { HomePageComponent } from './Pages/home-page/home-page';
+import { AddProjectComponent } from './Pages/add-project/add-project.component';
 
 // ייבא את כל הקומפוננטות שלך מהתיקיות בתוך app/
 // src/app/app.routes.ts

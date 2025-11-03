@@ -9,7 +9,6 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project,Long> {
     List<Project> findByCategoryId(Long categoryId);
     List<Project> findTop3ByCategoryIdOrderByCreatedDateDesc(Long categoryId);
-    List<Project> findAllProjects();
 
 
 }
