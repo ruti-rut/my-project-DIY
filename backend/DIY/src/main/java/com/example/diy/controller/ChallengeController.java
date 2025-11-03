@@ -1,5 +1,7 @@
 package com.example.diy.controller;
 
+import com.example.diy.DTO.ChallengeListDTO;
+import com.example.diy.Mapper.ChallengeMapper;
 import com.example.diy.model.Challenge;
 import com.example.diy.service.ChallengeRepository;
 import com.example.diy.service.ImageUtils;
@@ -9,15 +11,28 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/challenge")
 @CrossOrigin
 
 public class ChallengeController {
+    private final ChallengeMapper challengeMapper;
     ChallengeRepository challengeRepository;
 
-    public ChallengeController(ChallengeRepository challengeRepository) {
+    public ChallengeController(ChallengeRepository challengeRepository, ChallengeMapper challengeMapper) {
         this.challengeRepository = challengeRepository;
+        this.challengeMapper = challengeMapper;
+    }
+
+    @GetMapping("/allChallenges")
+    public ResponseEntity<List<ChallengeListDTO>> getAllChallenges() {
+        List<Challenge> list = challengeRepository.findAllChallenges();
+        if (list != null) {
+            return new ResponseEntity<>(challengeMapper.toChallengeListDTOList(list), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/challenge/{id}")
@@ -30,16 +45,16 @@ public class ChallengeController {
 
     @PostMapping("/uploadChallenge")
     public ResponseEntity<Challenge> uploadChallengeWithImage(@RequestPart("image") MultipartFile file
-            ,@RequestPart("challenge") Challenge c) {
+            , @RequestPart("challenge") Challenge c) {
         try {
             ImageUtils.uploadImage(file);
             c.setPicturePath(file.getOriginalFilename());
-            Challenge challenge=challengeRepository.save(c);
+            Challenge challenge = challengeRepository.save(c);
             return new ResponseEntity<>(challenge, HttpStatus.CREATED);
 
         } catch (IOException e) {
             System.out.println(e);
-            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
