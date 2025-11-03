@@ -76,7 +76,7 @@ public class ProjectController {
     }
     @GetMapping("/allProjects")
     public List<ProjectListDTO> getAllProjects() {
-        return projectMapper.toProjectListDTOList(projectRepository.findAllProjects());
+        return projectMapper.toProjectListDTOList(projectRepository.findAll());
     }
 
 
