@@ -20,7 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/project")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:4200")
 public class ProjectController {
     ProjectRepository projectRepository;
     ProjectMapper projectMapper;
@@ -73,6 +73,10 @@ public class ProjectController {
     public ResponseEntity<Map<Long, List<ProjectListDTO>>> getHomeProjects() {
         Map<Long, List<ProjectListDTO>> homeProjects = homeService.getLatestProjectsPerCategory();
         return ResponseEntity.ok(homeProjects);
+    }
+    @GetMapping("/allProjects")
+    public List<ProjectListDTO> getAllProjects() {
+        return projectMapper.toProjectListDTOList(projectRepository.findAllProjects());
     }
 
 

@@ -1,6 +1,6 @@
 export interface UsersSimpleDTO {
   id: number;
-  name: string;
-  email?: string; // אם יש שדות אופציונליים
-  // הוסף כאן את השדות שקיימים בצד השרת
+  userName: string;
+  profilePicture: string;           // base64 string
+  profilePicturePath: string;       // path to the image (if stored on server)
 }
