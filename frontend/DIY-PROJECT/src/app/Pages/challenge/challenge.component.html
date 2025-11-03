@@ -1,0 +1,49 @@
+<!-- src/app/components/challenges/challenges.component.html -->
+<div class="challenges-page">
+  <h1 class="page-title">אתגרי DIY</h1>
+  <p class="page-subtitle">הצטרף לאתגר, בנה, וזכה בפרסים!</p>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>טוען אתגרים...</p>
+  </div>
+
+  <!-- רשימה -->
+  <div *ngIf="!loading" class="challenges-grid">
+    <mat-card 
+      *ngFor="let c of challenges" 
+      class="challenge-card">
+
+      <!-- תמונת אתגר -->
+      <img 
+        [src]="getImageUrl(c.picture)" 
+        [alt]="c.them"
+        class="challenge-image">
+
+      <!-- תוכן -->
+      <mat-card-content class="card-content">
+        <h3 class="challenge-title">{{ c.them }}</h3>
+        <p class="challenge-date">
+          <mat-icon>event</mat-icon>
+          מסתיים ב: {{ formatDate(c.endDate) }}
+        </p>
+      </mat-card-content>
+
+      <!-- כפתור פרטים -->
+      <mat-card-actions>
+        <button mat-raised-button color="primary" routerLink="/challenge/{{c.id}}">
+          <mat-icon>arrow_forward</mat-icon>
+          פרטים
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- אין אתגרים -->
+    <div *ngIf="challenges.length === 0 && !loading" class="empty">
+      <mat-icon>flag</mat-icon>
+      <h3>אין אתגרים פעילים כרגע</h3>
+      <p>חזור בקרוב!</p>
+    </div>
+  </div>
+</div>

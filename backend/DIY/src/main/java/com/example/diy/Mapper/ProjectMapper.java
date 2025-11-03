@@ -15,8 +15,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {UsersMapper.class, CategoryMapper.class})
 public interface ProjectMapper {
-    @Mapping(source = "users", target = "usersSimpleDTO")
-    ProjectListDTO projectToListDTO(Project project);
 
     @Mapping(source = "users", target = "users")
     @Mapping(source = "category", target = "category")
