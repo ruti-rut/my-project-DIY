@@ -12,8 +12,14 @@ import java.io.IOException;
 
 @Mapper(componentModel = "spring")
 public interface StepMapper {
-
+    @Mapping(target = "project", source = "idProject")
     Step stepDtoToStep(StepDTO stepDTO);
+
+    @Mapping(target = "id", ignore = true) // לא לשנות את ה-ID
+    @Mapping(target = "project", ignore = true) // לא לשנות את הפרויקט
+    @Mapping(target = "picturePath", ignore = true) // לא לשנות את נתיב התמונה
+    void updateStepFromDto(StepDTO stepDTO, @MappingTarget Step step);
+
     @Mapping(target = "picture", ignore = true)
     StepDTO stepToStepDTO(Step step);
 

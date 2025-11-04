@@ -1,5 +1,6 @@
 package com.example.diy.controller;
 
+import com.example.diy.DTO.ChallengeCreateDTO;
 import com.example.diy.DTO.ChallengeListDTO;
 import com.example.diy.Mapper.ChallengeMapper;
 import com.example.diy.model.Challenge;
@@ -45,18 +46,19 @@ public class ChallengeController {
 
     @PostMapping("/uploadChallenge")
     public ResponseEntity<Challenge> uploadChallengeWithImage(@RequestPart("image") MultipartFile file
-            , @RequestPart("challenge") Challenge c) {
+            , @RequestPart("challenge") ChallengeCreateDTO challengeDto) {
         try {
             ImageUtils.uploadImage(file);
-            c.setPicturePath(file.getOriginalFilename());
-            Challenge challenge = challengeRepository.save(c);
-            return new ResponseEntity<>(challenge, HttpStatus.CREATED);
+            Challenge challenge = challengeMapper.challengeCreateDTOToEntity(challengeDto);
+            challenge.setPicturePath(file.getOriginalFilename());
+
+            Challenge savedChallenge = challengeRepository.save(challenge);
+            return new ResponseEntity<>(savedChallenge, HttpStatus.CREATED);
 
         } catch (IOException e) {
             System.out.println(e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
 }

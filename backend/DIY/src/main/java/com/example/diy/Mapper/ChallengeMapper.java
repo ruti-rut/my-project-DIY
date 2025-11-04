@@ -1,5 +1,6 @@
 package com.example.diy.Mapper;
 
+import com.example.diy.DTO.ChallengeCreateDTO;
 import com.example.diy.DTO.ChallengeListDTO;
 import com.example.diy.DTO.ProjectCreateDTO;
 import com.example.diy.DTO.ProjectListDTO;
@@ -16,6 +17,8 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ChallengeMapper {
     List<ChallengeListDTO> toChallengeListDTOList(List<Challenge> challenges);
+
+    Challenge challengeCreateDTOToEntity(ChallengeCreateDTO challengeCreateDTO);
 
     @Mapping(target = "picture", ignore = true)
     ChallengeListDTO toChallengeListDTO(Challenge c);

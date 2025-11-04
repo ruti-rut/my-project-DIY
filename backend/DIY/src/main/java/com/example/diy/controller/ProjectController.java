@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/project")
@@ -61,6 +60,7 @@ public class ProjectController {
         }
 
     }
+
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ProjectListDTO>> getProjectsByCategory(@PathVariable Long categoryId) {
         List<Project> projects = projectRepository.findByCategoryId(categoryId);
@@ -69,17 +69,20 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-//    @GetMapping("/projectByCategory")
+    //    @GetMapping("/projectByCategory")
 //    public ResponseEntity<Map<Long, List<ProjectListDTO>>> getHomeProjects() {
 //        Map<Long, List<ProjectListDTO>> homeProjects = homeService.getLatestProjectsPerCategory();
 //        return ResponseEntity.ok(homeProjects);
 //    }
+
     @GetMapping("/allProjects")
-    public List<ProjectListDTO> getAllProjects() {
-        return projectMapper.toProjectListDTOList(projectRepository.findAll());
+    public ResponseEntity<List<ProjectListDTO>> getAllChallenges() {
+        List<Project> list = projectRepository.findAll();
+        if (list != null) {
+            return new ResponseEntity<>(projectMapper.toProjectListDTOList(list), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
-
-
 
 
 }
