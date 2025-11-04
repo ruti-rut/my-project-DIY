@@ -36,7 +36,7 @@ public class StepController {
         try {
             ImageUtils.uploadImage(file);
 
-            Step step = stepMapper.stepDTOToStep(s);
+            Step step = stepMapper.stepDtoToStep(s);
 
             Project project = projectRepository.findById(s.getIdProject())
                     .orElseThrow(() -> new RuntimeException("Project not found"));
