@@ -9,7 +9,9 @@
       <input matInput [matDatepicker]="startPicker" formControlName="startDate">
       <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
       <mat-datepicker #startPicker></mat-datepicker>
-      <mat-error>תאריך התחלה נדרש</mat-error>
+      @if (challengeForm.controls['startDate'].hasError('required')) {
+        <mat-error>תאריך התחלה נדרש</mat-error>
+      }
     </mat-form-field>
 
     <!-- תאריך סיום -->
@@ -18,19 +20,21 @@
       <input matInput [matDatepicker]="endPicker" formControlName="endDate">
       <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
       <mat-datepicker #endPicker></mat-datepicker>
-      <mat-error>תאריך סיום נדרש</mat-error>
+      @if (challengeForm.controls['endDate'].hasError('required')) {
+        <mat-error>תאריך סיום נדרש</mat-error>
+      }
     </mat-form-field>
 
     <!-- נושא -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>נושא האתגר</mat-label>
       <input matInput formControlName="theme" placeholder="למשל: אתגר כושר 30 יום">
-      <mat-error *ngIf="challengeForm.controls['theme'].hasError('required')">
-        נושא נדרש
-      </mat-error>
-      <mat-error *ngIf="challengeForm.controls['theme'].hasError('minlength')">
-        לפחות 3 תווים
-      </mat-error>
+      @if (challengeForm.controls['theme'].hasError('required')) {
+        <mat-error>נושא נדרש</mat-error>
+      }
+      @if (challengeForm.controls['theme'].hasError('minlength')) {
+        <mat-error>לפחות 3 תווים</mat-error>
+      }
     </mat-form-field>
 
     <!-- תיאור -->
@@ -38,12 +42,12 @@
       <mat-label>תיאור האתגר</mat-label>
       <textarea matInput formControlName="content" rows="4"
                 placeholder="מה צריך לעשות? איך מצטרפים?"></textarea>
-      <mat-error *ngIf="challengeForm.controls['content'].hasError('required')">
-        תיאור נדרש
-      </mat-error>
-      <mat-error *ngIf="challengeForm.controls['content'].hasError('minlength')">
-        לפחות 10 תווים
-      </mat-error>
+      @if (challengeForm.controls['content'].hasError('required')) {
+        <mat-error>תיאור נדרש</mat-error>
+      }
+      @if (challengeForm.controls['content'].hasError('minlength')) {
+        <mat-error>לפחות 10 תווים</mat-error>
+      }
     </mat-form-field>
 
     <!-- העלאת תמונה -->
@@ -51,19 +55,26 @@
       <label class="mat-body-2">תמונת האתגר <span class="required">*</span></label>
       <input type="file" accept="image/*" (change)="onFileSelected($event)" class="file-input" />
       
-      <div class="preview" *ngIf="previewImage()">
-        <img [src]="previewImage()!" alt="תצוגה מקדימה" />
-      </div>
+      @if (previewImage()) {
+        <div class="preview">
+          <img [src]="previewImage()!" alt="תצוגה מקדימה" />
+        </div>
+      }
 
-      <mat-hint *ngIf="!selectedFile" class="warning">נא להעלות תמונה</mat-hint>
+      @if (!selectedFile) {
+        <mat-hint class="warning">נא להעלות תמונה</mat-hint>
+      }
     </div>
 
-    <!-- כפתור -->
+    <!-- כפתור שליחה -->
     <button mat-raised-button color="primary" type="submit"
             [disabled]="challengeForm.invalid || !selectedFile || isSubmitting()"
             class="submit-btn">
-      <span *ngIf="!isSubmitting()">צור אתגר</span>
-      <span *ngIf="isSubmitting()">שולח...</span>
+      @if (!isSubmitting()) {
+        <span>צור אתגר</span>
+      } @else {
+        <span>שולח...</span>
+      }
     </button>
   </form>
 </div>

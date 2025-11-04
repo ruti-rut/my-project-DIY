@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
-import { DatePipe } from '@angular/common';
 import { ChallengeListDTO } from '../../models/challenge.model';
 import { ChallengeService } from '../../services/challenge.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -18,12 +17,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatCardModule,
     MatButtonModule,
     RouterLink,
-    DatePipe ,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule
-  ],
+],
   templateUrl: './challenge.component.html',
   styleUrls: ['./challenge.component.css']
 })
@@ -67,4 +65,8 @@ export class ChallengesComponent implements OnInit {
       year: 'numeric'
     });
   }
+  onImageError(event: Event): void {
+  const img = event.target as HTMLImageElement;
+  img.src = 'assets/images/placeholder-challenge.jpg'; // או URL מקוון
+}
 }
