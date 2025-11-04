@@ -12,7 +12,6 @@ import java.io.IOException;
 
 @Mapper(componentModel = "spring")
 public interface StepMapper {
-    @Mapping(target = "project", source = "idProject")
     Step stepDtoToStep(StepDTO stepDTO);
 
     @Mapping(target = "id", ignore = true) // לא לשנות את ה-ID
