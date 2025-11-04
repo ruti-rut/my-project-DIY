@@ -1,7 +1,7 @@
 
 export interface ChallengeListDTO {
   id: number;
-  them: string;
+  theme: string;
   endDate:string
   picture: string;
   picturePath: string;
