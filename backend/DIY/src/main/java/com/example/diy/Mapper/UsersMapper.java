@@ -1,5 +1,6 @@
 package com.example.diy.Mapper;
 
+import com.example.diy.DTO.UsersRegisterDTO;
 import com.example.diy.DTO.UsersSimpleDTO;
 import com.example.diy.model.Users;
 import com.example.diy.service.ImageUtils;
@@ -12,6 +13,8 @@ import java.io.IOException;
 
 @Mapper(componentModel = "spring")
 public interface UsersMapper {
+
+    Users usersRegisterDTOToUsers(UsersRegisterDTO usersRegisterDTO);
 
     @Mapping(target = "profilePicture", ignore = true)
     UsersSimpleDTO toSimpleDTO(Users user);

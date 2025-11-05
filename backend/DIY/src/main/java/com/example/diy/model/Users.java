@@ -18,6 +18,15 @@ public class Users {
     private List<Project> myProjects;
 
     private String profilePicturePath;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @JsonIgnore
     @OneToMany(mappedBy = "users")
     private List<Comment> myComments;
