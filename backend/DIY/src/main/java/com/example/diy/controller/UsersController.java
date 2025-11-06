@@ -30,22 +30,22 @@ public class UsersController {
         this.usersMapper = usersMapper;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<Users> signUp(@Valid @RequestBody UsersRegisterDTO user){
-        //נבדוק ששם המשתמש לא קיים
-        Users u=usersRepository.findByUserName(user.getUserName());
-        if(u!=null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        Users newUser = usersMapper.usersRegisterDTOToUsers(user);
-
-        String pass=user.getPassword();//הסיסמא שהמשתמש הכניס - לא מוצפנת
-        newUser.setPassword(new BCryptPasswordEncoder().encode(pass));
-
-        usersRepository.save(newUser);
-        return new ResponseEntity<>(newUser,HttpStatus.CREATED);
-    }
-
+//    @PostMapping("/signup")
+//    public ResponseEntity<Users> signUp(@Valid @RequestBody UsersRegisterDTO user){
+//        //נבדוק ששם המשתמש לא קיים
+//        Users u=usersRepository.findByUserName(user.getUserName());
+//        if(u!=null)
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//
+//        Users newUser = usersMapper.usersRegisterDTOToUsers(user);
+//
+//        String pass=user.getPassword();//הסיסמא שהמשתמש הכניס - לא מוצפנת
+//        newUser.setPassword(new BCryptPasswordEncoder().encode(pass));
+//
+//        usersRepository.save(newUser);
+//        return new ResponseEntity<>(newUser,HttpStatus.CREATED);
+//    }
+//
 
 
 
