@@ -1,5 +1,6 @@
 package com.example.diy.Mapper;
 
+import com.example.diy.DTO.UserResponseDTO;
 import com.example.diy.DTO.UsersRegisterDTO;
 import com.example.diy.DTO.UsersSimpleDTO;
 import com.example.diy.model.Users;
@@ -13,6 +14,8 @@ import java.io.IOException;
 
 @Mapper(componentModel = "spring")
 public interface UsersMapper {
+
+    UserResponseDTO usersToUserResponseDTO(Users users);
 
     Users usersRegisterDTOToUsers(UsersRegisterDTO usersRegisterDTO);
 
@@ -32,7 +35,7 @@ public interface UsersMapper {
         }
     }
 
-    }
+}
 
 //    default UsersSimpleDTO toSimpleDTO(Users user) throws IOException {
 //        if (user == null) return null;

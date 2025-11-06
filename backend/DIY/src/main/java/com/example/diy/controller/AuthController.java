@@ -1,14 +1,13 @@
 package com.example.diy.controller;
 
 import com.example.diy.DTO.UserLogInDTO;
+import com.example.diy.DTO.UserResponseDTO;
 import com.example.diy.DTO.UsersRegisterDTO;
 import com.example.diy.Mapper.UsersMapper;
 import com.example.diy.model.AuthProvider;
 import com.example.diy.model.Users;
 import com.example.diy.service.UsersRepository;
-import com.example.diy.service.UsersService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Users> signUp(@Valid @RequestBody UsersRegisterDTO user){
+    public ResponseEntity<UserResponseDTO> signUp(@Valid @RequestBody UsersRegisterDTO user){
         //נבדוק ששם המשתמש לא קיים
         Users u=usersRepository.findByUserName(user.getUserName());
         if(u!=null)
@@ -43,9 +42,10 @@ public class AuthController {
 
         String pass=user.getPassword();//הסיסמא שהמשתמש הכניס - לא מוצפנת
         newUser.setPassword(new BCryptPasswordEncoder().encode(pass));
+        UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(newUser);
 
         usersRepository.save(newUser);
-        return new ResponseEntity<>(newUser,HttpStatus.CREATED);
+        return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
     }
 
     // --- 2. כניסת משתמש (Login) ---
@@ -59,9 +59,9 @@ public class AuthController {
         }
 
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-
+            UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(user);
             // הצלחה - מחזירים DTO ללא סיסמה
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            return new ResponseEntity<>(responseDto, HttpStatus.OK);
         } else {
             // סיסמה לא תואמת
             return new ResponseEntity<>(Map.of("error", "שם משתמש או סיסמה שגויים."), HttpStatus.UNAUTHORIZED);
