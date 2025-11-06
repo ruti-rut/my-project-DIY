@@ -13,11 +13,31 @@ public class Users {
     private String password;
     private String userName;
     private String mail;
+    // --- שדות OAuth2 ---
+    // קובע אם המשתמש נרשם מקומית או דרך ספק חיצוני
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider = AuthProvider.LOCAL;
     @JsonIgnore
     @OneToMany(mappedBy = "users")
     private List<Project> myProjects;
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "users")
+    private List<Comment> myComments;
+    @ManyToMany
+    private List<Project> favoriteProjects;
+    @ManyToMany(mappedBy = "likedByUsers")
+    private List<Project> likeProjects;
+    private String city;
+    private String aboutMe;
     private String profilePicturePath;
+
+    public AuthProvider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(AuthProvider provider) {
+        this.provider = provider;
+    }
 
     public String getPassword() {
         return password;
@@ -26,18 +46,6 @@ public class Users {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "users")
-    private List<Comment> myComments;
-
-
-    @ManyToMany
-    private List<Project> favoriteProjects;
-    @ManyToMany(mappedBy = "likedByUsers")
-    private List<Project> likeProjects;
-    private String city;
-    private String aboutMe;
 
     public String getCity() {
         return city;
