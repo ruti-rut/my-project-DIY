@@ -1,1 +1,30 @@
-<p>log-in works!</p>
+<div class="login-container">
+  <h2>התחברות</h2>
+  
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="identifier">שם משתמש/מייל:</label>
+      <input id="identifier" type="text" formControlName="identifier">
+    </div>
+    
+    <div>
+      <label for="password">סיסמה:</label>
+      <input id="password" type="password" formControlName="password">
+    </div>
+    
+    <button type="submit" [disabled]="!loginForm.valid">התחבר</button>
+    
+    @if (errorMessage) {
+      <p class="server-error">{{ errorMessage }}</p>
+    }
+  </form>
+
+  <div class="google-login">
+    <hr>
+    <p>או התחבר באמצעות</p>
+    <button (click)="loginWithGoogle()">
+      <img src="assets/google_icon.svg" alt="Google Icon" class="google-icon">
+      התחבר עם גוגל
+    </button>
+  </div>
+</div>
