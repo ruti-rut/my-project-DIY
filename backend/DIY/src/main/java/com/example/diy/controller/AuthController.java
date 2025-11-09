@@ -6,11 +6,19 @@ import com.example.diy.DTO.UsersRegisterDTO;
 import com.example.diy.Mapper.UsersMapper;
 import com.example.diy.model.AuthProvider;
 import com.example.diy.model.Users;
+import com.example.diy.security.CustomUserDetails;
+import com.example.diy.security.jwt.JwtUtils;
 import com.example.diy.service.UsersRepository;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,49 +29,56 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 
 public class AuthController {
+    private final PasswordEncoder passwordEncoder; // הוספנו את ה-PasswordEncoder
     UsersRepository usersRepository;
     UsersMapper usersMapper;
-    private final PasswordEncoder passwordEncoder; // הוספנו את ה-PasswordEncoder
+    private AuthenticationManager authenticationManager;
+    private JwtUtils jwtUtils;
 
-    public AuthController(PasswordEncoder passwordEncoder, UsersMapper usersMapper, UsersRepository usersRepository) {
+    public AuthController(PasswordEncoder passwordEncoder, UsersRepository usersRepository, UsersMapper usersMapper, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.passwordEncoder = passwordEncoder;
-        this.usersMapper = usersMapper;
         this.usersRepository = usersRepository;
+        this.usersMapper = usersMapper;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDTO> signUp(@Valid @RequestBody UsersRegisterDTO user){
-        //נבדוק ששם המשתמש לא קיים
-        Users u=usersRepository.findByUserName(user.getUserName());
-        if(u!=null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
+    public ResponseEntity<UserResponseDTO> signUp(@Valid @RequestBody UsersRegisterDTO user) {
+        // נבדוק ששם המשתמש (או המזהה) לא קיים
+        if (usersRepository.existsByUserName(user.getUserName())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Bad Request
+        }
         Users newUser = usersMapper.usersRegisterDTOToUsers(user);
+        // הצפנת סיסמה באמצעות ה-PasswordEncoder המוזרק
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        newUser.setPassword(encodedPassword);
+        // הגדרת ספק האימות כ-LOCAL
+        newUser.setProvider(AuthProvider.LOCAL);
+        Users savedUser = usersRepository.save(newUser);
+        UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(savedUser);
 
-        String pass=user.getPassword();//הסיסמא שהמשתמש הכניס - לא מוצפנת
-        newUser.setPassword(new BCryptPasswordEncoder().encode(pass));
-        UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(newUser);
-
-        usersRepository.save(newUser);
-        return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED); // 201 Created
     }
 
     // --- 2. כניסת משתמש (Login) ---
     @PostMapping("/signin")
     public ResponseEntity<?> login(@Valid @RequestBody UserLogInDTO loginRequest) {
 
-        Users user = usersRepository.findByIdentifier(loginRequest.getIdentifier());
-
-        if (user == null || user.getProvider() != AuthProvider.LOCAL) {
-            return new ResponseEntity<>(Map.of("error", "שם משתמש או סיסמה שגויים."), HttpStatus.UNAUTHORIZED);
-        }
-
-        if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(user);
-            // הצלחה - מחזירים DTO ללא סיסמה
-            return new ResponseEntity<>(responseDto, HttpStatus.OK);
-        } else {
-            // סיסמה לא תואמת
+        try {
+            // 1. אימות המשתמש (מפעיל את DaoAuthenticationProvider)
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getIdentifier(), loginRequest.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            // 3. קבלת פרטי המשתמש
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            // 4. יצירת JWT והצבת ה-Cookie
+            ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+            UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(userDetails.getUser());
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .body(responseDto);
+        } catch (AuthenticationException e) {
             return new ResponseEntity<>(Map.of("error", "שם משתמש או סיסמה שגויים."), HttpStatus.UNAUTHORIZED);
         }
     }
@@ -76,6 +91,12 @@ public class AuthController {
         return ResponseEntity.ok(usersMapper.usersToUserResponseDTO(user));
     }
 
-
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser() {
+        ResponseCookie cleanCookie = jwtUtils.getCleanJwtCookie();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cleanCookie.toString())
+                .body(Map.of("message", "התנתקת בהצלחה!"));
+    }
 
 }

@@ -24,9 +24,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
         //לאמת את המשתמש עם המשתמש שנמצא ב-DB
-        Users user=userRepository.findByUserName(username);
+        Users user=userRepository.findByIdentifier(identifier);
         if (user==null)
             throw new UsernameNotFoundException("user not found");
         //רשימה של הרשאות
@@ -35,6 +35,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getName().name()));
         }
-        return new CustomUserDetails(username,user.getPassword(),grantedAuthorities);//יוצר משתמש עבור האבטחה
+        return new CustomUserDetails(user);
     }
 }
