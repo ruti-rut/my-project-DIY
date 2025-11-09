@@ -3,7 +3,9 @@ package com.example.diy.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Users {
@@ -30,6 +32,16 @@ public class Users {
     private String city;
     private String aboutMe;
     private String profilePicturePath;
+    @ManyToMany
+    private Set<Role> roles = new HashSet<>();
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
 
     public AuthProvider getProvider() {
         return provider;
