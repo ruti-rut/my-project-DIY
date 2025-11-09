@@ -1,46 +1,62 @@
-// auth/login/login.component.ts
-import { Component } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth.service';
+// auth/components/login/login.component.ts
+
+import { ReactiveFormsModule, Validators, FormBuilder, FormGroup } from "@angular/forms";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCardModule } from "@angular/material/card";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { Router } from "@angular/router";
+import { AuthService } from "../../services/auth.service";
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-log-in',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './log-in.component.html',
-  styleUrls: ['./log-in.component.css']
+  imports: [
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatIconModule
+  ],
+  templateUrl: './log-in.component.html',  // ← תיקון: ללא מקף
+  styleUrls: ['./log-in.component.css']     // ← תיקון: ללא מקף
 })
 export class LoginComponent {
-  loginForm = this.fb.group({
-    identifier: ['', Validators.required], // שם משתמש או מייל
-    password: ['', Validators.required]
-  });
-  errorMessage: string = '';
+  form!: FormGroup;  // ← נשתמש ב-! כי נאתחל ב-constructor
+  error = '';
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
+    public auth: AuthService,
     private router: Router
-  ) {}
-
-  onSubmit(): void {
-    this.errorMessage = '';
-    if (this.loginForm.valid) {
-      this.authService.login(this.loginForm.value).subscribe({
-        next: () => this.router.navigate(['/profile']),
-        error: (err) => {
-          this.errorMessage = err.error?.error || 'שם משתמש או סיסמה שגויים.';
-          console.error('שגיאת כניסה:', err);
-        }
-      });
-    }
+  ) {
+    this.form = this.fb.group({
+      identifier: ['', Validators.required],
+      password: ['', Validators.required]
+    });
   }
-  
-  /** מפנה ל-Backend לטיפול בכניסה עם גוגל (OAuth2) */
-  loginWithGoogle(): void {
-    // ה-Backend יטפל בהפניה לגוגל ויחזיר עוגייה
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google'; 
+
+  onSubmit() {
+    if (this.form.invalid) return;
+    this.loading = true;
+    this.error = '';
+
+    this.auth.login(this.form.value).subscribe({
+      next: () => this.router.navigate(['/profile']),
+      error: (err) => {
+        this.error = err.error?.error || 'שם משתמש או סיסמה שגויים';
+        this.loading = false;
+      }
+    });
+  }
+
+  googleLogin() {
+    this.auth.loginWithGoogle();
   }
 }

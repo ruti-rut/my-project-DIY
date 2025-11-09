@@ -1,0 +1,43 @@
+<!-- auth/components/signup/signup.component.html -->
+<div class="signup-container">
+  <mat-card class="signup-card">
+    <mat-card-header>
+      <mat-card-title>הרשמה</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>שם משתמש</mat-label>
+          <input matInput formControlName="userName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>אימייל</mat-label>
+          <input matInput type="email" formControlName="email" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>סיסמה (6+ תווים)</mat-label>
+          <input matInput type="password" formControlName="password" />
+        </mat-form-field>
+
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit" 
+          [disabled]="form.invalid || loading"
+          class="full-width submit-btn"
+        >
+          <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+          <span *ngIf="!loading">הירשם</span>
+        </button>
+      </form>
+
+      <p class="login-link">
+        יש לך חשבון? 
+        <a routerLink="/login">התחבר כאן</a>
+      </p>
+    </mat-card-content>
+  </mat-card>
+</div>

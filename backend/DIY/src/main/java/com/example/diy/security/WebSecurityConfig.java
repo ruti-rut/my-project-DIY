@@ -79,7 +79,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                                 auth.requestMatchers("/h2-console/**").permitAll()
                                         //כאן נעשה אפשור לפונקציות של הכניסה, הרשמה
-                                        .requestMatchers("/api/user/sign**").permitAll()
+                                        .requestMatchers("/api/auth/sign**").permitAll()
                                         .requestMatchers("/api/user/get").hasRole("ADMIN")
                                         //כל שאר הפונקציות ישארו חסומות אך ורק למשתמשים שנכנסו
                                         //אם רוצים אפשר לאפשר פונקציות מסוימות או קונטרולים מסוימים לכל המשתמשים

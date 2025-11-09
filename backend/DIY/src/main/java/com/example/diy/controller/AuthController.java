@@ -14,11 +14,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/autho")
-@CrossOrigin
+@RequestMapping("/api/auth")
 
 public class AuthController {
     UsersRepository usersRepository;
@@ -49,7 +49,7 @@ public class AuthController {
     }
 
     // --- 2. כניסת משתמש (Login) ---
-    @PostMapping("/login")
+    @PostMapping("/signin")
     public ResponseEntity<?> login(@Valid @RequestBody UserLogInDTO loginRequest) {
 
         Users user = usersRepository.findByIdentifier(loginRequest.getIdentifier());
@@ -66,6 +66,14 @@ public class AuthController {
             // סיסמה לא תואמת
             return new ResponseEntity<>(Map.of("error", "שם משתמש או סיסמה שגויים."), HttpStatus.UNAUTHORIZED);
         }
+    }
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Users user = usersRepository.findByUserName(principal.getName());
+        return ResponseEntity.ok(usersMapper.usersToUserResponseDTO(user));
     }
 
 
