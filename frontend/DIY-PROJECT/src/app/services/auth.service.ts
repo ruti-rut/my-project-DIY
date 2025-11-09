@@ -8,7 +8,7 @@ import { HttpClient } from "@angular/common/http";
   providedIn: 'root'
 })
 export class AuthService {
-private apiUrl = 'http://localhost:8080/api/autho';
+private apiUrl = 'http://localhost:8080/api/auth';
 private userSubject = new BehaviorSubject<UserResponseDTO | null>(null);
   public user$ = this.userSubject.asObservable();
 
@@ -26,7 +26,7 @@ private userSubject = new BehaviorSubject<UserResponseDTO | null>(null);
 
   // התחברות
   login(data: any): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data, {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/signin`, data, {
       withCredentials: true
     }).pipe(
       tap(res => this.saveUser(res.user))
@@ -42,7 +42,7 @@ private userSubject = new BehaviorSubject<UserResponseDTO | null>(null);
   logout() {
     this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).subscribe();
     this.clearUser();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/sign-in']);
   }
 
   // בדיקה אם מחובר

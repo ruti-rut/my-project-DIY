@@ -17,7 +17,7 @@ export class AuthButtonComponent {
 constructor(public auth: AuthService, private router: Router) {}
 
   goToLogin() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/sign-in']);
   }
 
   goToProfile() {

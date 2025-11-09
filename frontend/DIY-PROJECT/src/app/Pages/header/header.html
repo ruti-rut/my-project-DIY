@@ -9,7 +9,7 @@
   <span class="spacer"></span>
 
   <!-- כפתורים -->
-  <a mat-button routerLink="/projects" routerLinkActive="active">
+  <a mat-button routerLink="/projects" router-tLinkActive="active">
     <mat-icon>folder_open</mat-icon>
     פרויקטים
   </a>
@@ -24,9 +24,7 @@
     הוסף פרויקט
   </a>
 
-  <a mat-stroked-button routerLink="/auth" class="auth-btn">
-    <mat-icon>person</mat-icon>
-    התחברות / הרשמה
-  </a>
+  <!-- כאן – החלפה! -->
+  <app-auth-button></app-auth-button>
 
 </mat-toolbar>
