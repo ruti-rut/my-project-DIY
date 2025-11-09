@@ -1,0 +1,36 @@
+.user-menu-trigger {
+    padding: 0 16px;
+    height: 100%;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 8px;
+}
+
+.initials-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    margin-left: 8px;
+}
+
+.username {
+    margin-right: 8px;
+    font-weight: 500;
+}
+
+.user-menu-header {
+    padding: 8px 16px;
+    display: flex;
+    flex-direction: column;
+}
