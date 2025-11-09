@@ -5,6 +5,7 @@ import com.example.diy.model.AuthProvider;
 import com.example.diy.model.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -18,7 +19,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Autowired
     private UsersRepository usersRepository; // לגישה לבסיס הנתונים (DB)
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     // המתודה ש-Spring Security קורא לה כדי לטעון משתמש מגוגל
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -53,24 +55,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return oauth2User;
     }
 
-    // *** לוגיקת רישום משתמש חדש מ-OAuth2 ***
     private Users registerNewOAuth2User(String email, String name) {
         Users newUser = new Users();
         newUser.setMail(email);
         newUser.setUserName(name);
-        newUser.setProvider(AuthProvider.GOOGLE); // הגדרה כמשתמש גוגל
+        newUser.setProvider(AuthProvider.GOOGLE);
 
         // יצירת סיסמה אקראית מוצפנת. לא משתמשים בה, אבל שדה הסיסמה אינו ריק.
-        // אנו מניחים ש-passwordEncoder() הוזרק כ-Bean.
-        newUser.setPassword(new BCryptPasswordEncoder().encode(UUID.randomUUID().toString()));
-
+        newUser.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
         return usersRepository.save(newUser);
     }
 
-    // *** לוגיקת עדכון משתמש קיים ***
     private Users updateExistingOAuth2User(Users existingUser) {
         existingUser.setProvider(AuthProvider.GOOGLE);
-        // ניתן לעדכן פרטים נוספים אם גוגל סיפקה מידע חדש
         return usersRepository.save(existingUser);
     }
 }

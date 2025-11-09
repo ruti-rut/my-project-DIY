@@ -13,6 +13,7 @@ public class CustomUserDetails extends User {
     // 1. הוספת השדה לאובייקט המשתמש המלא
     private final Users user;
 
+
     // 2. עדכון הבנאי כך שיקבל את אובייקט ה-Users
     public CustomUserDetails(Users user) {
         // קורא לבנאי של מחלקת האב (Spring Security User)
