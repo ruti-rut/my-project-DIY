@@ -68,7 +68,7 @@ public class WebSecurityConfig {
         //משבית את הגנת CSRF על ידי הפעלת שיטת `csrf()` והשבתתה
         http.csrf(csrf -> csrf.disable()).cors(cors->cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration=new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200"));
+                    corsConfiguration.setAllowedOrigins(List.of("*"));
                     corsConfiguration.setAllowedMethods(List.of("*"));
                     corsConfiguration.setAllowedHeaders(List.of("*"));
                     corsConfiguration.setAllowCredentials(true);//לאפשר עוגיות
@@ -79,12 +79,13 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                                 auth.requestMatchers("/h2-console/**").permitAll()
                                         //כאן נעשה אפשור לפונקציות של הכניסה, הרשמה
-                                        .requestMatchers("/api/user/sign**").permitAll()
-                                        .requestMatchers("/api/user/get").hasRole("ADMIN")
+                                        .requestMatchers("/api/auth/sign**").permitAll()
                                         //כל שאר הפונקציות ישארו חסומות אך ורק למשתמשים שנכנסו
                                         //אם רוצים אפשר לאפשר פונקציות מסוימות או קונטרולים מסוימים לכל המשתמשים
                                         //לדוג'
-                                        .requestMatchers("/api/recipes/**").permitAll()
+                                        .requestMatchers("/api/project/**").permitAll()
+                                        .requestMatchers("/api/challenge/**").permitAll()
+
                                         //.requestMatchers("/api/recipes/delete")
 //                  .requestMatchers("/api/user/signIn").permitAll()
                                         .anyRequest().authenticated()

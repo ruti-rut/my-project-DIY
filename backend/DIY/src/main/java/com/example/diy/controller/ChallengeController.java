@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/challenge")
-@CrossOrigin(origins = "*")
 
 public class ChallengeController {
     ChallengeRepository challengeRepository;

@@ -22,11 +22,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/autho")
-@CrossOrigin
+@RequestMapping("/api/auth")
 
 public class AuthController {
     private final PasswordEncoder passwordEncoder; // הוספנו את ה-PasswordEncoder
@@ -61,7 +61,8 @@ public class AuthController {
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED); // 201 Created
     }
 
-    @PostMapping("/login")
+    // --- 2. כניסת משתמש (Login) ---
+    @PostMapping("/signin")
     public ResponseEntity<?> login(@Valid @RequestBody UserLogInDTO loginRequest) {
 
         try {
@@ -80,6 +81,14 @@ public class AuthController {
         } catch (AuthenticationException e) {
             return new ResponseEntity<>(Map.of("error", "שם משתמש או סיסמה שגויים."), HttpStatus.UNAUTHORIZED);
         }
+    }
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Users user = usersRepository.findByUserName(principal.getName());
+        return ResponseEntity.ok(usersMapper.usersToUserResponseDTO(user));
     }
 
     @PostMapping("/logout")

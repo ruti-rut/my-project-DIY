@@ -9,3 +9,17 @@ export enum AuthProvider {
     GOOGLE = 'GOOGLE'
 }
 
+export interface UserResponseDTO {
+  id: number;
+  userName: string;
+  mail: string;
+  city: string;
+  aboutMe: string;
+  profilePicturePath: string;
+  provider: AuthProvider;
+
+  }
+
+export interface AuthResponse {
+  user: UserResponseDTO;  // בדיוק מה שמחזיר Spring
+}

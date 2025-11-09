@@ -17,7 +17,6 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/step")
-@CrossOrigin
 
 public class StepController {
     StepRepository stepRepository;
