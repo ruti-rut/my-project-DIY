@@ -1,22 +1,36 @@
 // src/app/app.routes.ts
+
 import { Routes } from '@angular/router';
-import { AddChallengeComponent } from './Pages/add-challenge/add-challenge.component';
-import { AddProjectComponent } from './Pages/add-project/add-project.component';
-import { ChallengesComponent } from './Pages/challenge/challenge.component';
-import { HomePageComponent } from './Pages/home-page/home-page';
-import { SignUpComponent } from './Pages/sign-up/sign-up.component';
-import { SignInComponent } from './Pages/sign-in/sign-in.component';
 
-// ייבא את כל הקומפוננטות שלך מהתיקיות בתוך app/
-// src/app/app.routes.ts
+// אין צורך יותר לייבא את הקומפוננטות בראש הקובץ!
+// Angular מטפל בזה באופן דינאמי בתוך loadComponent.
+
 export const routes: Routes = [
-  { path: '', component: HomePageComponent },
-  { path: 'add-project', component: AddProjectComponent },
-  { path: 'challenges', component: ChallengesComponent },
-  { path: 'add-challenge', component: AddChallengeComponent },
-  { path: 'sign-in', component:SignInComponent},
-  { path: 'sign-up', component: SignUpComponent },
+  { 
+    path: '', 
+    loadComponent: () => import('./pages/home-page/home-page').then(m => m.HomePageComponent)
+  },
+  { 
+    path: 'add-project', 
+    loadComponent: () => import('./pages/add-project/add-project.component').then(m => m.AddProjectComponent) 
+  },
+  { 
+    path: 'challenges', 
+    loadComponent: () => import('./pages/challenge/challenge.component').then(m => m.ChallengesComponent) 
+  },
+  { 
+    path: 'add-challenge', 
+    loadComponent: () => import('./pages/add-challenge/add-challenge.component').then(m => m.AddChallengeComponent) 
+  },
+  { 
+    path: 'sign-in', 
+    loadComponent: () => import('./pages/sign-in/sign-in.component').then(m => m.SignInComponent)
+  },
+  { 
+    path: 'sign-up', 
+    loadComponent: () => import('./pages/sign-up/sign-up.component').then(m => m.SignUpComponent) 
+  },
 
-
+  // נתיב Fallback (ללא שינוי)
   { path: '**', redirectTo: '' }
 ];

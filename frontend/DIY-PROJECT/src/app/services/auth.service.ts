@@ -1,74 +1,76 @@
-import { Injectable } from "@angular/core";
-import { AuthResponse, UserResponseDTO } from "../models/user.model";
-import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { Router } from "@angular/router";
-import { HttpClient } from "@angular/common/http";
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { tap, catchError, Observable, of } from 'rxjs';
+import { Router } from '@angular/router';
+import { UserResponseDTO, UsersRegisterDTO, UserLogInDTO } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-private apiUrl = 'http://localhost:8080/api/auth';
-private userSubject = new BehaviorSubject<UserResponseDTO | null>(null);
-  public user$ = this.userSubject.asObservable();
+  // כתובת ה-URL הבסיסית של שרת ה-Spring Boot שלך
+  private baseUrl = 'http://localhost:8080/api/auth'; // *** שנה אם צריך ***
 
-  constructor(private http: HttpClient, private router: Router) {
-    this.checkIfLoggedIn(); // בודק אם יש עוגייה
-  }
-  // הרשמה
-  signup(data: any): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/signup`, data, {
-      withCredentials: true  // שולח עוגיות
-    }).pipe(
-      tap(res => this.saveUser(res.user))
+  private currentUserSignal = signal<UserResponseDTO | null>(null);
+  public currentUser = this.currentUserSignal.asReadonly();
+
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  constructor() {
+        // מפעיל את בדיקת האימות מיד כאשר השירות מוזרק
+        this.checkAuthentication().subscribe(); 
+    }
+
+  checkAuthentication(): Observable<UserResponseDTO | null> {
+    return this.http.get<UserResponseDTO>(`${this.baseUrl}/me`).pipe(
+      tap(user => {
+        this.currentUserSignal.set(user);
+      }),
+      catchError(() => {
+        this.currentUserSignal.set(null);
+        return of(null);
+      })
     );
   }
 
-  // התחברות
-  login(data: any): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/signin`, data, {
-      withCredentials: true
-    }).pipe(
-      tap(res => this.saveUser(res.user))
+  /**
+   * פונקציה לרישום משתמש חדש
+   */
+signUp(userData: UsersRegisterDTO): Observable<UserResponseDTO> {
+  return this.http.post<UserResponseDTO>(`${this.baseUrl}/signup`, userData).pipe(
+    tap(user => {
+      this.currentUserSignal.set(user);
+    })
+  );
+}
+  /**
+   * פונקציה להתחברות משתמש
+   */
+  signIn(credentials: UserLogInDTO): Observable<UserResponseDTO> {
+    return this.http.post<UserResponseDTO>(`${this.baseUrl}/signin`, credentials).pipe(
+      tap(user => {
+        this.currentUserSignal.set(user);
+        this.router.navigate(['/']);
+      }),
     );
-
   }
-// התחברות עם Google
-  loginWithGoogle() {
+
+  signInWithGoogle(): void {
     window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   }
 
-  // התנתקות
-  logout() {
-    this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).subscribe();
-    this.clearUser();
-    this.router.navigate(['/sign-in']);
-  }
 
-  // בדיקה אם מחובר
-  isLoggedIn(): boolean {
-    return this.userSubject.value !== null;
+  logout(): Observable<any> {
+    return this.http.post(`${this.baseUrl}/logout`, {}).pipe(
+      tap(() => {
+        this.currentUserSignal.set(null);
+        this.router.navigate(['/']);
+      }),
+      catchError(err => {
+        this.currentUserSignal.set(null);
+        this.router.navigate(['/']);
+        return of(err);
+      })
+    );
   }
-
-  getUser(): UserResponseDTO | null {
-    return this.userSubject.value;
-  }
-
-  // שומר את המשתמש
-  private saveUser(user: UserResponseDTO) {
-    this.userSubject.next(user);
-  }
-
-  // מנקה
-  private clearUser() {
-    this.userSubject.next(null);
-  }
-  
-  private checkIfLoggedIn() {
-  this.http.get<AuthResponse>(`${this.apiUrl}/me`, { withCredentials: true })
-    .subscribe({
-      next: (res) => this.saveUser(res.user),  // יש JWT → שומר את המשתמש
-      error: () => this.clearUser()            // אין JWT → מנקה
-    });
-}
 }

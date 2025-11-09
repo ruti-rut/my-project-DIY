@@ -68,10 +68,10 @@ public class WebSecurityConfig {
         //משבית את הגנת CSRF על ידי הפעלת שיטת `csrf()` והשבתתה
         http.csrf(csrf -> csrf.disable()).cors(cors->cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration=new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(List.of("*"));
-                    corsConfiguration.setAllowedMethods(List.of("*"));
+                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200")); // <--- ללא הגרשיים הכפולים בפנים!
+                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // מומלץ במקום *
                     corsConfiguration.setAllowedHeaders(List.of("*"));
-                    corsConfiguration.setAllowCredentials(true);//לאפשר עוגיות
+                    corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
 
@@ -79,12 +79,13 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                                 auth.requestMatchers("/h2-console/**").permitAll()
                                         //כאן נעשה אפשור לפונקציות של הכניסה, הרשמה
-                                        .requestMatchers("/api/auth/sign**").permitAll()
+                                        .requestMatchers("/api/auth/**").permitAll()
                                         //כל שאר הפונקציות ישארו חסומות אך ורק למשתמשים שנכנסו
                                         //אם רוצים אפשר לאפשר פונקציות מסוימות או קונטרולים מסוימים לכל המשתמשים
                                         //לדוג'
                                         .requestMatchers("/api/project/**").permitAll()
                                         .requestMatchers("/api/challenge/**").permitAll()
+                                        .requestMatchers("/error").permitAll()
 
                                         //.requestMatchers("/api/recipes/delete")
 //                  .requestMatchers("/api/user/signIn").permitAll()
