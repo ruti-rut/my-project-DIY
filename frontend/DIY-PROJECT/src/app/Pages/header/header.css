@@ -1,52 +1,122 @@
+/* header.css – עיצוב מלא, יפה ותקין */
+
 .header-toolbar {
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
+  padding: 0 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
 }
 
+/* מרווח יפה בין כל הפריטים */
+.header-toolbar > * {
+  margin: 0 4px;
+}
+
+/* הלוגו */
 .logo {
   display: flex;
   align-items: center;
+  gap: 10px;
   text-decoration: none;
-  color: rgb(41, 38, 137);
+  color: inherit;
   font-weight: 600;
-  font-size: 1.3rem;
-  gap: 8px;
+  font-size: 1.4rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.logo:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .logo-text {
-  display: none;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
-@media (min-width: 600px) {
-  .logo-text {
-    display: inline;
+/* כפתורי הניווט (פרויקטים, אתגרים, הוסף פרויקט) */
+.header-toolbar a[mat-button] {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+/* הדגשה כשפעיל */
+.header-toolbar a[routerlinkactive="active"],
+.header-toolbar a.active {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  font-weight: 600;
+}
+
+/* כפתור "התחברות / הרשמה" – הכי חשוב! */
+.login-btn {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 0 20px !important;
+  height: 40px !important;
+  min-width: 160px !important;
+  transition: all 0.3s ease !important;
+}
+
+/* צבע רקע יפה יותר לכפתור הראשי */
+.login-btn {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.login-btn:hover {
+  background-color: rgba(255, 255, 255, 0.28) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* אייקון בתוך הכפתור */
+.login-btn mat-icon {
+  margin-right: 8px;
+}
+
+/* ה-spacer – **ללא** pointer-events: none!!! */
+.spacer {
+  flex: 1 1 auto;
+  /* זה הכל – שום דבר לא חוסם קליקים */
+}
+
+/* וידוא מוחלט ששום דבר לא חוסם קליקים */
+.header-toolbar a,
+.header-toolbar button,
+.header-toolbar .login-btn,
+.header-toolbar .mat-button,
+.header-toolbar .mat-flat-button {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+}
+
+/* תמיכה במוד dark אם תרצה בעתיד */
+@media (prefers-color-scheme: dark) {
+  .header-toolbar {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   }
 }
 
-.spacer {
-  flex: 1;
-}
-
-a[mat-button] {
-  margin-left: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 500;
-}
-
-.auth-btn {
-  border: 2px solid white !important;
-  font-weight: 500;
-}
-
-a[routerLinkActive="active"] {
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+/* רספונסיביות למובייל */
+@media (max-width: 768px) {
+  .header-toolbar {
+    padding: 0 8px;
+  }
+  
+  .logo-text {
+    display: none;
+  }
+  
+  .login-btn {
+    min-width: auto !important;
+    padding: 0 12px !important;
+  }
+  
+  .header-toolbar a[mat-button] {
+    padding: 0 8px;
+    font-size: 0.9rem;
+  }
 }

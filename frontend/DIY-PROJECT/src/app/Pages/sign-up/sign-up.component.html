@@ -1,43 +1,51 @@
-<!-- auth/components/signup/signup.component.html -->
-<div class="signup-container">
-  <mat-card class="signup-card">
-    <mat-card-header>
-      <mat-card-title>הרשמה</mat-card-title>
-    </mat-card-header>
+<div class="auth-wrapper">
+  <mat-card class="auth-card">
+    <mat-card-title>הרשמה</mat-card-title>
+
+    @if (isLoading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
 
     <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="outline" class="full-width">
+      <form [formGroup]="signupForm" (ngSubmit)="onSignupSubmit()">
+        
+        <mat-form-field appearance="outline">
           <mat-label>שם משתמש</mat-label>
-          <input matInput formControlName="userName" />
+          <input matInput formControlName="userName" required>
+          
+          @if (signupForm.get('userName')?.hasError('minlength')) {
+            <mat-error>שם המשתמש חייב להיות לפחות 3 תווים</mat-error>
+          }
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline">
           <mat-label>אימייל</mat-label>
-          <input matInput type="email" formControlName="email" />
+          <input matInput formControlName="mail" type="email" required>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>סיסמה (6+ תווים)</mat-label>
-          <input matInput type="password" formControlName="password" />
+        <mat-form-field appearance="outline">
+          <mat-label>סיסמה</mat-label>
+          <input matInput formControlName="password" type="password" required>
+          
+          @if (signupForm.get('password')?.hasError('minlength')) {
+            <mat-error>הסיסמה חייבת להיות לפחות 6 תווים</mat-error>
+          }
         </mat-form-field>
 
-        <button 
-          mat-raised-button 
-          color="primary" 
-          type="submit" 
-          [disabled]="form.invalid || loading"
-          class="full-width submit-btn"
-        >
-          <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
-          <span *ngIf="!loading">הירשם</span>
+        @if (errorMessage()) {
+          <p class="error-message">{{ errorMessage() }}</p>
+        }
+
+        <button mat-flat-button color="accent" type="submit" [disabled]="signupForm.invalid || isLoading()">
+          הירשם
         </button>
+        
       </form>
 
-      <p class="login-link">
-        יש לך חשבון? 
-        <a routerLink="/sign-in">התחבר כאן</a>
-      </p>
     </mat-card-content>
+
+    <mat-card-footer class="auth-footer">
+      <p>כבר רשום? <a routerLink="/log-in">התחבר עכשיו</a></p>
+    </mat-card-footer>
   </mat-card>
 </div>

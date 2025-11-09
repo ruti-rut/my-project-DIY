@@ -1,91 +1,84 @@
-/* auth/components/login/login.component.scss */
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+/* עוטף מרכזי: ממקם את הכרטיס באמצע המסך */
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+    min-height: calc(100vh - 50px); /* מבטיח שהעמוד ימלא את גובה המסך */
 }
 
-.login-card {
-  width: 100%;
-  max-width: 400px;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+/* כרטיס הטופס הראשי */
+.auth-card {
+    max-width: 400px;
+    width: 100%;
+    padding: 24px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-mat-card-header {
-  text-align: center;
-  margin-bottom: 20px;
+.auth-card mat-card-title {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    font-weight: 500;
 }
 
-mat-card-title {
-  font-size: 24px;
-  font-weight: 600;
+/* תוכן הטופס */
+.auth-card mat-card-content {
+    display: flex;
+    flex-direction: column;
 }
 
-.full-width {
-  width: 100%;
-  margin-bottom: 16px;
+.auth-card mat-card-content form {
+    display: flex;
+    flex-direction: column;
 }
 
-.submit-btn {
-  height: 48px;
-  font-size: 16px;
-  font-weight: 500;
+.auth-card mat-form-field {
+    width: 100%;
+    margin-bottom: 5px;
 }
 
-.google-btn {
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  font-size: 15px;
+.auth-card button[type="submit"] {
+    margin-top: 20px;
+    height: 48px;
+    font-size: 1.1rem;
 }
 
 .divider {
-  text-align: center;
-  margin: 20px 0;
-  position: relative;
-  color: #999;
-  font-size: 14px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: #e0e0e0;
-  }
-
-  span {
-    background: white;
-    padding: 0 15px;
-  }
+    margin: 25px 0 15px 0;
 }
 
-.error {
-  color: #f44336;
-  text-align: center;
-  margin: 12px 0 0;
-  font-size: 14px;
-}
-
-.signup-link {
-  text-align: center;
-  margin-top: 20px;
-  color: #666;
-  font-size: 14px;
-
-  a {
-    color: #667eea;
-    text-decoration: none;
+/* כפתור Google/External Login */
+.google-btn {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 500;
-    &:hover { text-decoration: underline; }
-  }
+}
+
+.google-btn mat-icon {
+    margin-left: 10px;
+}
+
+/* הודעת שגיאה */
+.error-message {
+    color: var(--mat-warn-color);
+    font-size: 0.9rem;
+    margin: 5px 0 10px 0;
+}
+
+/* קישור בתחתית הכרטיס */
+.auth-footer {
+    display: flex;
+    justify-content: center;
+    padding-top: 16px;
+    border-top: 1px solid #eee; /* קו הפרדה עדין */
+}
+
+.auth-footer a {
+    text-decoration: none;
+    color: var(--mat-primary-color);
+    font-weight: 500;
 }

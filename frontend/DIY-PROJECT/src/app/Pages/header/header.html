@@ -1,6 +1,5 @@
 <mat-toolbar color="primary" class="header-toolbar">
 
-  <!-- לוגו -->
   <a routerLink="/" class="logo" routerLinkActive="active">
     <mat-icon>build</mat-icon>
     <span class="logo-text">InstructaBuild</span>
@@ -8,8 +7,7 @@
 
   <span class="spacer"></span>
 
-  <!-- כפתורים -->
-  <a mat-button routerLink="/projects" router-tLinkActive="active">
+  <a mat-button routerLink="/projects" routerLinkActive="active">
     <mat-icon>folder_open</mat-icon>
     פרויקטים
   </a>
@@ -23,8 +21,12 @@
     <mat-icon>add_box</mat-icon>
     הוסף פרויקט
   </a>
-
-  <!-- כאן – החלפה! -->
-  <app-auth-button></app-auth-button>
-
+  
+@if (currentUser(); as user) {
+    <app-user-profile-menu [user]="user" />
+  } 
+  
+  @else { 
+    <app-login-button />
+  }
 </mat-toolbar>

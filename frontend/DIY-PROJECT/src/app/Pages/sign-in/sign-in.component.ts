@@ -1,58 +1,61 @@
-import { Component } from '@angular/core';
-import { Validators, FormBuilder, ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { Validators, FormBuilder, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { UserLogInDTO } from '../../models/user.model';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { CommonModule } from '@angular/common';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-sign-in',
-  imports: [ReactiveFormsModule,
+  imports: [CommonModule,
+    RouterLink,
+    ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatProgressSpinnerModule,
-    MatIconModule],
+    MatIconModule,
+    MatProgressBarModule,
+    MatDividerModule],
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.css'
 })
 export class SignInComponent {
 
-  form!: FormGroup;  // ← נשתמש ב-! כי נאתחל ב-constructor
-  error = '';
-  loading = false;
+  public authService = inject(AuthService);
 
-  constructor(
-    private fb: FormBuilder,
-    public auth: AuthService,
-    private router: Router
-  ) {
-    this.form = this.fb.group({
-      identifier: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+  errorMessage = signal<string | null>(null);
+  isLoading = signal(false);
 
-    });
-  }
-  onSubmit() {
-    if (this.form.invalid) return;
-    this.loading = true;
-    this.error = '';
+  loginForm = new FormGroup({
+    identifier: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required])
+  });
 
-    this.auth.login(this.form.value).subscribe({
-      next: () => this.router.navigate(['/profile']),
+  onLoginSubmit(): void {
+    if (this.loginForm.invalid) return;
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    this.authService.signIn(this.loginForm.value as UserLogInDTO).subscribe({
+      // במקרה של הצלחה, ה-AuthService מנווט אוטומטית
+      next: () => this.isLoading.set(false),
       error: (err) => {
-        this.error = err.error?.error || 'שם משתמש או סיסמה שגויים';
-        this.loading = false;
+        this.isLoading.set(false);
+        if (err.status === 401) {
+          this.errorMessage.set('אימייל או סיסמה שגויים. אנא נסה שנית.');
+        } else {
+          this.errorMessage.set('שגיאת שרת: נסה שוב מאוחר יותר.');
+        }
       }
     });
-  }
-
-  googleLogin() {
-    this.auth.loginWithGoogle();
   }
 }

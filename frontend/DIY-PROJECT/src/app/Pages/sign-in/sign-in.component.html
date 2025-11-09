@@ -1,49 +1,46 @@
-<!-- auth/components/login/login.component.html -->
-<div class="login-container">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>התחברות</mat-card-title>
-    </mat-card-header>
+<div class="auth-wrapper">
+  <mat-card class="auth-card">
+    <mat-card-title>התחברות</mat-card-title>
+    
+    @if (isLoading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
 
     <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>שם משתמש או אימייל</mat-label>
-          <input matInput formControlName="identifier" />
+      <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
+        
+        <mat-form-field appearance="outline">
+          <mat-label>אימייל</mat-label>
+          <input matInput formControlName="identifier" type="email" required>
+          <mat-error *ngIf="loginForm.get('identifier')?.hasError('email')">אנא הזן אימייל תקין</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline">
           <mat-label>סיסמה</mat-label>
-          <input matInput type="password" formControlName="password" />
+          <input matInput formControlName="password" type="password" required>
         </mat-form-field>
 
-        <button 
-          mat-raised-button 
-          color="primary" 
-          type="submit" 
-          [disabled]="form.invalid || loading"
-          class="full-width submit-btn"
-        >
-          <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
-          <span *ngIf="!loading">התחבר</span>
+        @if (errorMessage()) {
+          <p class="error-message">{{ errorMessage() }}</p>
+        }
+
+        <button mat-flat-button color="primary" type="submit" [disabled]="loginForm.invalid || isLoading()">
+          התחבר
         </button>
+        
       </form>
+      
+      <mat-divider class="divider"></mat-divider>
 
-      <div class="divider">
-        <span>או</span>
-      </div>
-
-      <button mat-stroked-button class="full-width google-btn" (click)="googleLogin()">
-        <mat-icon svgIcon="google"></mat-icon>
-        התחבר עם Google
+      <button mat-stroked-button class="google-btn" (click)="authService.signInWithGoogle()">
+        <mat-icon>public</mat-icon>
+        התחבר עם גוגל
       </button>
 
-      <p *ngIf="error" class="error">{{ error }}</p>
-
-      <p class="signup-link">
-        אין לך חשבון? 
-        <a routerLink="/sign-up">הירשם כאן</a>
-      </p>
     </mat-card-content>
+    
+    <mat-card-footer class="auth-footer">
+      <p>עדיין לא רשום? <a routerLink="/sign-up">צור חשבון</a></p>
+    </mat-card-footer>
   </mat-card>
 </div>

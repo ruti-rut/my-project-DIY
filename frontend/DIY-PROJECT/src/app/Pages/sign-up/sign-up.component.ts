@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Validators, FormBuilder, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { Component, inject, signal } from '@angular/core';
+import { Validators, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,6 +7,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { UsersRegisterDTO } from '../../models/user.model';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sign-up',
@@ -15,36 +18,54 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatProgressSpinnerModule],
+    MatProgressSpinnerModule,
+  MatProgressBarModule],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
 })
 export class SignUpComponent {
-  form!: FormGroup;  // ← נשתמש ב-! כי נאתחל ב-constructor
-  error = '';
-  loading = false;
+private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(
-    private fb: FormBuilder,
-    public auth: AuthService,
-    private router: Router
-  ) {
-    this.form = this.fb.group({
-      userName: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
-      
-    });
+  errorMessage = signal<string | null>(null);
+  isLoading = signal(false);
+
+  signupForm = new FormGroup({
+    userName: new FormControl('', [Validators.required, Validators.minLength(3)]),
+    mail: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)])
+  });
+
+onSignupSubmit(): void {
+  if (this.signupForm.invalid) {
+    return;
   }
 
-  onSubmit() {
-    if (this.form.invalid) return;
-    this.loading = true;
+  this.isLoading.set(true);
+  this.errorMessage.set(null);
 
-    this.auth.signup(this.form.value).subscribe({
-      next: () => this.router.navigate(['/profile']),
-      error: () => this.loading = false
-    });
-  }
+  // הפתרון המושלם – בטוח 100% מפני undefined
+  const signupData: UsersRegisterDTO = {
+    userName: this.signupForm.get('userName')!.value!.trim(),
+    mail: this.signupForm.get('mail')!.value!.trim(),
+    password: this.signupForm.get('password')!.value!
+  };
 
+  this.authService.signUp(signupData).subscribe({
+    next: (response) => {
+      this.isLoading.set(false);
+      console.log('הרשמה הצליחה!', response);
+      this.router.navigate(['/login'], { queryParams: { registered: true } });
+    },
+    error: (err) => {
+      this.isLoading.set(false);
+      console.error('שגיאה:', err);
+      this.errorMessage.set(
+        err.status === 400
+          ? 'שם משתמש או אימייל כבר קיימים.'
+          : 'שגיאת שרת, נסה שוב מאוחר יותר.'
+      );
+    }
+  });
+}
 }
