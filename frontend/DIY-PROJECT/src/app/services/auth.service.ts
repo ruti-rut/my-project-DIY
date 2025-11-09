@@ -46,31 +46,30 @@ signUp(userData: UsersRegisterDTO): Observable<UserResponseDTO> {
   /**
    * פונקציה להתחברות משתמש
    */
-  signIn(credentials: UserLogInDTO): Observable<UserResponseDTO> {
-    return this.http.post<UserResponseDTO>(`${this.baseUrl}/signin`, credentials).pipe(
-      tap(user => {
-        this.currentUserSignal.set(user);
-        this.router.navigate(['/']);
-      }),
-    );
-  }
-
+signIn(credentials: UserLogInDTO): Observable<UserResponseDTO> {
+  return this.http.post<UserResponseDTO>(`${this.baseUrl}/signin`, credentials).pipe(
+    tap(response => {
+      this.currentUserSignal.set(response);
+      this.router.navigate(['/']);
+    })
+  );
+}
   signInWithGoogle(): void {
     window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   }
 
 
   logout(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/logout`, {}).pipe(
-      tap(() => {
-        this.currentUserSignal.set(null);
-        this.router.navigate(['/']);
-      }),
-      catchError(err => {
-        this.currentUserSignal.set(null);
-        this.router.navigate(['/']);
-        return of(err);
-      })
-    );
-  }
+  return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true }).pipe(
+    tap(() => {
+      this.currentUserSignal.set(null);
+      this.router.navigate(['/']);
+    }),
+    catchError(err => {
+      this.currentUserSignal.set(null);
+      this.router.navigate(['/']);
+      return of(err);
+    })
+  );
+}
 }
