@@ -7,3 +7,14 @@ export interface ProjectListDTO {
   picture: string;
   picturePath: string;
 }
+interface ProjectCreateDTO {
+  title: string;
+  description: string;
+  materials: string;
+  categoryId: number | null;
+  challengeId?: number | null; 
+  tagNames: string[]; 
+  ages: string;
+  timePrep: string;
+  isDraft: boolean;
+}

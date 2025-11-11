@@ -82,7 +82,37 @@ public class ProjectController {
         }
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
+    @PutMapping("/editProject/{id}")
+    public ResponseEntity<Project> updateProjectWithImage(@PathVariable Long id,
+                                                          @RequestPart(value = "image", required = false) MultipartFile file,
+                                                          @RequestPart("project") ProjectCreateDTO p) {
+        try {
+            // 1. קבלת הפרויקט הקיים מה-DB
+            Project existingProject = projectRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
 
+            // 2. מיפוי נתונים חדשים מה-DTO לאובייקט הקיים
+            // שימוש במאפר שיודע לעדכן (למשל, mapstruct)
+            Project updatedProject = projectMapper.updateProjectFromDto(p, existingProject);
+
+            // 3. טיפול בתמונה (רק אם נשלחה תמונה חדשה)
+            if (file != null && !file.isEmpty()) {
+                // אם יש קובץ חדש: שמירה שלו ועדכון הנתיב
+                ImageUtils.uploadImage(file);
+                updatedProject.setPicturePath(file.getOriginalFilename());
+            }
+            // אם לא נשלח קובץ חדש, הנתיב הקיים נשמר.
+
+            // 4. שמירת הפרויקט המעודכן (יעדכן את הרשומה הקיימת בגלל שה-ID קיים)
+            Project savedProject = projectRepository.save(updatedProject);
+
+            return new ResponseEntity<>(savedProject, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }
 

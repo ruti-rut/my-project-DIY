@@ -8,7 +8,7 @@ import { UserResponseDTO, UsersRegisterDTO, UserLogInDTO } from '../models/user.
   providedIn: 'root'
 })
 export class AuthService {
-  // כתובת ה-URL הבסיסית של שרת ה-Spring Boot שלך
+// כתובת ה-URL הבסיסית של שרת ה-Spring Boot שלך
   private baseUrl = 'http://localhost:8080/api/auth'; // *** שנה אם צריך ***
 
   private currentUserSignal = signal<UserResponseDTO | null>(null);

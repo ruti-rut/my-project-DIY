@@ -7,8 +7,8 @@ import com.example.diy.model.Tag;
 import java.util.List;
 
 public class ProjectCreateDTO {
-    private CategoryDTO category;
-    private Challenge challenge;
+    private long categoryId;
+    private long challengeId;
     private List<Tag> tags;
     private String materials;
     private String title;
@@ -36,22 +36,21 @@ public class ProjectCreateDTO {
         this.picturePath = picturePath;
     }
 
-    public CategoryDTO getCategory() {
-        return category;
+    public long getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(CategoryDTO category) {
-        this.category = category;
+    public void setCategoryId(long categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public Challenge getChallenge() {
-        return challenge;
+    public long getChallengeId() {
+        return challengeId;
     }
 
-    public void setChallenge(Challenge challenge) {
-        this.challenge = challenge;
+    public void setChallengeId(long challengeId) {
+        this.challengeId = challengeId;
     }
-
 
     public List<Tag> getTags() {
         return tags;
