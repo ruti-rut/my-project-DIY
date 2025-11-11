@@ -31,6 +31,12 @@ public interface ProjectMapper {
 
     List<ProjectListDTO> toProjectListDTOList(List<Project> projects);
 
+    @Mapping(target = "id", ignore = true) // מוודא ששדה ה-ID של הישות לא יידרס
+    // נניח שאת צריכה לעדכן את הקטגוריה והאתגר באמצעות ה-IDs שלהם
+    @Mapping(source = "categoryId", target = "category.id")
+    @Mapping(source = "challengeId", target = "challenge.id")
+        // ניתן להוסיף כאן לוגיקה מורכבת יותר, למשל לתגיות
+    Project updateProjectFromDto(ProjectCreateDTO p, @MappingTarget Project existingProject);
 
     @Mapping(target = "picture", ignore = true)
     ProjectCreateDTO projectCreateToDTO(Project project);

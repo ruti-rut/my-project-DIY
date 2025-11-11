@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ProjectListDTO } from '../models/project.model';
 
@@ -8,10 +8,11 @@ import { ProjectListDTO } from '../models/project.model';
 })
 export class ProjectService {
   private apiUrl = 'http://localhost:8080/api/projects';
-
-  constructor(private _httpClient: HttpClient) { }
+ private http = inject(HttpClient);
 
   getAllProjects(): Observable<ProjectListDTO[]> {
-    return this._httpClient.get<ProjectListDTO[]>(`${this.apiUrl}/allProjects`);
+    return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/allProjects`);
   }
+
+
 }
