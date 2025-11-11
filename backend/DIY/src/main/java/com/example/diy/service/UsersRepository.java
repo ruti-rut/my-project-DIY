@@ -14,6 +14,7 @@ public interface UsersRepository extends JpaRepository<Users,Long> {
     boolean existsByUserName(String userName);
     boolean existsByMail(String mail);
 
+
     @Query("SELECT u FROM Users u WHERE u.userName = :identifier OR u.mail = :identifier")
     Users findByIdentifier(@Param("identifier") String identifier);
 }

@@ -1,3 +1,4 @@
+import { CommentResponse } from "./comment.model";
 import { StepResponse } from "./step.model";
 import { UsersSimpleDTO } from "./user.model";
 
@@ -32,5 +33,8 @@ export interface Project {
   isDraft: boolean;
   users?: { id: number };
   ages?: string;        // ← חדש
-  timePrep?: string;    // ← חדש
+  timePrep?: string; 
+  createdAt?: string;
+  likesCount?: number;
+  comments?: CommentResponse[]; // אם יש   // ← חדש
 }

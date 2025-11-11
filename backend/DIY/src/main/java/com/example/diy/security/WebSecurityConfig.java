@@ -84,6 +84,10 @@ public class WebSecurityConfig {
                                         //אם רוצים אפשר לאפשר פונקציות מסוימות או קונטרולים מסוימים לכל המשתמשים
                                         //לדוג'
                                         .requestMatchers("/api/project/**").permitAll()
+                                        .requestMatchers("/api/category/**").permitAll()
+                                        .requestMatchers("/api/step/**").permitAll()
+
+
 
 
                                         .requestMatchers("/api/challenge/uploadChallenge").hasRole("ADMIN")

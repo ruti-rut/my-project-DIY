@@ -16,13 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
-
-interface StepForm {
-  title: string;
-  content: string;
-  picture: File | null;
-  preview: string | null;
-}
+import { StepService } from '../../services/step.service';
 
 @Component({
   selector: 'app-project-form',
@@ -42,6 +36,8 @@ export class ProjectFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private projectService = inject(ProjectService);
+    private stepService = inject(StepService);
+
   private categoryService = inject(CategoryService);
   private authService = inject(AuthService);
 
@@ -202,11 +198,11 @@ export class ProjectFormComponent implements OnInit {
       next: (saved) => {
         const steps = formValue.steps;
         const obs = steps.map((s: any, i: number) => {
-          const step: StepDTO = { ...s, stepNumber: i + 1, idProject: saved.id };
+          const step: StepDTO = { ...s, stepNumber: i + 1, projectId: saved.id };
           const fd = new FormData();
           fd.append('step', new Blob([JSON.stringify(step)], { type: 'application/json' }));
           if (s.picture) fd.append('image', s.picture, s.picture.name);
-          return this.projectService.uploadStep(fd);
+          return this.stepService.uploadStep(fd);
         });
 
         forkJoin(obs).subscribe({

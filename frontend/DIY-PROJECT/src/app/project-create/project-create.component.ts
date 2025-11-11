@@ -1,11 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectFormComponent } from '../pages/project-form/project-form.component';
-import { HeaderComponent } from '../pages/header/header.component';
 @Component({
   selector: 'app-project-create',
   standalone: true,
-  imports: [ProjectFormComponent, HeaderComponent], // ← עכשיו תקין!
+  imports: [ProjectFormComponent], // ← עכשיו תקין!
   templateUrl: './project-create.component.html',
   styleUrl: './project-create.component.css'
 })

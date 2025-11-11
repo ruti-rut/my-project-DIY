@@ -4,14 +4,12 @@ import com.example.diy.DTO.CategoryDTO;
 import com.example.diy.model.Category;
 import org.mapstruct.Mapper;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 
 public interface CategoryMapper {
-    default CategoryDTO categoryToDTO(Category category){
-        CategoryDTO categoryDTO=new CategoryDTO();
-        categoryDTO.setId(category.getId());
-        categoryDTO.setName(category.getName());
-        return categoryDTO;
-    }
+    List<CategoryDTO> CategoryToCategoryDTO(List<Category> category);
+
 }
 

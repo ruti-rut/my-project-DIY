@@ -9,7 +9,7 @@ export class CategoryService {
   private apiUrl = 'http://localhost:8080/api/category';
 
   getAll(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.apiUrl);
+    return this.http.get<Category[]>(`${this.apiUrl}/allCategories`);
   }
   
 }

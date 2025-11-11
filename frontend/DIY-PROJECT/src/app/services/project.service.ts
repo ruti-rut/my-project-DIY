@@ -7,7 +7,7 @@ import { Project, ProjectListDTO } from '../models/project.model';
   providedIn: 'root'
 })
 export class ProjectService {
-  private apiUrl = 'http://localhost:8080/api/projects';
+  private apiUrl = 'http://localhost:8080/api/project';
  private http = inject(HttpClient);
 
   getAllProjects(): Observable<ProjectListDTO[]> {
@@ -15,11 +15,6 @@ export class ProjectService {
   }
 uploadProject(formData: FormData): Observable<Project> {
     return this.http.post<Project>(`${this.apiUrl}/uploadProject`, formData);
-  }
-
-  // העלאת שלב + תמונה
-  uploadStep(formData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/uploadStep`, formData);
   }
 
   // קבלת פרויקט לפי ID

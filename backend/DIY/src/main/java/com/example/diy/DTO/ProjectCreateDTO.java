@@ -10,9 +10,6 @@ public class ProjectCreateDTO {
     private String title;
     private String description;
     private String materials;
-    private  String picturePath;
-    private String picture;
-
     private Long categoryId;
     private Long challengeId;
 
@@ -38,13 +35,6 @@ public class ProjectCreateDTO {
     private String timePrep;
     private boolean isDraft;
 
-    public String getPicturePath() {
-        return picturePath;
-    }
-
-    public void setPicturePath(String picturePath) {
-        this.picturePath = picturePath;
-    }
 
     public long getCategoryId() {
         return categoryId;
@@ -95,13 +85,6 @@ public class ProjectCreateDTO {
         this.timePrep = timePrep;
     }
 
-    public String getPicture() {
-        return picture;
-    }
-
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
 
     public String getDescription() {
         return description;

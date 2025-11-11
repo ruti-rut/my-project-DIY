@@ -1,6 +1,7 @@
 package com.example.diy.controller;
 
 import com.example.diy.DTO.StepDTO;
+import com.example.diy.DTO.StepResponseDTO;
 import com.example.diy.Mapper.StepMapper;
 import com.example.diy.model.Project;
 import com.example.diy.model.Step;
@@ -23,29 +24,29 @@ public class StepController {
     StepMapper stepMapper;
     ProjectRepository projectRepository;
 
-    @Autowired
-    public StepController(StepRepository stepRepository, StepMapper stepMapper) {
+    public StepController(StepRepository stepRepository, StepMapper stepMapper, ProjectRepository projectRepository) {
         this.stepRepository = stepRepository;
         this.stepMapper = stepMapper;
+        this.projectRepository = projectRepository;
     }
 
     @PostMapping("/uploadStep")
-    public ResponseEntity<Step> uploadStepWithImage(@RequestPart("image") MultipartFile file
+    public ResponseEntity<StepResponseDTO> uploadStepWithImage(@RequestPart("image") MultipartFile file
             , @RequestPart("step") StepDTO s) {
         try {
             ImageUtils.uploadImage(file);
 
             Step step = stepMapper.stepDtoToStep(s);
 
-            Project project = projectRepository.findById(s.getIdProject())
+            Project project = projectRepository.findById(s.getProjectId())
                     .orElseThrow(() -> new RuntimeException("Project not found"));
 
             step.setProject(project);
             step.setPicturePath(file.getOriginalFilename());
 
             Step savedStep = stepRepository.save(step);
-
-            return new ResponseEntity<>(savedStep, HttpStatus.CREATED);
+            StepResponseDTO responseDTO = stepMapper.stepEntityToResponseDTO(savedStep);
+            return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
 
         } catch (IOException e) {
             System.out.println(e);
@@ -71,12 +72,13 @@ public class StepController {
     }
 
     @PutMapping("/editStepWithImage/{stepId}")
-    public ResponseEntity<Step> editStepWithImage(
+    public ResponseEntity<StepResponseDTO> editStepWithImage(
             @PathVariable Long stepId,
             @RequestPart(value = "image", required = false) MultipartFile file, // התמונה היא אופציונלית
             @RequestPart("step") StepDTO updatedStepDto) {
         // 1. חיפוש השלב הקיים
         Step existingStep = stepRepository.findById(stepId).orElse(null);
+
         if (existingStep == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -93,7 +95,8 @@ public class StepController {
             }
             // 4. שמירת השלב המעודכן
             Step savedStep = stepRepository.save(existingStep);
-            return new ResponseEntity<>(savedStep, HttpStatus.OK);
+            StepResponseDTO responseDTO = stepMapper.stepEntityToResponseDTO(savedStep);
+            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
         } catch (IOException e) {
             System.out.println("Error uploading image: " + e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

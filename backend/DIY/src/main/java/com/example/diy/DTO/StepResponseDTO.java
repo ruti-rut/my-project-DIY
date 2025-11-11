@@ -1,17 +1,19 @@
 package com.example.diy.DTO;
 
-public class StepDTO {
+public class StepResponseDTO
+{
+    private Long id; // נחוץ כדי לערוך שלב קיים בעתיד
     private int stepNumber;
     private String title;
     private String content;
-    private long ProjectId;
+    private String picturePath;
 
-    public long getProjectId() {
-        return ProjectId;
+    public Long getId() {
+        return id;
     }
 
-    public void setProjectId(long projectId) {
-        ProjectId = projectId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public int getStepNumber() {
@@ -38,4 +40,11 @@ public class StepDTO {
         this.content = content;
     }
 
+    public String getPicturePath() {
+        return picturePath;
+    }
+
+    public void setPicturePath(String picturePath) {
+        this.picturePath = picturePath;
+    }
 }

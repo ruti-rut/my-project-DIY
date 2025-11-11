@@ -1,32 +1,28 @@
 package com.example.diy.DTO;
 
-import com.example.diy.model.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDate;
 import java.util.List;
 
-public class ProjectDTO {
+public class ProjectResponseDTO {
     private Long id;
-    private UsersSimpleDTO users;
-    private CategoryDTO category;
+    private UsersSimpleDTO users;       // DTO חלקי של המשתמש
+    private CategoryDTO category;       // DTO חלקי של הקטגוריה
 
-    private List<Step> steps;
-    private List<Comment> comments;
-    private List<Tag> tags;
-    private int likesCount;         // optional
+    private List<StepResponseDTO> steps; // **חייב להיות DTO של שלב**, לא Entity מלא!
+    private List<CommentDTO> comments;   // **חייב להיות DTO של תגובה**
+    private List<TagDTO> tags;           // **חייב להיות DTO של תגית**
 
+    // שדות פרימיטיביים
+    private int likesCount;
     private LocalDate createdAt;
     private String materials;
     private String title;
     private String ages;
     private String timePrep;
     private String picturePath;
-    private String image;
     private String description;
 
+    // ...
     public Long getId() {
         return id;
     }
@@ -49,30 +45,6 @@ public class ProjectDTO {
 
     public void setCategory(CategoryDTO category) {
         this.category = category;
-    }
-
-    public List<Step> getSteps() {
-        return steps;
-    }
-
-    public void setSteps(List<Step> steps) {
-        this.steps = steps;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
     }
 
     public int getLikesCount() {
@@ -131,12 +103,28 @@ public class ProjectDTO {
         this.picturePath = picturePath;
     }
 
-    public String getImage() {
-        return image;
+    public List<StepResponseDTO> getSteps() {
+        return steps;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setSteps(List<StepResponseDTO> steps) {
+        this.steps = steps;
+    }
+
+    public List<CommentDTO> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentDTO> comments) {
+        this.comments = comments;
+    }
+
+    public List<TagDTO> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<TagDTO> tags) {
+        this.tags = tags;
     }
 
     public String getDescription() {
