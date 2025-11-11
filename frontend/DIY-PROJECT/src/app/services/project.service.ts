@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ProjectListDTO } from '../models/project.model';
+import { Project, ProjectListDTO } from '../models/project.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,18 @@ export class ProjectService {
   getAllProjects(): Observable<ProjectListDTO[]> {
     return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/allProjects`);
   }
+uploadProject(formData: FormData): Observable<Project> {
+    return this.http.post<Project>(`${this.apiUrl}/uploadProject`, formData);
+  }
 
+  // העלאת שלב + תמונה
+  uploadStep(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/uploadStep`, formData);
+  }
+
+  // קבלת פרויקט לפי ID
+  getById(id: number): Observable<Project> {
+    return this.http.get<Project>(`${this.apiUrl}/${id}`);
+  }
 
 }

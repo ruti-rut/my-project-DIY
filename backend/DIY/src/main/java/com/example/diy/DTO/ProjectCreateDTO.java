@@ -7,26 +7,36 @@ import com.example.diy.model.Tag;
 import java.util.List;
 
 public class ProjectCreateDTO {
-    private long categoryId;
-    private long challengeId;
-    private List<Tag> tags;
-    private String materials;
     private String title;
+    private String description;
+    private String materials;
+    private  String picturePath;
+    private String picture;
+
+    private Long categoryId;
+    private Long challengeId;
+
+    private List<String> tagNames;
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public void setChallengeId(Long challengeId) {
+        this.challengeId = challengeId;
+    }
+
+    public List<String> getTagNames() {
+        return tagNames;
+    }
+
+    public void setTagNames(List<String> tagNames) {
+        this.tagNames = tagNames;
+    }
+
     private String ages;
     private String timePrep;
-    private String picture;
-    private String picturePath;
-    private String description;
     private boolean isDraft;
-    private long usersID;
-
-    public long getUsersID() {
-        return usersID;
-    }
-
-    public void setUsersID(long usersID) {
-        this.usersID = usersID;
-    }
 
     public String getPicturePath() {
         return picturePath;
@@ -52,13 +62,6 @@ public class ProjectCreateDTO {
         this.challengeId = challengeId;
     }
 
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
 
     public String getMaterials() {
         return materials;

@@ -1,6 +1,7 @@
 // src/app/app.routes.ts
 
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 
 // אין צורך יותר לייבא את הקומפוננטות בראש הקובץ!
 // Angular מטפל בזה באופן דינאמי בתוך loadComponent.
@@ -30,6 +31,10 @@ export const routes: Routes = [
     path: 'sign-up', 
     loadComponent: () => import('./pages/sign-up/sign-up.component').then(m => m.SignUpComponent) 
   },
+  {
+  path: 'create-project',
+    loadComponent: () => import('./project-create/project-create.component').then(m => m.ProjectCreateComponent),
+},
 
   // נתיב Fallback (ללא שינוי)
   { path: '**', redirectTo: '' }
