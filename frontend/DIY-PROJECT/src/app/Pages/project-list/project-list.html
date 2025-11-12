@@ -1,1 +1,29 @@
-<p>project-list works!</p>
+<div class="container">
+  <mat-grid-list [cols]="cols()" rowHeight="380px" gutterSize="16px">
+    @for (project of projects(); track trackById($index, project)) {
+      <mat-grid-tile>
+        <app-project-card [project]="project"></app-project-card>
+      </mat-grid-tile>
+    }
+  </mat-grid-list>
+
+  @if (hasMore()) {
+    <div class="load-more">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="loadMore()" 
+        [disabled]="loading()">
+        @if (loading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          טען עוד
+        }
+      </button>
+    </div>
+  }
+
+  @if (!hasMore() && projects().length > 0) {
+    <p class="no-more">אין עוד פרויקטים להצגה</p>
+  }
+</div>

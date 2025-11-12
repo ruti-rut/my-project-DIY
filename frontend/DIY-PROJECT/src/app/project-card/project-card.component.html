@@ -1,0 +1,34 @@
+<mat-card class="card" routerLink="/projects/{{ project.id }}">
+  <img 
+    mat-card-image 
+    [src]="getImageUrl()" 
+    [alt]="project.title"
+    class="project-img"
+    (error)="onImageError($event)">
+  
+  <mat-card-content>
+    <h3 class="title">{{ project.title }}</h3>
+  </mat-card-content>
+
+  <mat-card-footer class="footer">
+    <div class="user">
+      @if (avatar().url) {
+        <img [src]="avatar().url" class="avatar">
+      } @else {
+        <div 
+          class="avatar-placeholder" 
+          [style.background-color]="avatar().color">
+          {{ avatar().initial }}
+        </div>
+      }
+
+      <span>{{ project.usersSimpleDTO.userName }}</span>
+    </div>
+
+    <app-favorite-button 
+      [projectId]="project.id"
+      [isFavorited]="project.isFavorited || false"
+      (toggled)="toggleFavorite($event)">
+    </app-favorite-button>
+  </mat-card-footer>
+</mat-card>

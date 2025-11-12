@@ -1,0 +1,13 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.load-more,
+.no-more {
+  text-align: center;
+  padding: 24px 0;
+  font-size: 1.1rem;
+  color: #666;
+}
