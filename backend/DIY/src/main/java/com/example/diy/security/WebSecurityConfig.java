@@ -84,6 +84,8 @@ public class WebSecurityConfig {
                                         //אם רוצים אפשר לאפשר פונקציות מסוימות או קונטרולים מסוימים לכל המשתמשים
                                         //לדוג'
                                         .requestMatchers("/api/category/**").permitAll()
+                                        .requestMatchers("/api/project/**").permitAll()
+
 
 
 

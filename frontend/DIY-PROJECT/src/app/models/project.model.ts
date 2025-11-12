@@ -4,10 +4,11 @@ import { UsersSimpleDTO } from "./user.model";
 
 export interface ProjectListDTO {
   id: number;
-  usersSimpleDTO: UsersSimpleDTO;
   title: string;
   picture: string;
-  picturePath: string;
+  usersSimpleDTO: UsersSimpleDTO;
+  // לא נשלח מהשרת – נשמור בלוקאל
+  isFavorited?: boolean;
 }
 export interface ProjectCreateDTO {
   title: string;
@@ -37,4 +38,10 @@ export interface Project {
   createdAt?: string;
   likesCount?: number;
   comments?: CommentResponse[]; // אם יש   // ← חדש
+}
+export interface Page<T> {
+  content: T[];
+  last: boolean;
+  number: number;
+  size: number;
 }

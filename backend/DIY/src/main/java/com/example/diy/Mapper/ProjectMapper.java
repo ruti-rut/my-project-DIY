@@ -4,11 +4,14 @@ import com.example.diy.DTO.ProjectCreateDTO;
 import com.example.diy.DTO.ProjectResponseDTO;
 import com.example.diy.DTO.ProjectListDTO;
 import com.example.diy.model.Project;
+import com.example.diy.service.ImageUtils;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.data.domain.Page;
 
+import java.io.IOException;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {UsersMapper.class, CategoryMapper.class})
@@ -25,8 +28,6 @@ public interface ProjectMapper {
     @Mapping(target = "users", ignore = true)
     Project projectCreateDTOToEntity (ProjectCreateDTO dto);
 
-    @Mapping(source = "users", target = "usersSimpleDTO")
-    ProjectListDTO toProjectListDTO(Project project);
 
     default Page<ProjectListDTO> toProjectListDTOList(Page<Project> projects) {
         return projects.map(this::toProjectListDTO);
@@ -41,6 +42,25 @@ public interface ProjectMapper {
         // ניתן להוסיף כאן לוגיקה מורכבת יותר, למשל לתגיות
     Project updateProjectFromDto(ProjectCreateDTO p, @MappingTarget Project existingProject);
 
+    @Mapping(source = "users", target = "usersSimpleDTO")
+    ProjectListDTO toProjectListDTO(Project project);
+
+    // לוגיקה מותאמת אישית לטיפול בשדה התמונה
+    @AfterMapping
+    default void handleProjectPicture(@MappingTarget ProjectListDTO dto, Project project) {
+        // ודא שאתה ממלא את שדה ה-'picture' ב-DTO
+        if (project.getPicturePath() != null) {
+            try {
+                // קורא את הקובץ וממיר ל-Base64
+                String imageBase64 = ImageUtils.getImage(project.getPicturePath());
+                dto.setPicture(imageBase64);
+            } catch (IOException e) {
+                // הדפסת שגיאה ודאית לתהליך, והשארת picture כ-null או ריק
+                e.printStackTrace();
+                dto.setPicture(null);
+            }
+        }
+    }
     ProjectCreateDTO projectCreateToDTO(Project project);
 
 //    @AfterMapping
