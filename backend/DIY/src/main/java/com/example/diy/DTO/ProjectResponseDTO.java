@@ -2,6 +2,7 @@ package com.example.diy.DTO;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public class ProjectResponseDTO {
     private Long id;
@@ -10,7 +11,7 @@ public class ProjectResponseDTO {
 
     private List<StepResponseDTO> steps; // **חייב להיות DTO של שלב**, לא Entity מלא!
     private List<CommentDTO> comments;   // **חייב להיות DTO של תגובה**
-    private List<TagDTO> tags;           // **חייב להיות DTO של תגית**
+    private Set<TagDTO> tags;           // **חייב להיות DTO של תגית**
 
     // שדות פרימיטיביים
     private int likesCount;
@@ -119,11 +120,11 @@ public class ProjectResponseDTO {
         this.comments = comments;
     }
 
-    public List<TagDTO> getTags() {
+    public Set<TagDTO> getTags() {
         return tags;
     }
 
-    public void setTags(List<TagDTO> tags) {
+    public void setTags(Set<TagDTO> tags) {
         this.tags = tags;
     }
 

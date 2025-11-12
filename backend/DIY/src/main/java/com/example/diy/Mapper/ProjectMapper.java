@@ -7,6 +7,7 @@ import com.example.diy.model.Project;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -19,12 +20,17 @@ public interface ProjectMapper {
     @Mapping(source = "category", target = "category")
     ProjectResponseDTO projectToDTO(Project project);
 
-    @Mapping(target = "id", ignore = true)
+    @Mapping(source = "categoryId", target = "category.id")
+    @Mapping(target = "tags", ignore = true)
     @Mapping(target = "users", ignore = true)
     Project projectCreateDTOToEntity (ProjectCreateDTO dto);
 
     @Mapping(source = "users", target = "usersSimpleDTO")
     ProjectListDTO toProjectListDTO(Project project);
+
+    default Page<ProjectListDTO> toProjectListDTOList(Page<Project> projects) {
+        return projects.map(this::toProjectListDTO);
+    }
 
     List<ProjectListDTO> toProjectListDTOList(List<Project> projects);
 

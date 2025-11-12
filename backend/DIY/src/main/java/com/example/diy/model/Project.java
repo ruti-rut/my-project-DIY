@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Project {
@@ -28,8 +29,7 @@ public class Project {
     private List<Comment> comments;
 
     @ManyToMany
-    private List<Tag> tags;
-
+    private Set<Tag> tags; // שינינו מ-List ל-Set
     @ManyToMany
     private List<Users> likedByUsers;
 
@@ -131,11 +131,11 @@ public class Project {
         this.comments = comments;
     }
 
-    public List<Tag> getTags() {
+    public Set<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
 

@@ -83,9 +83,8 @@ public class WebSecurityConfig {
                                         //כל שאר הפונקציות ישארו חסומות אך ורק למשתמשים שנכנסו
                                         //אם רוצים אפשר לאפשר פונקציות מסוימות או קונטרולים מסוימים לכל המשתמשים
                                         //לדוג'
-                                        .requestMatchers("/api/project/**").permitAll()
                                         .requestMatchers("/api/category/**").permitAll()
-                                        .requestMatchers("/api/step/**").permitAll()
+
 
 
 

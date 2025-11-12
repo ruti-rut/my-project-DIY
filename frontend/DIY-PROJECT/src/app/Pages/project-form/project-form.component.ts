@@ -36,7 +36,7 @@ export class ProjectFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private projectService = inject(ProjectService);
-    private stepService = inject(StepService);
+  private stepService = inject(StepService);
 
   private categoryService = inject(CategoryService);
   private authService = inject(AuthService);
@@ -182,17 +182,16 @@ export class ProjectFormComponent implements OnInit {
       description: formValue.description,
       materials: formValue.materials,
       categoryId: formValue.categoryId,
-      challengeId: this.challengeId,  // ← מה-@Input
+      challengeId: this.challengeId,
       ages: formValue.ages,
       timePrep: formValue.timePrep,
-      tagNames: this.tags(),
-      isDraft
+      tagNames: this.tags(),  // ← נשלח!
+      isDraft                 // ← לפי כפתור!
     };
 
     const formData = new FormData();
     formData.append('project', new Blob([JSON.stringify(data)], { type: 'application/json' }));
-    const cover = formValue.picture;
-    if (cover) formData.append('image', cover, cover.name);
+    if (formValue.picture) formData.append('image', formValue.picture, formValue.picture.name);
 
     this.projectService.uploadProject(formData).subscribe({
       next: (saved) => {
