@@ -9,7 +9,7 @@ export const authGuard: CanActivateFn = () => {
 
   const user = authService.currentUser();
   if (!user) {
-    router.navigate(['/login']);
+    router.navigate(['/sign-in']);
     return false;
   }
   return true;

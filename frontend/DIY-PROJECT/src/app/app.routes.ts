@@ -34,6 +34,7 @@ export const routes: Routes = [
   {
   path: 'create-project',
     loadComponent: () => import('./project-create/project-create.component').then(m => m.ProjectCreateComponent),
+    canActivate: [authGuard]
 },
 
   // נתיב Fallback (ללא שינוי)

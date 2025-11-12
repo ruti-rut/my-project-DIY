@@ -1,5 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
-import { Validators, FormBuilder, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { 
+  Validators, 
+  FormBuilder, 
+  ReactiveFormsModule, 
+  FormGroup, 
+  FormControl,
+  AbstractControl,
+  ValidatorFn 
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +19,23 @@ import { UserLogInDTO } from '../../models/user.model';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
+
+
+function conditionalEmailValidator(): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    const value = (control.value ?? '').trim();
+
+    // אם אין @ → זה שם משתמש, אין צורך בוולידציית אימייל
+    if (!value.includes('@')) {
+      return null;
+    }
+
+    // אם יש @ → בדוק שזה אימייל תקין
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(value) ? null : { email: true };
+  };
+}
+
 
 @Component({
   selector: 'app-sign-in',
@@ -29,13 +54,14 @@ import { MatDividerModule } from '@angular/material/divider';
 })
 export class SignInComponent {
 
-  public authService = inject(AuthService);
+public authService = inject(AuthService);
 
   errorMessage = signal<string | null>(null);
   isLoading = signal(false);
 
+  // השתמש בוולידטור המותאם במקום Validators.email
   loginForm = new FormGroup({
-    identifier: new FormControl('', [Validators.required, Validators.email]),
+    identifier: new FormControl('', [Validators.required, conditionalEmailValidator()]),
     password: new FormControl('', [Validators.required])
   });
 
@@ -46,7 +72,6 @@ export class SignInComponent {
     this.errorMessage.set(null);
 
     this.authService.signIn(this.loginForm.value as UserLogInDTO).subscribe({
-      // במקרה של הצלחה, ה-AuthService מנווט אוטומטית
       next: () => this.isLoading.set(false),
       error: (err) => {
         this.isLoading.set(false);
