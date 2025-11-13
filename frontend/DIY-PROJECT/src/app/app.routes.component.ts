@@ -40,7 +40,15 @@ export const routes: Routes = [
     path: 'projects-list',
     loadComponent: () => import('./pages/project-list/project-list.component').then(m => m.ProjectListComponent)
   },
-
+{
+  path: 'oauth2/success',
+  loadComponent: () => import('./oauth2-success.component').then(m => m.OAuth2SuccessComponent)
+},
+{
+  path: 'projects/:id',
+  loadComponent: () => import('./project-detail/project-detail.component')
+    .then(m => m.ProjectDetailComponent)
+},
 
   // נתיב Fallback (ללא שינוי)
   { path: '**', redirectTo: '' }

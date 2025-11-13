@@ -1,0 +1,25 @@
+<div class="container">
+    @if (loading()) {
+    <div class="loading">
+        <mat-spinner></mat-spinner>
+    </div>
+    } @else {
+    @let proj = project();
+    @if (proj) {
+    <app-project-header [projectInput]="proj"></app-project-header>
+    @defer (on viewport) {
+    <app-project-steps [steps]="proj.steps || []"></app-project-steps>
+    } @placeholder {
+    <div class="placeholder">טוען שלבים...</div>
+    }
+
+    @defer (on viewport) {
+    <app-project-comments [projectId]="proj.id"></app-project-comments>
+    } @placeholder {
+    <div class="placeholder">טוען תגובות...</div>
+    }
+    } @else {
+    <p>הפרויקט לא נמצא</p>
+    }
+    }
+</div>

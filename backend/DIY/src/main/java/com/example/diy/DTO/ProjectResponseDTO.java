@@ -20,8 +20,17 @@ public class ProjectResponseDTO {
     private String title;
     private String ages;
     private String timePrep;
-    private String picturePath;
+    private String picture;
     private String description;
+    private boolean isDraft;
+
+    public boolean isDraft() {
+        return isDraft;
+    }
+
+    public void setDraft(boolean draft) {
+        isDraft = draft;
+    }
 
     // ...
     public Long getId() {
@@ -96,12 +105,12 @@ public class ProjectResponseDTO {
         this.timePrep = timePrep;
     }
 
-    public String getPicturePath() {
-        return picturePath;
+    public String getPicture() {
+        return picture;
     }
 
-    public void setPicturePath(String picturePath) {
-        this.picturePath = picturePath;
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public List<StepResponseDTO> getSteps() {

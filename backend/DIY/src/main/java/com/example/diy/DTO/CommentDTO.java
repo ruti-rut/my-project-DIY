@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class CommentDTO {
     private Long id;
     private String content;
-    private LocalDate createdDate;
+    private LocalDate createdAt;
     private UsersSimpleDTO user;
 
     public Long getId() {
@@ -24,12 +24,12 @@ public class CommentDTO {
         this.content = content;
     }
 
-    public LocalDate getCreatedDate() {
-        return createdDate;
+    public LocalDate getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(LocalDate createdDate) {
-        this.createdDate = createdDate;
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
     public UsersSimpleDTO getUser() {

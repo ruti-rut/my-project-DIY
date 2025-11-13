@@ -23,7 +23,7 @@ public class Users {
     @OneToMany(mappedBy = "users")
     private List<Project> myProjects;
     @JsonIgnore
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "user")
     private List<Comment> myComments;
     @ManyToMany
     private List<Project> favoriteProjects;

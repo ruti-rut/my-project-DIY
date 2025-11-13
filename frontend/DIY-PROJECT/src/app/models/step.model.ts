@@ -8,6 +8,6 @@ export interface StepResponse {
   id: number;
   title: string;
   content: string;
-  picturePath?: string;
+  picture?: string;
   stepNumber: number;
 }

@@ -10,7 +10,7 @@ import { ProjectFormComponent } from '../pages/project-form/project-form.compone
 })
 export class ProjectCreateComponent {
   private route = inject(ActivatedRoute);
-challengeId: number | null = null;
+  challengeId: number | null = null;
 
   constructor() {
     const ch = this.route.snapshot.queryParamMap.get('challenge');

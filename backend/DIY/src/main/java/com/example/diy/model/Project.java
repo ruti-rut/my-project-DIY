@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -20,14 +21,13 @@ public class Project {
     @ManyToOne(optional = true)
     private Challenge challenge;//לבדוק איך לעשות שיוכלו לעשות קשר של Null
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("stepNumber ASC")
     private List<Step> steps;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "project")
-    private List<Comment> comments;
-
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("createdAt DESC")
+    private List<Comment> comments = new ArrayList<>();
     @ManyToMany
     private Set<Tag> tags; // שינינו מ-List ל-Set
     @ManyToMany

@@ -1,4 +1,4 @@
-import { CommentResponse } from "./comment.model";
+import { CommentDTO,} from "./comment.model";
 import { StepResponse } from "./step.model";
 import { UsersSimpleDTO } from "./user.model";
 
@@ -25,19 +25,19 @@ export interface Project {
   id: number;
   title: string;
   description: string;
-  picturePath?: string;
+  picture?: string;
   materials?: string;
   category?: { id: number; name: string };
   challenge?: { id: number } | null;
   tags?: { id: number; name: string }[];
   steps?: StepResponse[];
   isDraft: boolean;
-  users?: { id: number };
+  users?: UsersSimpleDTO;
   ages?: string;        // ← חדש
   timePrep?: string; 
   createdAt?: string;
   likesCount?: number;
-  comments?: CommentResponse[]; // אם יש   // ← חדש
+  comments?: CommentDTO[]; // אם יש   // ← חדש
 }
 export interface Page<T> {
   content: T[];

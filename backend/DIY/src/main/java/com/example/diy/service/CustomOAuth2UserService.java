@@ -32,6 +32,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String mail = oauth2User.getAttribute("email");
         String name = oauth2User.getAttribute("name");
 
+        // *** הוספת בדיקה קריטית, כפי שהומלץ, למקרה שהמייל חסר (בגלל בעיית Scope) ***
+        if (mail == null || mail.isEmpty()) {
+            throw new OAuth2AuthenticationException("Email attribute is missing from Google response. Check 'email' scope configuration.");
+        }
+
         // 3. חיפוש המשתמש בבסיס הנתונים המקומי שלנו
         Optional<Users> userOptional = usersRepository.findByMail(mail);
         Users user;
@@ -54,7 +59,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 4. החזרת אובייקט ה-OAuth2User (שכעת מקושר ל-DB שלנו)
         return oauth2User;
     }
-
     private Users registerNewOAuth2User(String email, String name) {
         Users newUser = new Users();
         newUser.setMail(email);

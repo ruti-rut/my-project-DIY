@@ -85,6 +85,8 @@ public class WebSecurityConfig {
                                         //לדוג'
                                         .requestMatchers("/api/category/**").permitAll()
                                         .requestMatchers("/api/project/**").permitAll()
+                                        .requestMatchers("/api/comment/**").permitAll()
+
 
 
 

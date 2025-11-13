@@ -1,0 +1,28 @@
+<div class="comments-section">
+  <h2>תגובות</h2>
+
+  <app-comment-form [projectId]="projectId" (commentAdded)="onCommentAdded()"></app-comment-form>
+
+  @if (loading()) {
+    <p>טוען תגובות...</p>
+  } @else if (comments().length > 0) {
+    @for (comment of comments(); track comment.id) {
+      <div class="comment">
+        <div class="user">
+          @if (comment.user.profilePicturePath) {
+            <img [src]="'http://localhost:8080' + comment.user.profilePicturePath" class="avatar">
+          } @else {
+            <div class="avatar-placeholder" [style.background-color]="getColor(comment.user.userName)">
+              {{ getInitial(comment.user.userName) }}
+            </div>
+          }
+          <strong>{{ comment.user.userName }}</strong>
+        </div>
+        <p>{{ comment.content }}</p>
+        <small>{{ comment.createdAt }}</small>
+      </div>
+    }
+  } @else {
+    <p class="no-comments">אין תגובות עדיין – היה הראשון להגיב!</p>
+  }
+</div>

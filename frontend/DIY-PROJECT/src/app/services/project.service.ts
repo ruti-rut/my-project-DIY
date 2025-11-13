@@ -16,7 +16,7 @@ export class ProjectService {
 
   // קבלת פרויקט לפי ID
   getById(id: number): Observable<Project> {
-    return this.http.get<Project>(`${this.apiUrl}/${id}`);
+    return this.http.get<Project>(`${this.apiUrl}/getProject/${id}`);
   }
 
   getProjects(page: number, size: number = 30): Observable<Page<ProjectListDTO>> {

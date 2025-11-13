@@ -101,7 +101,7 @@ export class ProjectFormComponent implements OnInit {
         });
 
         this.tags.set(project.tags?.map(t => t.name) || []);
-        this.coverPreview.set(project.picturePath ? `/assets/images/projects/${project.picturePath}` : null);
+        this.coverPreview.set(project.picture ? `/assets/images/projects/${project.picture}` : null);
 
         this.steps().clear();
         this.stepPreviews.set([]);
@@ -110,7 +110,7 @@ export class ProjectFormComponent implements OnInit {
           const i = this.steps().length - 1;
           this.stepPreviews.set([
             ...this.stepPreviews(),
-            step.picturePath ? `/assets/images/steps/${step.picturePath}` : null
+            step.picture ? `/assets/images/steps/${step.picture}` : null
           ]);
         });
         this.loading.set(false);

@@ -45,10 +45,10 @@ public class ProjectController {
     }
 
     @GetMapping("/getProject/{id}")
-    public ResponseEntity<ProjectResponseDTO> get(@PathVariable long id) throws IOException {
-        Project p = projectRepository.findById(id).get();
-        if (p != null) return new ResponseEntity<>(projectMapper.projectToDTO(p), HttpStatus.OK);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<ProjectResponseDTO> get(@PathVariable Long id) {
+        return projectRepository.findById(id)
+                .map(project -> ResponseEntity.ok(projectMapper.projectEntityToResponseDTO(project)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/uploadProject")

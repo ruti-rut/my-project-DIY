@@ -1,6 +1,7 @@
 package com.example.diy.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 
@@ -10,10 +11,11 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @ManyToOne
-    private Users users;
+    private Users user;
     @ManyToOne
     private Project project;
-    private LocalDate createdDate;
+    @CreationTimestamp
+    private LocalDate createdAt;
     @Lob
     private String content;
 
@@ -25,12 +27,12 @@ public class Comment {
         this.id = id;
     }
 
-    public Users getUsers() {
-        return users;
+    public Users getUser() {
+        return user;
     }
 
-    public void setUsers(Users users) {
-        this.users = users;
+    public void setUser(Users user) {
+        this.user = user;
     }
 
     public Project getProject() {
@@ -41,12 +43,12 @@ public class Comment {
         this.project = project;
     }
 
-    public LocalDate getCreatedDate() {
-        return createdDate;
+    public LocalDate getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(LocalDate createdDate) {
-        this.createdDate = createdDate;
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getContent() {

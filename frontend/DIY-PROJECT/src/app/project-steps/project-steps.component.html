@@ -1,0 +1,17 @@
+<div class="steps">
+  <h2>שלבים</h2>
+  @for (step of steps; track step.id) {
+    <div class="step">
+      <div class="step-number">{{ step.stepNumber }}</div>
+      <div class="step-content">
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.content }}</p>
+        @if (step.picture) {
+          <img [src]="'data:image/jpeg;base64,' + step.picture" alt="שלב {{ step.stepNumber }}">
+        }
+      </div>
+    </div>
+  } @empty {
+    <p>אין שלבים</p>
+  }
+</div>

@@ -14,14 +14,38 @@ import org.springframework.data.domain.Page;
 import java.io.IOException;
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {UsersMapper.class, CategoryMapper.class})
+@Mapper(
+        componentModel = "spring",
+        uses = {
+                UsersMapper.class,
+                CategoryMapper.class,
+                StepMapper.class,
+                CommentMapper.class,
+                TagMapper.class
+        }
+
+)
 public interface ProjectMapper {
 
+    @Mapping(target = "users", source = "users")
+    @Mapping(target = "category", source = "category")
+    @Mapping(target = "steps", source = "steps")        // חובה!
+    @Mapping(target = "comments", source = "comments")  // חובה!
+    @Mapping(target = "tags", source = "tags")          // חובה!
+    @Mapping(target = "likesCount", expression = "java(entity.getLikedByUsers() != null ? entity.getLikedByUsers().size() : 0)")
     ProjectResponseDTO projectEntityToResponseDTO(Project entity);
+    @AfterMapping
+    default void handleProjectPictureForResponse(@MappingTarget ProjectResponseDTO dto, Project project) {
+        if (project.getPicturePath() != null) {
+            try {
+                dto.setPicture(ImageUtils.getImage(project.getPicturePath()));
+            } catch (IOException e) {
+                e.printStackTrace();
+                dto.setPicture(null);
+            }
+        }
+    }
 
-    @Mapping(source = "users", target = "users")
-    @Mapping(source = "category", target = "category")
-    ProjectResponseDTO projectToDTO(Project project);
 
     @Mapping(source = "categoryId", target = "category.id")
     @Mapping(target = "tags", ignore = true)
@@ -36,10 +60,8 @@ public interface ProjectMapper {
     List<ProjectListDTO> toProjectListDTOList(List<Project> projects);
 
     @Mapping(target = "id", ignore = true) // מוודא ששדה ה-ID של הישות לא יידרס
-    // נניח שאת צריכה לעדכן את הקטגוריה והאתגר באמצעות ה-IDs שלהם
     @Mapping(source = "categoryId", target = "category.id")
     @Mapping(source = "challengeId", target = "challenge.id")
-        // ניתן להוסיף כאן לוגיקה מורכבת יותר, למשל לתגיות
     Project updateProjectFromDto(ProjectCreateDTO p, @MappingTarget Project existingProject);
 
     @Mapping(source = "users", target = "usersSimpleDTO")

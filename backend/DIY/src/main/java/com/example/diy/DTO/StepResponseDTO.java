@@ -6,7 +6,7 @@ public class StepResponseDTO
     private int stepNumber;
     private String title;
     private String content;
-    private String picturePath;
+    private String picture;
 
     public Long getId() {
         return id;
@@ -40,11 +40,11 @@ public class StepResponseDTO
         this.content = content;
     }
 
-    public String getPicturePath() {
-        return picturePath;
+    public String getPicture() {
+        return picture;
     }
 
-    public void setPicturePath(String picturePath) {
-        this.picturePath = picturePath;
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 }
