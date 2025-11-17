@@ -101,8 +101,15 @@ public class AuthController {
                 .body(Map.of("message", "התנתקת בהצלחה!"));
     }
     @GetMapping("/login")
-    public void login(HttpServletResponse response) throws IOException {
+    public void login(@RequestParam(value = "error", required = false) String error,
+                      HttpServletResponse response) throws IOException {
+
+        if (error != null) {
+            String redirectUrl = "http://localhost:4200/login?error=true";
+            response.sendRedirect(redirectUrl);
+            return;
+        }
+
         response.sendRedirect("/oauth2/authorization/google");
     }
-
 }

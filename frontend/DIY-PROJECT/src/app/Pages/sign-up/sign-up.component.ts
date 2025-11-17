@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { Validators, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -19,7 +19,8 @@ import { CommonModule } from '@angular/common';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-  MatProgressBarModule],
+  MatProgressBarModule,RouterLink
+],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
 })

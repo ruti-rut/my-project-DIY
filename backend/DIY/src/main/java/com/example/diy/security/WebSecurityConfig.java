@@ -1,12 +1,8 @@
-package com.example.diy.security; // *** ודאי שהנתיב הזה נכון לפרויקט שלך ***
-
-
-
+package com.example.diy.security;
 
 import com.example.diy.security.jwt.AuthEntryPointJwt;
 import com.example.diy.security.jwt.AuthTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,34 +15,42 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
-//הגדרות אבטחה
+// הגדרות אבטחה
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-    @Qualifier("customUserDetailsService")
-    CustomUserDetailsService userDetailsService;
+
+    // השדה userDetailsService הוסר כדי למנוע את שגיאת ה-Bean
+
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
+    @Autowired
+    private AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
 
-    public WebSecurityConfig(CustomUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
-    //********תפקיד הפונקציה:
-    //מה הפונקציה מחזירה?
+
+    /**
+     * מגדיר את ספק האימות הראשי (Local Login)
+     * מקבל את CustomUserDetailsService ישירות כפרמטר כדי לפתור את שגיאת 'UserDetailsService must be set'
+     */
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider authenticationProvider() { // [1] שונה - אין פרמטר
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-        authProvider.setUserDetailsService(userDetailsService);
+        // משתמש במשתנה המחלקה המוזרק
+        authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
@@ -61,15 +65,17 @@ public class WebSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    //********תפקיד הפונקציה:
-    //מגדירה את שרשרת מסנן האבטחה
+
+    /**
+     * מגדירה את שרשרת מסנן האבטחה
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        //משבית את הגנת CSRF על ידי הפעלת שיטת `csrf()` והשבתתה
+
         http.csrf(csrf -> csrf.disable()).cors(cors->cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration=new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200")); // <--- ללא הגרשיים הכפולים בפנים!
-                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // מומלץ במקום *
+                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200"));
+                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfiguration.setAllowedHeaders(List.of("*"));
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
@@ -77,39 +83,30 @@ public class WebSecurityConfig {
 
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                                auth.requestMatchers("/h2-console/**").permitAll()
-                                        //כאן נעשה אפשור לפונקציות של הכניסה, הרשמה
-                                        .requestMatchers("/api/auth/**").permitAll()
-                                        //כל שאר הפונקציות ישארו חסומות אך ורק למשתמשים שנכנסו
-                                        //אם רוצים אפשר לאפשר פונקציות מסוימות או קונטרולים מסוימים לכל המשתמשים
-                                        //לדוג'
-                                        .requestMatchers("/api/category/**").permitAll()
-                                        .requestMatchers("/api/project/**").permitAll()
-                                        .requestMatchers("/api/comment/**").permitAll()
+                        auth.requestMatchers("/h2-console/**", "/oauth2/**", "/login", "/favicon.ico", "/error").permitAll()
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/category/**").permitAll()
+                                .requestMatchers("/api/project/**").permitAll()
+                                .requestMatchers("/api/comment/**").permitAll()
+                                .anyRequest().authenticated()
 
-
-
-
-
-
-
-                                        .requestMatchers("/api/challenge/uploadChallenge").hasRole("ADMIN")
-                                        .requestMatchers("/error").permitAll()
-
-                                        //.requestMatchers("/api/recipes/delete")
-//                  .requestMatchers("/api/user/signIn").permitAll()
-                                        .anyRequest().authenticated()
                 );
 
-        http .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));
+        http.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));
 
-        // fix H2 database console: Refused to display ' in a frame because it set 'X-Frame-Options' to 'deny'
         http.headers(headers -> headers.frameOptions(frameOption -> frameOption.sameOrigin()));
 
-        http.authenticationProvider(authenticationProvider());
+        // שימוש במתודת ה-Bean המתוקנת
+        // ********* שילוב OAuth2 (כניסה דרך גוגל) *********
+        http.oauth2Login(oauth2 -> oauth2
+                .authorizationEndpoint(endpoint -> endpoint.baseUri("/oauth2/authorization"))
+                .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
+                // חיבור ה-Handler המטפל ב-JWT
+                .successHandler(oauth2AuthenticationSuccessHandler)
+        );
+        // ********* סוף OAuth2 *********
 
 
-        //***********משמעות הגדרה זו:
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
 
