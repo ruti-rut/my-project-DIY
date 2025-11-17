@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { LoginButtonComponent } from '../../login-button/login-button.component';
 import { UserProfileMenuComponent } from '../../user-profile-menu/user-profile-menu.component';
+import { DailyBellComponent } from '../../daily-bell/daily-bell.component';
 
 @Component({
   selector: 'app-header',
@@ -26,7 +27,8 @@ CommonModule,
     
     // הילדים שהפרדנו
     LoginButtonComponent,
-    UserProfileMenuComponent],
+    UserProfileMenuComponent,
+  DailyBellComponent],
   templateUrl: './header.html',
   styleUrls: ['./header.css']
 })
