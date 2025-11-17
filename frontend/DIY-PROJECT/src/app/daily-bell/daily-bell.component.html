@@ -1,0 +1,15 @@
+<button mat-icon-button
+        class="bell-button"
+        (click)="toggleSubscription()"
+        [matTooltip]="isSubscribed() ? 'בטל קבלת עדכונים יומיים' : 'קבל עדכונים יומיים בכל בוקר'"
+        matTooltipPosition="below">
+
+  <mat-icon class="bell-icon"
+            [ngClass]="{ 'subscribed': isSubscribed(), 'ring': justToggled }">
+    {{ isSubscribed() ? 'notifications' : 'notifications_none' }}
+  </mat-icon>
+
+  @if (isSubscribed()) {
+    <span class="notification-dot"></span>
+  }
+</button>

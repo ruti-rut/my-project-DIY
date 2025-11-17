@@ -1,0 +1,37 @@
+.bell-button {
+  position: relative;
+  margin-left: 12px;
+}
+
+.bell-icon {
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+  transition: color 0.3s ease, transform 0.1s ease;
+}
+
+.bell-icon.subscribed {
+  color: #ff4081;   /* ורוד פעיל – כמו באפליקציות אמיתיות */
+}
+
+.bell-icon.ring {
+  animation: ring 0.8s ease-in-out;
+}
+
+@keyframes ring {
+  0%, 100%   { transform: rotate(0deg); }
+  10%, 30%, 50%, 70%, 90% { transform: rotate(18deg); }
+  20%, 40%, 60%, 80%     { transform: rotate(-18deg); }
+}
+
+.notification-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 10px;
+  height: 10px;
+  background-color: #f44336;
+  border-radius: 50%;
+  border: 2.5px solid white;
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+}

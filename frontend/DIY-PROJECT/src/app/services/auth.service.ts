@@ -8,68 +8,64 @@ import { UserResponseDTO, UsersRegisterDTO, UserLogInDTO } from '../models/user.
   providedIn: 'root'
 })
 export class AuthService {
-// כתובת ה-URL הבסיסית של שרת ה-Spring Boot שלך
-  private baseUrl = 'http://localhost:8080/api/auth'; // *** שנה אם צריך ***
+private baseUrl = 'http://localhost:8080/api/auth';
 
   private currentUserSignal = signal<UserResponseDTO | null>(null);
   public currentUser = this.currentUserSignal.asReadonly();
 
   private http = inject(HttpClient);
   private router = inject(Router);
+
   constructor() {
-        // מפעיל את בדיקת האימות מיד כאשר השירות מוזרק
-        this.checkAuthentication().subscribe(); 
-    }
+    this.checkAuthentication().subscribe();
+  }
+
+  // פונקציה ציבורית לעדכון המשתמש – משמשת מכל מקום באפליקציה
+  updateCurrentUser(user: UserResponseDTO | null) {
+      console.log('AuthService: updateCurrentUser', user); // לוג לבדיקה
+    this.currentUserSignal.set(user);
+  }
 
   checkAuthentication(): Observable<UserResponseDTO | null> {
     return this.http.get<UserResponseDTO>(`${this.baseUrl}/me`).pipe(
-      tap(user => {
-        this.currentUserSignal.set(user);
-      }),
+      tap(user => this.updateCurrentUser(user)),
       catchError(() => {
-        this.currentUserSignal.set(null);
+        this.updateCurrentUser(null);
         return of(null);
       })
     );
   }
 
-  /**
-   * פונקציה לרישום משתמש חדש
-   */
-signUp(userData: UsersRegisterDTO): Observable<UserResponseDTO> {
-  return this.http.post<UserResponseDTO>(`${this.baseUrl}/signup`, userData).pipe(
-    tap(user => {
-      this.currentUserSignal.set(user);
-    })
-  );
-}
-  /**
-   * פונקציה להתחברות משתמש
-   */
-signIn(credentials: UserLogInDTO): Observable<UserResponseDTO> {
-  return this.http.post<UserResponseDTO>(`${this.baseUrl}/signin`, credentials).pipe(
-    tap(response => {
-      this.currentUserSignal.set(response);
-      this.router.navigate(['/']);
-    })
-  );
-}
+  signUp(userData: UsersRegisterDTO): Observable<UserResponseDTO> {
+    return this.http.post<UserResponseDTO>(`${this.baseUrl}/signup`, userData).pipe(
+      tap(user => this.updateCurrentUser(user))
+    );
+  }
+
+  signIn(credentials: UserLogInDTO): Observable<UserResponseDTO> {
+    return this.http.post<UserResponseDTO>(`${this.baseUrl}/signin`, credentials).pipe(
+      tap(response => {
+        this.updateCurrentUser(response);
+        this.router.navigate(['/']);
+      })
+    );
+  }
+
   signInWithGoogle(): void {
     window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   }
 
-
   logout(): Observable<any> {
-  return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true }).pipe(
-    tap(() => {
-      this.currentUserSignal.set(null);
-      this.router.navigate(['/']);
-    }),
-    catchError(err => {
-      this.currentUserSignal.set(null);
-      this.router.navigate(['/']);
-      return of(err);
-    })
-  );
-}
+    return this.http.post(`${this.baseUrl}/logout определить`, {}, { withCredentials: true }).pipe(
+      tap(() => {
+        this.updateCurrentUser(null);
+        this.router.navigate(['/']);
+      }),
+      catchError(err => {
+        this.updateCurrentUser(null);
+        this.router.navigate(['/']);
+        return of(err);
+      })
+    );
+  }
 }

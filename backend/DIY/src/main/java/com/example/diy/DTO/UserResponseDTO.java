@@ -10,6 +10,16 @@ public class UserResponseDTO {
     private String aboutMe;
     private String profilePicturePath;
     private AuthProvider provider;
+    private boolean isSubscribedToDaily;
+
+
+    public boolean isSubscribedToDaily() {
+        return isSubscribedToDaily;
+    }
+
+    public void setSubscribedToDaily(boolean subscribedToDaily) {
+        isSubscribedToDaily = subscribedToDaily;
+    }
 
     public UserResponseDTO() {
     }
