@@ -20,12 +20,11 @@ export class DailyBellComponent {
   private authService = inject(AuthService);
 
   // computed שמסתכל על ה-signal של AuthService
-  isSubscribed = computed(() => {
-    const value = this.authService.currentUser()?.isSubscribedToDaily ?? false;
-    console.log('DailyBell: computed isSubscribed =', value);
-    return value;
-  });
-
+isSubscribed = computed(() => {
+  const value = this.authService.currentUser()?.subscribedToDaily ?? false;
+  console.log('isSubscribed computed ran →', value, this.authService.currentUser());
+  return value;
+});
   justToggled = false;
 
   toggleSubscription() {

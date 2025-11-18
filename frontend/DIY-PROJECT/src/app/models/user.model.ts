@@ -17,7 +17,7 @@ export interface UserResponseDTO {
   aboutMe: string;
   profilePicturePath: string | null;
   provider: AuthProvider;
-  isSubscribedToDaily:boolean;
+  subscribedToDaily:boolean;
 
 }
 

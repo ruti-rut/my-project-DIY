@@ -19,10 +19,13 @@ private usersUrl = 'http://localhost:8080/api/users';
 toggleDailySubscription(): Observable<UserResponseDTO> {
   return this.http.put<UserResponseDTO>(`${this.usersUrl}/subscription/toggle`, {}).pipe(
     tap(updatedUser => {
-      this.authService.updateCurrentUser(Object.assign({}, updatedUser));
+      // ← זה מה שגורם ל-computed להפעיל שוב!
+      this.authService.updateCurrentUser({ ...updatedUser });
+      // או אפשר גם: this.authService.updateCurrentUser(structuredClone(updatedUser));
     })
   );
-}}
+}
+}
 
 
 
