@@ -22,7 +22,7 @@ private baseUrl = 'http://localhost:8080/api/auth';
 
   // פונקציה ציבורית לעדכון המשתמש – משמשת מכל מקום באפליקציה
   updateCurrentUser(user: UserResponseDTO | null) {
-      console.log('AuthService: updateCurrentUser', user); // לוג לבדיקה
+    console.log('AuthService: updateCurrentUser', user); // לוג לבדיקה
     this.currentUserSignal.set(user);
   }
 
