@@ -15,13 +15,13 @@ import java.util.List;
 public class AIChatService {
 
     private final ChatClient chatClient;
-    private final static String SYSYEM_INSTRUCTION= """
+    private final static String SYSTEM_INSTRUCTION= """
             אתה עוזר AI שנועד לעזור בעניני בישולים ומתכונים בלבד.
             .ענה בשפה פשוטה שגם משתמשים ללא ניסיון בבישול יוכלו להבין אותך
            אם יש מוצר חלופי שאמור להתאים למתכון תתן את כל החלופות.
            אם מישהו שואל אותך על מזג אוויר תענה לו גם.
            אם שואלים שאלות שלא קשורות לעניני מתכונים ובישול ענה בנימוס שאתה עוזר רק לעניני בישול.
-            """;
+           """;
     private final ChatMemory chatMemory;
 
     public AIChatService(ChatClient.Builder chatClient,ChatMemory chatMemory) {
@@ -33,7 +33,7 @@ public class AIChatService {
     public Flux<String> getResponse(String prompt, String conversationId){
         List<Message> messageList=new ArrayList<>();
         //ההודעה הראשונה - ההנחיה הראשונית
-        messageList.add(new SystemMessage(SYSYEM_INSTRUCTION));
+        messageList.add(new SystemMessage(SYSTEM_INSTRUCTION));
         //מוסיפים את כל ההודעות ששייכות לאותה השיחה
         messageList.addAll(chatMemory.get(conversationId));
         //השאלה הנוכחית
@@ -51,19 +51,8 @@ public class AIChatService {
         return aiResponse;
 
     }
-
-
-
-
-
-
-
-
-
-
-
     //    public String getResponse(String prompt){
-//        SystemMessage systemMessage=new SystemMessage(SYSYEM_INSTRUCTION);
+//        SystemMessage systemMessage=new SystemMessage(SYSTEM_INSTRUCTION);
 //        UserMessage userMessage=new UserMessage(prompt);
 //
 //        List<Message> messageList= List.of(systemMessage,userMessage);

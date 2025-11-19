@@ -21,9 +21,6 @@ public class ProjectCreateDTO {
         this.categoryId = categoryId;
     }
 
-    public void setChallengeId(Long challengeId) {
-        this.challengeId = challengeId;
-    }
 
     public List<String> getTagNames() {
         return tagNames;
@@ -35,10 +32,6 @@ public class ProjectCreateDTO {
 
     public Long getCategoryId() {
         return categoryId;
-    }
-
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
     }
 
     public Long getChallengeId() {
