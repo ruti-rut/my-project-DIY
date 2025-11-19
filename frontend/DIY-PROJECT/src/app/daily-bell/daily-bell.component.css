@@ -1,0 +1,86 @@
+.bell-button {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.bell-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* הפעמון עצמו */
+.bell-icon {
+  font-size: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  color: #e0e0e0;
+  transition: color 0.3s ease;
+  transform-origin: top center;
+}
+
+/* כשהמשתמש רשום – צבע כתום/זהב כמו באפליקציות אמיתיות */
+.bell-icon.subscribed {
+  color: #ff6b35;
+  filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.5));
+}
+
+/* אנימציית צלצול – הכי אמיתית שיש */
+.bell-icon.ringing {
+  animation: bell-ring 0.9s ease-in-out;
+}
+
+/* אנימציית הגל שמתפשט */
+.ring-wave {
+  position: absolute;
+  inset: 4px;
+  border: 3px solid #ff6b35;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: wave-expand 1s ease-out forwards;
+}
+
+/* נקודה אדומה מהבהבת */
+.active-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 11px;
+  height: 11px;
+  background: #f44336;
+  border: 2.5px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* === כל האנימציות === */
+@keyframes bell-ring {
+  0%   { transform: rotate(0deg); }
+  10%  { transform: rotate(16deg); }
+  20%  { transform: rotate(-14deg); }
+  30%  { transform: rotate(12deg); }
+  40%  { transform: rotate(-10deg); }
+  50%  { transform: rotate(8deg); }
+  60%  { transform: rotate(-6deg); }
+  70%  { transform: rotate(4deg); }
+  80%  { transform: rotate(-2deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes wave-expand {
+  from {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.2); }
+}

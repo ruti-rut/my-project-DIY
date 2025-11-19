@@ -1,7 +1,7 @@
 <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger">
   
-  @if (user.imageUrl) {
-    <img [src]="user.imageUrl" alt="פרופיל" class="user-avatar">
+  @if (user.profilePicturePath) {
+    <img [src]="user.profilePicturePath" alt="פרופיל" class="user-avatar">
   } @else {
     <div 
       class="initials-avatar" 

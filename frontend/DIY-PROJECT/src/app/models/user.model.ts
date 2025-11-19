@@ -15,9 +15,9 @@ export interface UserResponseDTO {
   mail: string;
   city: string;
   aboutMe: string;
-  profilePicturePath: string;
+  profilePicturePath: string | null;
   provider: AuthProvider;
-  imageUrl: string | null;
+  subscribedToDaily:boolean;
 
 }
 

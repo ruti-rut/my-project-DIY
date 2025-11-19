@@ -1,0 +1,22 @@
+<button mat-icon-button
+        class="bell-button"
+        (click)="toggleSubscription()"
+        [matTooltip]="isSubscribed() ? 'בטל התראות יומיות' : 'קבל התראות יומיות'"
+        matTooltipPosition="below">
+
+  <mat-icon class="bell-icon"
+            [class.subscribed]="isSubscribed()"
+            [class.ringing]="justToggled">
+    {{ isSubscribed() ? 'notifications_active' : 'notifications' }}
+  </mat-icon>
+
+  <!-- גל הרינג שיוצא החוצה -->
+  @if (justToggled) {
+    <span class="ring-wave"></span>
+  }
+
+  <!-- נקודה אדומה שמהבהבת -->
+  @if (isSubscribed()) {
+    <span class="active-dot"></span>
+  }
+</button>

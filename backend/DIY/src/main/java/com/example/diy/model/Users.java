@@ -37,6 +37,15 @@ public class Users {
     private String profilePicturePath;
     @ManyToMany
     private Set<Role> roles = new HashSet<>();
+    private boolean isSubscribedToDaily = false;
+
+    public boolean isSubscribedToDaily() {
+        return isSubscribedToDaily;
+    }
+
+    public void setSubscribedToDaily(boolean subscribedToDaily) {
+        isSubscribedToDaily = subscribedToDaily;
+    }
 
     public Set<Role> getRoles() {
         return roles;
