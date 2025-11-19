@@ -16,8 +16,6 @@ public class CustomUserDetails extends User {
 
 
     public CustomUserDetails(Users user) {
-
-
         super(getPrincipalName(user),
                 user.getPassword() != null ? user.getPassword() : "",
                 buildAuthorities(user));

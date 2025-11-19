@@ -3,7 +3,7 @@ package com.example.diy.DTO;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-
+//not projectToShow?
 public class ProjectResponseDTO {
     private Long id;
     private UsersSimpleDTO users;       // DTO חלקי של המשתמש

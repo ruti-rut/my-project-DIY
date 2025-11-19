@@ -12,7 +12,9 @@ public class ProjectCreateDTO {
     private String materials;
     private Long categoryId;
     private Long challengeId;
-
+    private String ages;
+    private String timePrep;
+    private boolean isDraft;
     private List<String> tagNames;
 
     public void setCategoryId(Long categoryId) {
@@ -31,27 +33,21 @@ public class ProjectCreateDTO {
         this.tagNames = tagNames;
     }
 
-    private String ages;
-    private String timePrep;
-    private boolean isDraft;
-
-
-    public long getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(long categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 
-    public long getChallengeId() {
+    public Long getChallengeId() {
         return challengeId;
     }
 
-    public void setChallengeId(long challengeId) {
+    public void setChallengeId(Long challengeId) {
         this.challengeId = challengeId;
     }
-
 
     public String getMaterials() {
         return materials;
@@ -84,7 +80,6 @@ public class ProjectCreateDTO {
     public void setTimePrep(String timePrep) {
         this.timePrep = timePrep;
     }
-
 
     public String getDescription() {
         return description;

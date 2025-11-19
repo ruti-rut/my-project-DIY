@@ -1,5 +1,5 @@
 package com.example.diy.DTO;
-
+//not stepToShow?
 public class StepResponseDTO
 {
     private Long id; // נחוץ כדי לערוך שלב קיים בעתיד

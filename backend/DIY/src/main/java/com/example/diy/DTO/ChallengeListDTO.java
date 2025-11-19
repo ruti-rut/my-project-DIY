@@ -1,7 +1,7 @@
 package com.example.diy.DTO;
 
 import java.time.LocalDate;
-
+//not challengeCard?
 public class ChallengeListDTO {
     private Long id;
     private LocalDate endDate;

@@ -14,8 +14,11 @@ public class Comment {
     private Users user;
     @ManyToOne
     private Project project;
+
     @CreationTimestamp
     private LocalDate createdAt;
+
+
     @Lob
     private String content;
 
