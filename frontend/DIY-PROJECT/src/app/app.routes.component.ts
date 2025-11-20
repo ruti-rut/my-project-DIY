@@ -49,6 +49,12 @@ export const routes: Routes = [
   loadComponent: () => import('./project-detail/project-detail.component')
     .then(m => m.ProjectDetailComponent)
 },
+{
+  path: 'diy-question',
+  loadComponent: () => import('./diy-chat/diy-chat.component')
+    .then(m => m.DiyChatComponent),
+  canActivate: [authGuard]
+},
 
   // נתיב Fallback (ללא שינוי)
   { path: '**', redirectTo: '' }
