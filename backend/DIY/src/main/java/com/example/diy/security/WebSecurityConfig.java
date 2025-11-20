@@ -101,6 +101,7 @@ public class WebSecurityConfig {
         // שימוש במתודת ה-Bean המתוקנת
         // ********* שילוב OAuth2 (כניסה דרך גוגל) *********
         http.oauth2Login(oauth2 -> oauth2
+                .loginPage("http://localhost:4200/sign-in") // <-- כאן השם של הדף שלך ב-frontend
                 .authorizationEndpoint(endpoint -> endpoint.baseUri("/oauth2/authorization"))
                 .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
                 // חיבור ה-Handler המטפל ב-JWT
