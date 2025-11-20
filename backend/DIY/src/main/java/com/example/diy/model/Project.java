@@ -25,8 +25,11 @@ public class Project {
     @OrderBy("stepNumber ASC")
     private List<Step> steps;
 
+
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @OrderBy("createdAt DESC")
+
+
     private List<Comment> comments = new ArrayList<>();
     @ManyToMany
     private Set<Tag> tags; // שינינו מ-List ל-Set
@@ -38,9 +41,13 @@ public class Project {
 
     @CreationTimestamp
     private LocalDate createdAt;
+
+
     //לבדוק איך להגדיל את הטקסט
     @Lob//@Column(length = 5000)
     @Column(columnDefinition = "TEXT")
+
+
     private String materials;
     private String title;
     private String ages;

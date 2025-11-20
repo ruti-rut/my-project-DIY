@@ -1,8 +1,7 @@
 package com.example.diy.DTO;
 
 import com.example.diy.model.AuthProvider;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+//not userProfile?
 public class UserResponseDTO {
     private Long id;
     private String userName;

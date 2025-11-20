@@ -1,5 +1,5 @@
 package com.example.diy.DTO;
-
+//not projectCard?
 public class ProjectListDTO {
     private Long id;
     private UsersSimpleDTO usersSimpleDTO;
