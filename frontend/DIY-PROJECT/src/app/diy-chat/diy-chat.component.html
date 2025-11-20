@@ -1,0 +1,54 @@
+<!-- src/app/components/diy-chat/diy-chat.component.html -->
+<div class="chat-container">
+
+  <!-- כותרת -->
+  <header class="header">
+    <h1>עוזר DIY חכם</h1>
+    <div class="header-buttons">
+      <button class="btn-new" (click)="startNewChat()">שיחה חדשה</button>
+      <button class="btn-logout" (click)="logout()">יציאה</button>
+    </div>
+  </header>
+
+  <!-- אזור ההודעות -->
+  <div class="messages-area" #scrollContainer>
+    
+    @if (messages().length === 0) {
+      <div class="welcome">
+        <p>שלום! שאל אותי כל שאלה על פרויקטי DIY, תיקונים, יצירה ועבודות יד</p>
+      </div>
+    }
+
+    @for (msg of messages(); track msg.timestamp) {
+      <app-message-bubble [message]="msg"></app-message-bubble>
+    }
+
+    @if (isLoading()) {
+      <div class="message assistant typing">
+        <div class="bubble">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- אזור הקלט -->
+  <div class="input-area">
+    <form (ngSubmit)="send()" class="input-form">
+      <input 
+        [(ngModel)]="newMessage"
+        (keydown.enter)="handleEnter($event)"
+        placeholder="איך בונים מדף? איך מתקנים נזילה?..."
+        [disabled]="isLoading()"
+        name="msg"
+        autocomplete="off"
+      />
+      <button type="submit" [disabled]="!newMessage.trim() || isLoading()">
+        שלח
+      </button>
+    </form>
+    <small class="hint">Shift + Enter לירידת שורה</small>
+  </div>
+</div>
