@@ -36,6 +36,24 @@ public class Users {
     @ManyToMany
     private Set<Role> roles = new HashSet<>();
     private boolean isSubscribedToDaily = false;
+    private boolean emailVerified = false;
+    private String verificationToken;
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
+    }
 
     public boolean isSubscribedToDaily() {
         return isSubscribedToDaily;

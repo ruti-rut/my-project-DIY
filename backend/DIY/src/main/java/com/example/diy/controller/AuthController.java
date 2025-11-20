@@ -8,6 +8,7 @@ import com.example.diy.model.AuthProvider;
 import com.example.diy.model.Users;
 import com.example.diy.security.CustomUserDetails;
 import com.example.diy.security.jwt.JwtUtils;
+import com.example.diy.service.EmailSenderService;
 import com.example.diy.service.UsersRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -36,13 +38,16 @@ public class AuthController {
     UsersMapper usersMapper;
     private AuthenticationManager authenticationManager;
     private JwtUtils jwtUtils;
+    EmailSenderService emailSenderService;
 
-    public AuthController(PasswordEncoder passwordEncoder, UsersRepository usersRepository, UsersMapper usersMapper, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+
+    public AuthController(PasswordEncoder passwordEncoder, UsersRepository usersRepository, UsersMapper usersMapper, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailSenderService emailSenderService) {
         this.passwordEncoder = passwordEncoder;
         this.usersRepository = usersRepository;
         this.usersMapper = usersMapper;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
+        this.emailSenderService = emailSenderService;
     }
 
     @PostMapping("/signup")
@@ -62,7 +67,6 @@ public class AuthController {
 
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED); // 201 Created
     }
-
     // --- 2. כניסת משתמש (Login) ---
     @PostMapping("/signin")
     public ResponseEntity<?> login(@Valid @RequestBody UserLogInDTO loginRequest) {
@@ -112,4 +116,21 @@ public class AuthController {
 
         response.sendRedirect("/oauth2/authorization/google");
     }
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyEmail(@RequestParam String token) {
+
+        Users user = usersRepository.findByVerificationToken(token);
+
+        if (user == null) {
+            return ResponseEntity.badRequest().body("Token לא תקף");
+        }
+
+        user.setEmailVerified(true);
+        user.setVerificationToken(null);
+        usersRepository.save(user);
+
+        return ResponseEntity.ok("המייל אומת בהצלחה!");
+    }
+
+
 }
