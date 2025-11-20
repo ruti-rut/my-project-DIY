@@ -21,6 +21,12 @@
     <mat-icon>add_box</mat-icon>
     הוסף פרויקט
   </a>
+  <!-- הקישור החדש לצ'אט DIY – יפה ומקצועי -->
+  <a mat-button routerLink="/diy-question" routerLinkActive="active">
+    <mat-icon svgIcon="chat-bubble" class="icon-small"></mat-icon>
+    עוזר AI
+    <mat-chip color="accent" selected class="new-badge">NEW</mat-chip>
+  </a>
   
 @if (currentUser(); as user) {
     <app-user-profile-menu [user]="user" />

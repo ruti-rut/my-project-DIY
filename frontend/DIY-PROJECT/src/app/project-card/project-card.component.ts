@@ -18,6 +18,11 @@ export class ProjectCardComponent {
 
   private avatarHelper = inject(AvatarHelperService);
 
+  ngOnInit() {
+  console.log('Project:', this.project);
+  console.log('Image URL:', this.getImageUrl());
+  console.log('Avatar:', this.avatar());
+}
   // בדיוק כמו getImageUrl באתגרים!
 getImageUrl(): string {
   const base64 = this.project.picture;

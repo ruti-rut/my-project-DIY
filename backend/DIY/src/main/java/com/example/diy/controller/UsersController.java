@@ -50,11 +50,20 @@ public class UsersController {
 
         return ResponseEntity.ok(responseDto);  // ← חייב להחזיר את זה!
     }
-
     @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> getResponse(@RequestBody ChatRequest chatRequest){
-        return aiChatService.getResponse(chatRequest.message(), chatRequest.conversationId());
+    public Flux<String> getResponse(
+            @RequestParam String message,
+            @RequestParam String conversationId) {
+
+        // קריאה לשירות עם הפרמטרים החדשים
+        // כמובן, תצטרכי לשנות את חתימת המתודה ב-AIChatService בהתאם
+        return aiChatService.getResponse(message, conversationId);
     }
+
+//    @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    public Flux<String> getResponse(@RequestBody ChatRequest chatRequest){
+//        return aiChatService.getResponse(chatRequest.message(), chatRequest.conversationId());
+//    }
 
 }
 

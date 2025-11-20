@@ -1,0 +1,11 @@
+<div class="message" [class.user]="message().role === 'user'">
+  <div class="bubble">
+    <div class="content" [innerHTML]="message().content | markdown"></div>
+    
+    @if (message().role === 'assistant') {
+      <button class="copy-btn" (click)="copy()" [class.copied]="showCopied">
+        {{ showCopied ? 'הועתק!' : 'העתק' }}
+      </button>
+    }
+  </div>
+</div>

@@ -10,6 +10,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { LoginButtonComponent } from '../../login-button/login-button.component';
 import { UserProfileMenuComponent } from '../../user-profile-menu/user-profile-menu.component';
 import { DailyBellComponent } from '../../daily-bell/daily-bell.component';
+import { MatChip } from '@angular/material/chips';
 
 @Component({
   selector: 'app-header',
@@ -24,6 +25,7 @@ CommonModule,
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
+    MatChip,
     
     // הילדים שהפרדנו
     LoginButtonComponent,
