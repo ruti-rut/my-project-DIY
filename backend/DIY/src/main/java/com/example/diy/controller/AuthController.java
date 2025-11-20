@@ -52,21 +52,59 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<UserResponseDTO> signUp(@Valid @RequestBody UsersRegisterDTO user) {
-        // נבדוק ששם המשתמש (או המזהה) לא קיים
+
         if (usersRepository.existsByUserName(user.getUserName())) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Bad Request
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
         Users newUser = usersMapper.usersRegisterDTOToUsers(user);
-        // הצפנת סיסמה באמצעות ה-PasswordEncoder המוזרק
+
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         newUser.setPassword(encodedPassword);
-        // הגדרת ספק האימות כ-LOCAL
-        newUser.setProvider(AuthProvider.LOCAL);
-        Users savedUser = usersRepository.save(newUser);
-        UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(savedUser);
 
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED); // 201 Created
+        newUser.setProvider(AuthProvider.LOCAL);
+
+        // יצירת טוקן אימות
+        String token = UUID.randomUUID().toString();
+        newUser.setVerificationToken(token);
+        newUser.setEmailVerified(false);
+
+        Users saved = usersRepository.save(newUser);
+
+        // שליחת מייל אימות
+        String verifyLink = "http://localhost:8080/api/auth/verify?token=" + token;
+
+        emailSenderService.send(
+                newUser.getMail(),
+                "אימות מייל",
+                "<h2>ברוכה הבאה!</h2>" +
+                        "<p>לחצי על הלינק כדי לאמת את המייל:</p>" +
+                        "<a href=\"" + verifyLink + "\">אימות מייל</a>"
+        );
+
+        UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(saved);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
+
+
+    //    @PostMapping("/signup")
+//    public ResponseEntity<UserResponseDTO> signUp(@Valid @RequestBody UsersRegisterDTO user) {
+//        // נבדוק ששם המשתמש (או המזהה) לא קיים
+//        if (usersRepository.existsByUserName(user.getUserName())) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 Bad Request
+//        }
+//        Users newUser = usersMapper.usersRegisterDTOToUsers(user);
+//        // הצפנת סיסמה באמצעות ה-PasswordEncoder המוזרק
+//        String encodedPassword = passwordEncoder.encode(user.getPassword());
+//        newUser.setPassword(encodedPassword);
+//        // הגדרת ספק האימות כ-LOCAL
+//        newUser.setProvider(AuthProvider.LOCAL);
+//        Users savedUser = usersRepository.save(newUser);
+//        UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(savedUser);
+//
+//        return new ResponseEntity<>(responseDto, HttpStatus.CREATED); // 201 Created
+//    }
     // --- 2. כניסת משתמש (Login) ---
     @PostMapping("/signin")
     public ResponseEntity<?> login(@Valid @RequestBody UserLogInDTO loginRequest) {
