@@ -99,4 +99,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             @Param("categoryIds") List<Long> categoryIds,
             Pageable pageable
     );
+
+    List<Project> findTop3ByOrderByCreatedAtDesc();
 }
