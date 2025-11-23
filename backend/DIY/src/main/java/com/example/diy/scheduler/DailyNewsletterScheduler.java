@@ -3,6 +3,7 @@ package com.example.diy.scheduler;
 import com.example.diy.model.Users;
 import com.example.diy.service.AIChatService;
 import com.example.diy.service.EmailService;
+import com.example.diy.service.NewsletterService;
 import com.example.diy.service.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,25 +17,24 @@ public class DailyNewsletterScheduler {
     private UsersRepository usersRepository;
 
     @Autowired
-    private EmailService emailService;
+    private NewsletterService newsletterService;
 
-    @Autowired
-    private AIChatService aiChatService;
-
-    @Scheduled(cron = "0 0 9 * * ?") // כל יום ב-9:00 בבוקר
+    // רץ כל יום ב-9:00 בבוקר
+    @Scheduled(cron = "0 38 18 * * ?")
     public void sendDailyEmails() {
+        // שולפים רק משתמשים שאישרו מייל וגם נרשמו לניוזלטר
         List<Users> users = usersRepository.findAllByIsSubscribedToDailyTrueAndEmailVerifiedTrue();
+
         for (Users user : users) {
-            String content = generateEmailContent(user); // נשתמש ב-AI
-            emailService.sendEmail(user.getMail(), "השראה חדשה מהאתר", content);
+            try {
+                newsletterService.createAndSendNewsletter(user);
+
+                // המתנה קצרה של חצי שנייה בין מייל למייל כדי לא להעמיס
+                Thread.sleep(500);
+            } catch (Exception e) {
+                System.out.println("Error sending email to: " + user.getMail());
+                e.printStackTrace();
+            }
         }
     }
-
-    private String generateEmailContent(Users user) {
-        // כאן נשלח Prompt ל-AI לקבלת תוכן מותאם
-        String prompt = "צור כותרת קצרה והשראה לפרויקטים DIY מותאם לעונה הנוכחית.";
-        // כאן תקבלי Flux<String> מה-AI, אפשר לאחד ל-String אחד
-        return aiChatService.getResponse(prompt, "daily-newsletter-" + user.getId()).blockLast();
-    }
-
 }

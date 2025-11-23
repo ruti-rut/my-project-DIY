@@ -64,6 +64,30 @@ public class AIChatService {
         return aiResponse;
 
     }
+    public String generateNewsletterContent(String userName, List<String> projectTitles) {
+
+        String prompt = String.format("""
+                כתוב פתיח קצר (עד 40 מילים) וטיפ יומי לניוזלטר בנושא DIY.
+                שם המשתמשת: %s
+                הפרויקטים שיוצגו במייל: %s
+                
+                הנחיות:
+                1. התחל בברכה חמה.
+                2. כתוב טיפ קצר ופרקטי שקשור לאחד הפרויקטים או לעונת השנה הנוכחית.
+                3. סיים במשפט שמזמין לגלול למטה ולראות את הפרויקטים.
+                4. אל תכתוב כותרות, רק את גוף הטקסט.
+                """, userName, String.join(", ", projectTitles));
+
+        return chatClient.prompt()
+                .user(prompt)
+                .call()
+                .content();
+    }
+
+
+
+
+
     //    public String getResponse(String prompt){
 //        SystemMessage systemMessage=new SystemMessage(SYSTEM_INSTRUCTION);
 //        UserMessage userMessage=new UserMessage(prompt);

@@ -89,6 +89,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/project/**").permitAll()
                                 .requestMatchers("/api/comment/**").permitAll()
                                 .requestMatchers("/api/users/**").permitAll()
+                                .requestMatchers("/images/**").permitAll() // <--- הוספת השורה הזו
 
                                 .anyRequest().authenticated()
 

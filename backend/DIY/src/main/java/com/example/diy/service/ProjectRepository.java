@@ -35,4 +35,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
             "ORDER BY COUNT(u) DESC",
             // הוספת שאילתת ספירה מותאמת אישית
             countQuery = "SELECT COUNT(DISTINCT p.id) FROM Project p")
-    Page<Project> findAllOrderByLikesCountDesc(Pageable pageable);}
+    Page<Project> findAllOrderByLikesCountDesc(Pageable pageable);
+    List<Project> findTop3ByOrderByCreatedAtDesc();
+
+}
