@@ -3,6 +3,7 @@ package com.example.diy.service;
 import com.example.diy.DTO.ProjectListDTO;
 import com.example.diy.model.Project;
 import com.example.diy.model.Tag;
+import com.example.diy.model.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findByCategoryId(Long categoryId);
-
+    List<Project> findByUsers(Users user);
     @Query("SELECT p FROM Project p WHERE p.createdAt >= :yesterday")
     List<Project> findProjectsFromLast24Hours(@Param("yesterday") LocalDateTime yesterday);
 

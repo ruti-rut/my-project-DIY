@@ -226,8 +226,21 @@ public class ProjectController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
+        }
+    @GetMapping("/myProjects")
+    public ResponseEntity<List<ProjectListDTO>> getProjectsByCurrentUser(Principal principal){
+        try {
+            List<Project> myProjects = projectRepository.findByUsers(getCurrentUser(principal));
+            List<ProjectListDTO> myDTO = projectMapper.toProjectListDTOList(myProjects);
+            return new ResponseEntity<>(myDTO,HttpStatus.OK);
+        }
+        catch(Exception e){
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-}
+    }
+
 
 
 
