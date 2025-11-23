@@ -103,22 +103,6 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-
-    @GetMapping("/allProjects")
-    public ResponseEntity<Page<ProjectListDTO>> getAllProjects(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "30") int size) {
-        // יוצר בקשה: עמוד X, 30 פריטים, מיון לפי createdAt מהחדש לישן
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        // מקבל את העמוד מה-DB
-        Page<Project> projectPage = projectRepository.findAllByOrderByCreatedAtDesc(pageable);
-        // ממיר כל Project ל-ProjectListDTO (עם MapStruct)
-        Page<ProjectListDTO> dtoPage = projectPage.map(projectMapper::toProjectListDTO);
-        // מחזיר ללקוח
-        return ResponseEntity.ok(dtoPage);
-    }
-
-
     @PutMapping("/editProject/{id}")
     public ResponseEntity<Project> updateProjectWithImage(@PathVariable Long id,
                                                           @RequestPart(value = "image", required = false) MultipartFile file,
@@ -178,68 +162,70 @@ public class ProjectController {
         return usersRepository.findByUserName(username);
     }
 
-    @GetMapping("/projectsSearch")
-    public ResponseEntity<Page<ProjectListDTO>> projectsSearch(@RequestParam String searchTerm, Pageable pageable) {
+
+    @GetMapping("/allProjects")
+    public ResponseEntity<Page<ProjectListDTO>> getAllProjectsWithFilters(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) List<Long> categoryIds,  // 🔥 מערך!
+            @RequestParam(defaultValue = "newest") String sort
+    ) {
         try {
-            Page<Project> search = projectRepository.searchByTitleOrTags(searchTerm,pageable);
-            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(search);
-            if (search.getTotalElements() > 0) {
-                return new ResponseEntity<>(dtoPage, HttpStatus.OK);
+            Pageable pageable;
+
+            // טיפול במיון
+            switch (sort) {
+                case "oldest":
+                    pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+                    break;
+                case "popular":
+                    pageable = PageRequest.of(page, size);
+                    break;
+                default: // newest
+                    pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
             }
-            return new ResponseEntity<>(dtoPage, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
-    @GetMapping("/newest")
-    public ResponseEntity<Page<ProjectListDTO>> getNewestProjects(Pageable pageable) {
-        try {
-            Page<Project> newest = projectRepository.findAllByOrderByCreatedAtDesc(pageable);
-            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(newest);
-            if (dtoPage.getTotalElements() > 0) {
-                return new ResponseEntity<>(dtoPage, HttpStatus.OK);
+            Page<Project> projects;
+
+            // לוגיקת החיפוש
+            if (search != null && !search.trim().isEmpty()) {
+                // יש חיפוש
+                if (categoryIds != null) {
+                    // חיפוש + קטגוריה
+                    projects = projectRepository.searchByTitleOrTagsAndCategories(search, categoryIds, pageable);
+                } else {
+                    // חיפוש בלי קטגוריה
+                    if ("popular".equals(sort)) {
+                        projects = projectRepository.searchByTitleOrTagsOrderByLikes(search, pageable);
+                    } else {
+                        projects = projectRepository.searchByTitleOrTags(search, pageable);
+                    }
+                }
+            } else if (categoryIds != null) {
+                // רק קטגוריה בלי חיפוש
+                if ("popular".equals(sort)) {
+                    projects = projectRepository.findByCategoryIdsOrderByLikes(categoryIds, pageable);
+                } else {
+                    projects = projectRepository.findByCategoryIds(categoryIds, pageable);
+                }
+            } else {
+                // בלי חיפוש ובלי קטגוריה - הכל
+                if ("popular".equals(sort)) {
+                    projects = projectRepository.findAllOrderByLikesCountDesc(pageable);
+                } else {
+                    projects = sort.equals("oldest")
+                            ? projectRepository.findAllByOrderByCreatedAtAsc(pageable)
+                            : projectRepository.findAllByOrderByCreatedAtDesc(pageable);
+                }
             }
-            return new ResponseEntity<>(dtoPage, HttpStatus.NOT_FOUND);
+
+            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(projects);
+            return ResponseEntity.ok(dtoPage);
+
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
-
-    @GetMapping("/oldest")
-    public ResponseEntity<Page<ProjectListDTO>> getoldestProjects(Pageable pageable) {
-        try {
-            Page<Project> oldest = projectRepository.findAllByOrderByCreatedAtAsc(pageable);
-            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(oldest);
-            if (dtoPage.getTotalElements() > 0) {
-                return new ResponseEntity<>(dtoPage, HttpStatus.OK);
-            }
-            return new ResponseEntity<>(dtoPage, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/popular")
-    public ResponseEntity<Page<ProjectListDTO>> getPopularProjects(Pageable pageable) {
-       try{
-           Page<Project> popular = projectRepository.findAllOrderByLikesCountDesc(pageable);
-           Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(popular);
-           if (dtoPage.getTotalElements() > 0) {
-               return new ResponseEntity<>(dtoPage, HttpStatus.OK);
-           }
-           return new ResponseEntity<>(dtoPage, HttpStatus.NOT_FOUND);
-       }
-       catch(Exception e){
-           return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-       }
-    }
-
-
-    @GetMapping("/projectByCategory")
-    public ResponseEntity<Map<Long, List<ProjectListDTO>>> getHomeProjects() {
-        Map<Long, List<ProjectListDTO>> homeProjects = homeService.getLatestProjectsPerCategory();
-        return ResponseEntity.ok(homeProjects);
     }
 }
 
