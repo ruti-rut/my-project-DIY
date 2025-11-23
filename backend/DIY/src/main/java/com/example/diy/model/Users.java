@@ -16,7 +16,6 @@ public class Users {
     private String userName;
 
     @Column(name = "user_email") // <-- התיקון הקריטי למילה שמורה
-
     private String mail;
     // --- שדות OAuth2 ---
     // קובע אם המשתמש נרשם מקומית או דרך ספק חיצוני
@@ -35,7 +34,7 @@ public class Users {
     private String city;
     private String aboutMe;
     private String profilePicturePath;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
     private boolean isSubscribedToDaily = false;
     private boolean emailVerified = false;

@@ -16,6 +16,7 @@ public interface UsersRepository extends JpaRepository<Users,Long> {
     boolean existsByMail(String mail);
     Users findByVerificationToken(String token);
 
+
     List<Users> findByIsSubscribedToDailyTrueAndEmailVerifiedTrue();
     List<Users> findAllByIsSubscribedToDailyTrueAndEmailVerifiedTrue();
 
