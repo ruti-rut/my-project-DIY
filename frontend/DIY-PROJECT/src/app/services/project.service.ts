@@ -3,6 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Page, Project, ProjectListDTO } from '../models/project.model';
 
+export type SortOption = 'newest' | 'oldest' | 'popular';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,19 +16,33 @@ export class ProjectService {
     return this.http.post<Project>(`${this.apiUrl}/uploadProject`, formData);
   }
 
-  // קבלת פרויקט לפי ID
   getById(id: number): Observable<Project> {
     return this.http.get<Project>(`${this.apiUrl}/getProject/${id}`);
   }
 
-  getProjects(page: number, size: number = 30): Observable<Page<ProjectListDTO>> {
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
+getProjects(
+  page: number, 
+  searchTerm: string = '', 
+  categoryIds: number[] = [],
+  sort: 'newest' | 'oldest' | 'popular' = 'newest',
+  size: number = 30
+): Observable<Page<ProjectListDTO>> {
+  let params = new HttpParams()
+    .set('page', page.toString())
+    .set('size', size.toString())
+    .set('sort', sort);
 
-    return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/allProjects`, { params });
+  if (searchTerm.trim()) {
+    params = params.set('search', searchTerm.trim());
   }
 
+  // 🔥 שלח את כל הקטגוריות
+  if (categoryIds.length > 0) {
+    categoryIds.forEach(id => {
+      params = params.append('categoryIds', id.toString());
+    });
+  }
 
-
+  return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/projects`, { params });
+}
 }
