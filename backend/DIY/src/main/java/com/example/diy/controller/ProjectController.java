@@ -8,10 +8,7 @@ import com.example.diy.Mapper.ProjectMapper;
 import com.example.diy.model.Project;
 import com.example.diy.model.Tag;
 import com.example.diy.model.Users;
-import com.example.diy.service.ImageUtils;
-import com.example.diy.service.ProjectRepository;
-import com.example.diy.service.TagRepository;
-import com.example.diy.service.UsersRepository;
+import com.example.diy.service.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +22,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,13 +34,15 @@ public class ProjectController {
     ProjectMapper projectMapper;
     UsersRepository usersRepository;
     TagRepository tagRepository;
+    HomeService homeService;
 
 
-    public ProjectController(ProjectRepository projectRepository, ProjectMapper projectMapper, UsersRepository usersRepository, TagRepository tagRepository) {
+    public ProjectController(ProjectRepository projectRepository, ProjectMapper projectMapper, UsersRepository usersRepository, TagRepository tagRepository,HomeService homeService) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
         this.usersRepository = usersRepository;
         this.tagRepository = tagRepository;
+        this.homeService = homeService;
     }
 
     @GetMapping("/getProject/{id}")
@@ -178,13 +178,69 @@ public class ProjectController {
         return usersRepository.findByUserName(username);
     }
 
+    @GetMapping("/projectsSearch")
+    public ResponseEntity<Page<ProjectListDTO>> projectsSearch(@RequestParam String searchTerm, Pageable pageable) {
+        try {
+            Page<Project> search = projectRepository.searchByTitleOrTags(searchTerm,pageable);
+            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(search);
+            if (search.getTotalElements() > 0) {
+                return new ResponseEntity<>(dtoPage, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(dtoPage, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-//    @GetMapping("/projectByCategory")
-//    public ResponseEntity<Map<Long, List<ProjectListDTO>>> getHomeProjects() {
-//        Map<Long, List<ProjectListDTO>> homeProjects = homeService.getLatestProjectsPerCategory();
-//        return ResponseEntity.ok(homeProjects);
+    @GetMapping("/newest")
+    public ResponseEntity<Page<ProjectListDTO>> getNewestProjects(Pageable pageable) {
+        try {
+            Page<Project> newest = projectRepository.findAllByOrderByCreatedAtDesc(pageable);
+            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(newest);
+            if (dtoPage.getTotalElements() > 0) {
+                return new ResponseEntity<>(dtoPage, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(dtoPage, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-//    }
+    @GetMapping("/oldest")
+    public ResponseEntity<Page<ProjectListDTO>> getoldestProjects(Pageable pageable) {
+        try {
+            Page<Project> oldest = projectRepository.findAllByOrderByCreatedAtAsc(pageable);
+            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(oldest);
+            if (dtoPage.getTotalElements() > 0) {
+                return new ResponseEntity<>(dtoPage, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(dtoPage, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<Page<ProjectListDTO>> getPopularProjects(Pageable pageable) {
+       try{
+           Page<Project> popular = projectRepository.findAllOrderByLikesCountDesc(pageable);
+           Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(popular);
+           if (dtoPage.getTotalElements() > 0) {
+               return new ResponseEntity<>(dtoPage, HttpStatus.OK);
+           }
+           return new ResponseEntity<>(dtoPage, HttpStatus.NOT_FOUND);
+       }
+       catch(Exception e){
+           return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+       }
+    }
+
+
+    @GetMapping("/projectByCategory")
+    public ResponseEntity<Map<Long, List<ProjectListDTO>>> getHomeProjects() {
+        Map<Long, List<ProjectListDTO>> homeProjects = homeService.getLatestProjectsPerCategory();
+        return ResponseEntity.ok(homeProjects);
+    }
 }
 
 
