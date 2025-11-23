@@ -8,7 +8,7 @@ export class CategoryService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:8080/api/category';
 
-  getAll(): Observable<Category[]> {
+  getAllCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(`${this.apiUrl}/allCategories`);
   }
   

@@ -83,7 +83,7 @@ export class ProjectFormComponent implements OnInit {
   }
 
   private loadCategories() {
-    this.categoryService.getAll().subscribe(cats => this.categories.set(cats));
+    this.categoryService.getAllCategories().subscribe(cats => this.categories.set(cats));
   }
 
   private loadProject(id: number) {
