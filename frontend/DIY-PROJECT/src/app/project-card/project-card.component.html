@@ -21,8 +21,7 @@
           {{ avatar().initial }}
         </div>
       }
-
-      <span>{{ project.usersSimpleDTO.userName }}</span>
+<span>{{ project.usersSimpleDTO?.userName || 'משתמש לא ידוע' }}</span>
     </div>
 
     <app-favorite-button 

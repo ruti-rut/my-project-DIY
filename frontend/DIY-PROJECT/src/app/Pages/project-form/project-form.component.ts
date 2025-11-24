@@ -182,21 +182,23 @@ export class ProjectFormComponent implements OnInit {
       description: formValue.description,
       materials: formValue.materials,
       categoryId: formValue.categoryId,
-      challengeId: this.challengeId,
+      challengeId: this.challengeId,           // ← חשוב! כאן זה נכנס!
       ages: formValue.ages,
       timePrep: formValue.timePrep,
-      tagNames: this.tags(),  // ← נשלח!
-      isDraft                 // ← לפי כפתור!
+      tagNames: this.tags(),
+      isDraft: isDraft
     };
 
     const formData = new FormData();
     formData.append('project', new Blob([JSON.stringify(data)], { type: 'application/json' }));
-    if (formValue.picture) formData.append('image', formValue.picture, formValue.picture.name);
+    if (formValue.picture) {
+      formData.append('image', formValue.picture, formValue.picture.name);
+    }
 
     this.projectService.uploadProject(formData).subscribe({
       next: (saved) => {
-        const steps = formValue.steps;
-        const obs = steps.map((s: any, i: number) => {
+        // ... שאר הקוד של השלבים
+        const obs = formValue.steps.map((s: any, i: number) => {
           const step: StepDTO = { ...s, stepNumber: i + 1, projectId: saved.id };
           const fd = new FormData();
           fd.append('step', new Blob([JSON.stringify(step)], { type: 'application/json' }));
@@ -205,7 +207,14 @@ export class ProjectFormComponent implements OnInit {
         });
 
         forkJoin(obs).subscribe({
-          next: () => this.router.navigate(['/project', saved.id]),
+          next: () => {
+            // אם הגיע מ-challenge – חזור לשם!
+            if (this.challengeId) {
+              this.router.navigate(['/challenge', this.challengeId]);
+            } else {
+              this.router.navigate(['/project', saved.id]);
+            }
+          },
           error: () => this.loading.set(false)
         });
       },

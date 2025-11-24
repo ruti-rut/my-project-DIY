@@ -12,8 +12,8 @@ export class ProjectCreateComponent {
   private route = inject(ActivatedRoute);
   challengeId: number | null = null;
 
-  constructor() {
-    const ch = this.route.snapshot.queryParamMap.get('challenge');
-    this.challengeId = ch ? +ch : null; // ← +ch = המרה ל-number
-  }
+ngOnInit(): void {
+  const challengeId = this.route.snapshot.queryParamMap.get('challengeId');
+  this.challengeId = challengeId ? Number(challengeId) : null;
+}
 }

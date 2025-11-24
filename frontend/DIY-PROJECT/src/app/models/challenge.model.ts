@@ -1,3 +1,4 @@
+import { ProjectListDTO } from "./project.model";
 
 export interface ChallengeListDTO {
   id: number;
@@ -5,6 +6,17 @@ export interface ChallengeListDTO {
   endDate:string
   picture: string;
   picturePath: string;
+}
+export interface ChallengeResponseDTO {
+  id: number;
+  theme: string;
+  content: string;
+  startDate: string;
+  endDate: string;
+  picturePath?: string;
+  picture?: string;
+  projects: ProjectListDTO[];
+  status: 'OPEN' | 'UPCOMING' | 'CLOSED';
 }
 export interface ChallengeCreateDTO {
   startDate: string; // נשתמש ב-string בטופס עבור תאריכים

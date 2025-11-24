@@ -55,6 +55,12 @@ export const routes: Routes = [
     .then(m => m.DiyChatComponent),
   canActivate: [authGuard]
 },
+{
+  path: 'challenge/:id',
+loadComponent: () => import('./challenge-details/challenge-details.component')
+    .then(m => m.ChallengeDetailsComponent), 
+     title: 'פרטי אתגר'
+},
 
   // נתיב Fallback (ללא שינוי)
   { path: '**', redirectTo: '' }
