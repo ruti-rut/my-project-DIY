@@ -20,29 +20,37 @@ export class ProjectService {
     return this.http.get<Project>(`${this.apiUrl}/getProject/${id}`);
   }
 
-getProjects(
-  page: number, 
-  searchTerm: string = '', 
-  categoryIds: number[] = [],
-  sort: 'newest' | 'oldest' | 'popular' = 'newest',
-  size: number = 30
-): Observable<Page<ProjectListDTO>> {
-  let params = new HttpParams()
-    .set('page', page.toString())
-    .set('size', size.toString())
-    .set('sort', sort);
+  getProjects(
+    page: number,
+    searchTerm: string = '',
+    categoryIds: number[] = [],
+    sort: 'newest' | 'oldest' | 'popular' = 'newest',
+    size: number = 30
+  ): Observable<Page<ProjectListDTO>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sort', sort);
 
-  if (searchTerm.trim()) {
-    params = params.set('search', searchTerm.trim());
+    if (searchTerm.trim()) {
+      params = params.set('search', searchTerm.trim());
+    }
+
+    // 🔥 שלח את כל הקטגוריות
+    if (categoryIds.length > 0) {
+      categoryIds.forEach(id => {
+        params = params.append('categoryIds', id.toString());
+      });
+    }
+
+    return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/projects`, { params });
   }
 
-  // 🔥 שלח את כל הקטגוריות
-  if (categoryIds.length > 0) {
-    categoryIds.forEach(id => {
-      params = params.append('categoryIds', id.toString());
-    });
-  }
+getMyProjects(): Observable<ProjectListDTO[]> {
+  return this.http.get<ProjectListDTO[]>('http://localhost:8080/api/project/myProjects');
+}
 
-  return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/projects`, { params });
+assignProjectToChallenge(projectId: number, challengeId: number): Observable<any> {
+  return this.http.patch(`${this.apiUrl}/${projectId}/assign-challenge/${challengeId}`, {});
 }
 }

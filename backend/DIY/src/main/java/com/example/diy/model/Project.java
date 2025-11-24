@@ -14,7 +14,7 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Users users;
     @ManyToOne
     private Category category;

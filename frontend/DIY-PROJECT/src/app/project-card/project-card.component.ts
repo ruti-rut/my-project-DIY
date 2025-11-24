@@ -33,19 +33,32 @@ getImageUrl(): string {
 }
   // אווטאר – נשאר כמו שהיה
   avatar = computed(() => {
-    const path = this.project.usersSimpleDTO.profilePicturePath;
-    const name = this.project.usersSimpleDTO.userName;
+  // 🌟 התיקון: בודק אם usersSimpleDTO קיים 🌟
+  const userDto = this.project.usersSimpleDTO;
 
-    if (path) {
-      return { url: `http://localhost:8080${path}`, initial: '', color: '' };
-    }
+  if (!userDto) {
+   // אם אין פרטי משתמש, מחזירים אווטאר ברירת מחדל
+   return {
+    url: '',
+    initial: this.avatarHelper.getFirstInitial(null), // או האות '?'
+    color: this.avatarHelper.generateColor(null)
+   };
+  }
+  
+  // אם userDto קיים, ממשיכים כרגיל:
+  const path = userDto.profilePicturePath;
+  const name = userDto.userName;
 
-    return {
-      url: '',
-      initial: this.avatarHelper.getFirstInitial(name),
-      color: this.avatarHelper.generateColor(name)
-    };
-  });
+  if (path) {
+   return { url: `http://localhost:8080${path}`, initial: '', color: '' };
+  }
+
+  return {
+   url: '',
+   initial: this.avatarHelper.getFirstInitial(name),
+   color: this.avatarHelper.generateColor(name)
+  };
+ });
 
   toggleFavorite = (isFavorited: boolean): void => {
     this.project.isFavorited = isFavorited;

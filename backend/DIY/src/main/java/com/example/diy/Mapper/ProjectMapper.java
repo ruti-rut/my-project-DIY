@@ -1,8 +1,8 @@
 package com.example.diy.Mapper;
 
 import com.example.diy.DTO.ProjectCreateDTO;
-import com.example.diy.DTO.ProjectResponseDTO;
 import com.example.diy.DTO.ProjectListDTO;
+import com.example.diy.DTO.ProjectResponseDTO;
 import com.example.diy.model.Project;
 import com.example.diy.service.ImageUtils;
 import org.mapstruct.AfterMapping;
@@ -34,6 +34,7 @@ public interface ProjectMapper {
     @Mapping(target = "tags", source = "tags")          // חובה!
     @Mapping(target = "likesCount", expression = "java(entity.getLikedByUsers() != null ? entity.getLikedByUsers().size() : 0)")
     ProjectResponseDTO projectEntityToResponseDTO(Project entity);
+
     @AfterMapping
     default void handleProjectPictureForResponse(@MappingTarget ProjectResponseDTO dto, Project project) {
         if (project.getPicturePath() != null) {
@@ -48,9 +49,10 @@ public interface ProjectMapper {
 
 
     @Mapping(source = "categoryId", target = "category.id")
+    @Mapping(source = "challengeId", target = "challenge.id")
     @Mapping(target = "tags", ignore = true)
     @Mapping(target = "users", ignore = true)
-    Project projectCreateDTOToEntity (ProjectCreateDTO dto);
+    Project projectCreateDTOToEntity(ProjectCreateDTO dto);
 
 
     default Page<ProjectListDTO> toProjectListDTOList(Page<Project> projects) {
@@ -64,7 +66,12 @@ public interface ProjectMapper {
     @Mapping(source = "challengeId", target = "challenge.id")
     Project updateProjectFromDto(ProjectCreateDTO p, @MappingTarget Project existingProject);
 
+    @Mapping(
+            target = "challengeId",
+            expression = "java(project.getChallenge() != null ? project.getChallenge().getId() : null)"
+    )
     @Mapping(source = "users", target = "usersSimpleDTO")
+    @Mapping(target = "picture", ignore = true)
     ProjectListDTO toProjectListDTO(Project project);
 
     // לוגיקה מותאמת אישית לטיפול בשדה התמונה
@@ -83,6 +90,7 @@ public interface ProjectMapper {
             }
         }
     }
+
     ProjectCreateDTO projectCreateToDTO(Project project);
 
 //    @AfterMapping
@@ -115,4 +123,4 @@ public interface ProjectMapper {
 //        projectCreateDTO.setDraft(project.isDraft());
 //        return projectCreateDTO;
 //    }
-    }
+}

@@ -27,8 +27,10 @@ public class Users {
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Comment> myComments;
+    @JsonIgnore
     @ManyToMany
     private List<Project> favoriteProjects;
+    @JsonIgnore
     @ManyToMany(mappedBy = "likedByUsers")
     private List<Project> likeProjects;
     private String city;

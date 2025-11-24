@@ -1,4 +1,5 @@
 package com.example.diy.DTO;
+
 //not projectCard?
 public class ProjectListDTO {
     private Long id;
@@ -6,6 +7,15 @@ public class ProjectListDTO {
     private String title;
     private String picture;
     private String picturePath;
+    private Long challengeId;
+
+    public long getChallengeId() {
+        return challengeId;
+    }
+
+    public void setChallengeId(long challengeId) {
+        this.challengeId = challengeId;
+    }
 
     public String getPicturePath() {
         return picturePath;

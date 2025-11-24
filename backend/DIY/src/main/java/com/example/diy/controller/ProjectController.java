@@ -5,6 +5,7 @@ import com.example.diy.DTO.ProjectCreateDTO;
 import com.example.diy.DTO.ProjectListDTO;
 import com.example.diy.DTO.ProjectResponseDTO;
 import com.example.diy.Mapper.ProjectMapper;
+import com.example.diy.model.Challenge;
 import com.example.diy.model.Project;
 import com.example.diy.model.Tag;
 import com.example.diy.model.Users;
@@ -35,14 +36,16 @@ public class ProjectController {
     UsersRepository usersRepository;
     TagRepository tagRepository;
     HomeService homeService;
+    ChallengeRepository  challengeRepository;
 
 
-    public ProjectController(ProjectRepository projectRepository, ProjectMapper projectMapper, UsersRepository usersRepository, TagRepository tagRepository,HomeService homeService) {
+    public ProjectController(ProjectRepository projectRepository, ProjectMapper projectMapper, UsersRepository usersRepository, TagRepository tagRepository,HomeService homeService,ChallengeRepository  challengeRepository) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
         this.usersRepository = usersRepository;
         this.tagRepository = tagRepository;
         this.homeService = homeService;
+        this.challengeRepository = challengeRepository;
     }
 
     @GetMapping("/getProject/{id}")
@@ -239,7 +242,23 @@ public class ProjectController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PatchMapping("/{projectId}/assign-challenge/{challengeId}")
+    public ResponseEntity<Project> assignToChallenge(
+            @PathVariable Long projectId,
+            @PathVariable Long challengeId) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow();
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow();
+
+        project.setChallenge(challenge);
+        projectRepository.save(project);
+
+        return ResponseEntity.ok(project);
     }
+
+
+}
 
 
 

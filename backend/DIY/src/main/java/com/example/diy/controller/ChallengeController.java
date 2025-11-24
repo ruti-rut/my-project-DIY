@@ -2,10 +2,13 @@ package com.example.diy.controller;
 
 import com.example.diy.DTO.ChallengeCreateDTO;
 import com.example.diy.DTO.ChallengeListDTO;
+import com.example.diy.DTO.ChallengeResponseDTO;
 import com.example.diy.Mapper.ChallengeMapper;
 import com.example.diy.model.Challenge;
+import com.example.diy.model.Project;
 import com.example.diy.service.ChallengeRepository;
 import com.example.diy.service.ImageUtils;
+import com.example.diy.service.ProjectRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,10 +23,12 @@ import java.util.List;
 public class ChallengeController {
     ChallengeRepository challengeRepository;
     ChallengeMapper challengeMapper;
+    ProjectRepository projectRepository;
 
-    public ChallengeController(ChallengeRepository challengeRepository, ChallengeMapper challengeMapper) {
+    public ChallengeController(ChallengeRepository challengeRepository, ChallengeMapper challengeMapper, ProjectRepository projectRepository) {
         this.challengeRepository = challengeRepository;
         this.challengeMapper = challengeMapper;
+        this.projectRepository = projectRepository;
     }
 
     @GetMapping("/allChallenges")
@@ -36,12 +41,13 @@ public class ChallengeController {
     }
 
     @GetMapping("/challenge/{id}")
-    public ResponseEntity<Challenge> getChallenge(@PathVariable Long id) {
+    public ResponseEntity<ChallengeResponseDTO> getChallenge(@PathVariable Long id) {
         Challenge challenge = challengeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Challenge not found"));
-        return ResponseEntity.ok(challenge);
-    }
 
+        ChallengeResponseDTO dto = challengeMapper.toChallengeResponseDTO(challenge);
+        return ResponseEntity.ok(dto);
+    }
 
     @PostMapping("/uploadChallenge")
     public ResponseEntity<Challenge> uploadChallengeWithImage(@RequestPart("image") MultipartFile file
@@ -59,5 +65,4 @@ public class ChallengeController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

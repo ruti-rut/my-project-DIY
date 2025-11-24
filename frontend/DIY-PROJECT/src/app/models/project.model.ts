@@ -7,7 +7,7 @@ export interface ProjectListDTO {
   title: string;
   picture: string;
   usersSimpleDTO: UsersSimpleDTO;
-  // לא נשלח מהשרת – נשמור בלוקאל
+  challengeId?: number | null;   
   isFavorited?: boolean;
 }
 export interface ProjectCreateDTO {

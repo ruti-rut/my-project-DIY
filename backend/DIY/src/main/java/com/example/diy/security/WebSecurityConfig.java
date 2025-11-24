@@ -75,8 +75,7 @@ public class WebSecurityConfig {
         http.csrf(csrf -> csrf.disable()).cors(cors->cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration=new CorsConfiguration();
                     corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200"));
-                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfiguration.setAllowedHeaders(List.of("*"));
+                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));                    corsConfiguration.setAllowedHeaders(List.of("*"));
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
@@ -90,6 +89,8 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/comment/**").permitAll()
                                 .requestMatchers("/api/users/**").permitAll()
                                 .requestMatchers("/images/**").permitAll() // <--- הוספת השורה הזו
+                                .requestMatchers("api/challenge/**").permitAll()
+
 
                                 .anyRequest().authenticated()
 
