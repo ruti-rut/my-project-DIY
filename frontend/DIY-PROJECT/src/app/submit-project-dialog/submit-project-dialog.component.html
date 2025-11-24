@@ -1,0 +1,37 @@
+<!-- submit-project-dialog.component.html -->
+
+<h2 mat-dialog-title>הגש פרויקט לאתגר</h2>
+
+<mat-dialog-content class="dialog-content">
+  <button mat-stroked-button color="primary" class="full-width large-btn" (click)="createNewProject()">
+    <mat-icon>add_circle</mat-icon>
+    צור פרויקט חדש
+  </button>
+
+  <div class="separator">
+    <span>או</span>
+  </div>
+
+  @if (loading()) {
+    <div class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (myProjects().length === 0) {
+    <p class="no-projects">אין לך פרויקטים קיימים שניתן להגיש</p>
+  } @else {
+    <p class="hint">בחר פרויקט קיים מהרשימה:</p>
+    <div class="projects-list">
+      @for (project of myProjects(); track project.id) {
+        <div class="project-item" (click)="submitExistingProject(project.id)">
+          <img [src]="getImageUrl(project)" alt="{{ project.title }}" class="thumb">
+          <span class="title">{{ project.title }}</span>
+          <mat-icon>arrow_forward_ios</mat-icon>
+        </div>
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]>ביטול</button>
+</mat-dialog-actions>

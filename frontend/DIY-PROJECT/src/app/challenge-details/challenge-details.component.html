@@ -1,0 +1,56 @@
+<div class="challenge-details-page">
+  @if (loading()) {
+    <div class="loading">
+      <mat-spinner diameter="60"></mat-spinner>
+    </div>
+  } @else if (challenge()) {
+    <div class="hero">
+      <img [src]="getImageUrl()" alt="{{ challenge()!.theme }}" class="hero-image">
+
+      <div class="hero-overlay">
+        <h1 class="title">{{ challenge()!.theme }}</h1>
+
+        <div class="status-chip">
+          <mat-chip [color]="challenge()!.status === 'OPEN' ? 'primary' : challenge()!.status === 'UPCOMING' ? 'accent' : 'warn'"
+                    selected>
+            @switch (challenge()!.status) {
+              @case ('OPEN') { אתגר פתוח להגשה }
+              @case ('UPCOMING') { ייפתח בקרוב }
+              @case ('CLOSED') { האתגר הסתיים }
+            }
+          </mat-chip>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <div class="dates">
+        <p><mat-icon>event</mat-icon> מתחיל: {{ formatDate(challenge()!.startDate) }}</p>
+        <p><mat-icon>event_busy</mat-icon> מסתיים: {{ formatDate(challenge()!.endDate) }}</p>
+      </div>
+
+      @if (canSubmit()) {
+        <button mat-fab extended color="primary" class="submit-btn" (click)="openSubmitDialog()">
+          <mat-icon>add</mat-icon>
+          הגש פרויקט לאתגר
+        </button>
+      }
+
+      <div class="description" [innerHTML]="challenge()!.content"></div>
+
+      <h2 class="projects-title">
+        פרויקטים שהוגשו ({{ challenge()!.projects.length }})
+      </h2>
+
+      @if (challenge()!.projects.length === 0) {
+        <p class="empty">עדיין לא הוגשו פרויקטים... תהיה הראשון!</p>
+      } @else {
+        <div class="projects-grid">
+          @for (project of challenge()!.projects; track project.id) {
+            <app-project-card [project]="project" />
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
