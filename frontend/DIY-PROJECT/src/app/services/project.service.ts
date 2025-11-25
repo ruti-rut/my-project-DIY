@@ -43,7 +43,7 @@ export class ProjectService {
       });
     }
 
-    return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/projects`, { params });
+    return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/allProjects`, { params });
   }
 
 getMyProjects(): Observable<ProjectListDTO[]> {
