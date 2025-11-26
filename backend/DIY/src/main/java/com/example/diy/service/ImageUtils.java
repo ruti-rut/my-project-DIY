@@ -1,5 +1,6 @@
 package com.example.diy.service;
 
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
+@Service
 
 public class ImageUtils {
     private static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "\\images\\";

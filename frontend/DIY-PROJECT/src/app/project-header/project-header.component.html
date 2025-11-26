@@ -1,29 +1,55 @@
 @if (project(); as proj) {
-  <div class="header">
-    <img [src]="getImageUrl()" [alt]="proj.title" class="main-image">
+<div class="header">
+  <img [src]="getImageUrl()" [alt]="proj.title" class="main-image">
 
-    <div class="info">
-      <h1>{{ proj.title }}</h1>
-      <p class="description">{{ proj.description }}</p>
+  <div class="info">
+    <h1>{{ proj.title }}</h1>
+    <p class="description">{{ proj.description }}</p>
 
-      <div class="meta">
-        <div class="user">
-          @if (avatar().url) {
-            <img [src]="avatar().url" class="avatar" alt="אווטאר">
-          } @else {
-            <div class="avatar-placeholder" [style.background-color]="avatar().color">
-              {{ avatar().initial }}
-            </div>
-          }
-          <span>{{ proj.users?.userName || 'אנונימי' }}</span>
+    <div class="meta">
+      <div class="user">
+        @if (avatar().url) {
+        <img [src]="avatar().url" class="avatar" alt="אווטאר">
+        } @else {
+        <div class="avatar-placeholder" [style.background-color]="avatar().color">
+          {{ avatar().initial }}
         </div>
+        }
+        <span>{{ proj.users?.userName || 'אנונימי' }}</span>
+      </div>
 
-        <div class="stats">
-          <span>לייקים: {{ proj.likesCount ?? 0 }}</span>
-          <span>גיל: {{ proj.ages || 'כל הגילאים' }}</span>
-          <span>זמן: {{ proj.timePrep || 'לא צוין' }}</span>
-        </div>
+      <div class="stats">
+        <span>לייקים: {{ proj.likesCount ?? 0 }}</span>
+        <span>גיל: {{ proj.ages || 'כל הגילאים' }}</span>
+        <span>זמן: {{ proj.timePrep || 'לא צוין' }}</span>
       </div>
     </div>
+
+
+    <div class="project-actions">
+      <!-- הורדת PDF -->
+      <button mat-raised-button color="primary" (click)="downloadPdf(proj.id)">
+        <mat-icon>download</mat-icon>
+        הורד כ-PDF
+      </button>
+      <!-- הדפסה -->
+      <button mat-raised-button color="accent" (click)="print()">
+        <mat-icon>print</mat-icon>
+        הדפס
+      </button>
+
+      <!-- שיתוף כללי (טלפון: חלון שיתוף | מחשב: העתק קישור) -->
+      <button mat-raised-button color="warn" (click)="share()">
+        <mat-icon>share</mat-icon>
+        שתף
+      </button>
+
+      <!-- שיתוף ישיר לווטסאפ – הכי פופולרי בישראל! -->
+      <button mat-fab color="success" class="whatsapp-btn" (click)="shareWhatsApp()" title="שיתוף מהיר לווטסאפ">
+        <mat-icon>whatsapp</mat-icon>
+      </button>
+    </div>
+
   </div>
+</div>
 }

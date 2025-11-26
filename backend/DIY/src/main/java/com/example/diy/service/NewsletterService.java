@@ -252,4 +252,5 @@ public class NewsletterService {
         // אחרת, בנה URL מלא
         return BASE_URL + "/images/" + picturePath;
     }
+
 }

@@ -20,7 +20,9 @@ public class DailyNewsletterScheduler {
     private NewsletterService newsletterService;
 
     @Scheduled(cron = "0 38 18 * * ?")
-    public void sendDailyEmails() {
+//@Scheduled(cron = "0 * * * * ?")
+
+public void sendDailyEmails() {
         // שולפים רק משתמשים שאישרו מייל וגם נרשמו לניוזלטר
         List<Users> users = usersRepository.findAllByIsSubscribedToDailyTrueAndEmailVerifiedTrue();
 

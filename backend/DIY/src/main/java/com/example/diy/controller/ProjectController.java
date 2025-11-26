@@ -1,31 +1,40 @@
 package com.example.diy.controller;
-
-
+import com.itextpdf.layout.Document; // תיקון: ה-Document הנכון
+import com.itextpdf.layout.properties.BaseDirection;
+import com.itextpdf.layout.properties.Property; // זה משמש להגדרת RTL
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Paragraph;
 import com.example.diy.DTO.ProjectCreateDTO;
 import com.example.diy.DTO.ProjectListDTO;
 import com.example.diy.DTO.ProjectResponseDTO;
 import com.example.diy.Mapper.ProjectMapper;
-import com.example.diy.model.Challenge;
-import com.example.diy.model.Project;
-import com.example.diy.model.Tag;
-import com.example.diy.model.Users;
+import com.example.diy.model.*;
 import com.example.diy.service.*;
+import com.itextpdf.layout.properties.TextAlignment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/project")
@@ -37,15 +46,17 @@ public class ProjectController {
     TagRepository tagRepository;
     HomeService homeService;
     ChallengeRepository  challengeRepository;
+    StepRepository  stepRepository;
 
 
-    public ProjectController(ProjectRepository projectRepository, ProjectMapper projectMapper, UsersRepository usersRepository, TagRepository tagRepository,HomeService homeService,ChallengeRepository  challengeRepository) {
+    public ProjectController(ProjectRepository projectRepository, ProjectMapper projectMapper, UsersRepository usersRepository, TagRepository tagRepository,HomeService homeService,ChallengeRepository  challengeRepository, StepRepository stepRepository) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
         this.usersRepository = usersRepository;
         this.tagRepository = tagRepository;
         this.homeService = homeService;
         this.challengeRepository = challengeRepository;
+        this.stepRepository = stepRepository;
     }
 
     @GetMapping("/getProject/{id}")
@@ -86,7 +97,11 @@ public class ProjectController {
                 });
             }
             project.setTags(tags); // קישור ה-Set<Tag> לפרויקט
-
+            if (p.getChallengeId() != null) {
+                Challenge challenge = challengeRepository.findById(p.getChallengeId())
+                        .orElseThrow(() -> new RuntimeException("Challenge not found"));
+                project.setChallenge(challenge);
+            }
             Project savedProject = projectRepository.save(project);
             // 3. מיפוי לתגובה
             ProjectResponseDTO responseDTO = projectMapper.projectEntityToResponseDTO(savedProject);
@@ -227,6 +242,8 @@ public class ProjectController {
             return ResponseEntity.ok(dtoPage);
 
         } catch (Exception e) {
+            e.printStackTrace(); // 🔥 זה יראה לך את השגיאה המלאה בקונסול!
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
@@ -258,6 +275,94 @@ public class ProjectController {
     }
 
 
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> generateProjectPdf(@PathVariable Long id) throws Exception {
+
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        // ייתכן ותרצי להשתמש ב-project.getSteps() אם קיים קשר @OneToMany
+        List<Step> steps = stepRepository.findByProjectId(id);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        PdfWriter writer = new PdfWriter(baos);
+        PdfDocument pdf = new PdfDocument(writer);
+
+        // **תיקון 1:** יצירת אובייקט Document הנכון של iText
+        Document document = new Document(pdf);
+
+        // ----- תמיכה בעברית ופונט -----
+        // **תיקון 2:** טעינת הפונט. ודאי שקובץ 'arial.ttf' קיים בנתיב היחסי או המוחלט.
+        // אם השגיאה עדיין קיימת, בדקי את גרסת ה-iText ואת המיקום של הקובץ.
+        PdfFont font = PdfFontFactory.createFont("fonts/arial.ttf", PdfEncodings.IDENTITY_H);
+
+        document.setFont(font);
+        document.setProperty(Property.BASE_DIRECTION, BaseDirection.RIGHT_TO_LEFT);
+
+        // ----- כותרת, תיאור, תמונה ראשית -----
+        Paragraph title = new Paragraph(project.getTitle())
+                .setFontSize(24)
+                .setBold()
+                .setTextAlignment(TextAlignment.CENTER);
+        document.add(title);
+
+        if (project.getDescription() != null) {
+            document.add(new Paragraph(project.getDescription()).setFontSize(14));
+        }
+
+        if (project.getPicturePath() != null) {
+            String coverPath = System.getProperty("user.dir") + "/images/" + project.getPicturePath();
+            try {
+                ImageData imgData = ImageDataFactory.create(coverPath);
+                // ממורכז את התמונה
+                Image img = new Image(imgData).setWidth(350).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+                document.add(img);
+            } catch (IOException e) {
+                System.err.println("Error loading cover image: " + coverPath + " - " + e.getMessage());
+            }
+        }
+
+        // ----- שלבים -----
+        document.add(new Paragraph("\n"));
+        document.add(new Paragraph("שלבי העבודה").setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
+        document.add(new Paragraph("\n"));
+
+        for (Step step : steps) {
+
+            document.add(new Paragraph("שלב " + step.getStepNumber() + ": " + step.getTitle())
+                    .setBold()
+                    .setFontSize(16));
+
+            document.add(new Paragraph(step.getContent()).setFontSize(12));
+
+            // תמונת שלב
+            if (step.getPicturePath() != null) {
+
+                String imgPath = System.getProperty("user.dir")
+                        + "/images/" + step.getPicturePath();
+
+                try {
+                    ImageData imgData2 = ImageDataFactory.create(imgPath);
+                    Image img2 = new Image(imgData2).setWidth(300).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+                    document.add(img2);
+                } catch (IOException e) {
+                    System.err.println("Error loading step image: " + imgPath + " - " + e.getMessage());
+                }
+            }
+            document.add(new Paragraph("\n"));
+        }
+
+        document.close();
+
+        // החזרת ה-PDF כבייט-אייריי. שם הקובץ נשלח ב-Content-Disposition.
+        return ResponseEntity.ok()
+                // שם הקובץ הדינמי:
+                .header("Content-Disposition", "attachment; filename=\"" + project.getTitle().replaceAll("[^a-zA-Z0-9.-]", "_") + ".pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(baos.toByteArray());
+    }
 }
 
 

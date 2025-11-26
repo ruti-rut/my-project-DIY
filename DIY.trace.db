@@ -1,3 +1,0 @@
-2025-11-19 23:20:30.930473+02:00 jdbc[13]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "delete [*]* FROM PROJECT"; expected "identifier"; SQL statement:
-delete * FROM PROJECT [42001-232]
