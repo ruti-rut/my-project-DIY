@@ -40,7 +40,6 @@ public class AuthController {
     private JwtUtils jwtUtils;
     EmailSenderService emailSenderService;
 
-
     public AuthController(PasswordEncoder passwordEncoder, UsersRepository usersRepository, UsersMapper usersMapper, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailSenderService emailSenderService) {
         this.passwordEncoder = passwordEncoder;
         this.usersRepository = usersRepository;
@@ -52,7 +51,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<UserResponseDTO> signUp(@Valid @RequestBody UsersRegisterDTO user) {
-
+try{
         if (usersRepository.existsByUserName(user.getUserName())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -84,7 +83,10 @@ public class AuthController {
 
         UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(saved);
 
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);}
+catch(Exception e){
+    return  new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+}
     }
 
 
