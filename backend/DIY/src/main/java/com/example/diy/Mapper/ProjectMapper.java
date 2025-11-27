@@ -49,7 +49,7 @@ public interface ProjectMapper {
 
 
     @Mapping(source = "categoryId", target = "category.id")
-    @Mapping(source = "challengeId", target = "challenge.id")
+    @Mapping(target = "challenge", ignore = true) // 🔥 התעלם!
     @Mapping(target = "tags", ignore = true)
     @Mapping(target = "users", ignore = true)
     Project projectCreateDTOToEntity(ProjectCreateDTO dto);
@@ -66,28 +66,28 @@ public interface ProjectMapper {
     @Mapping(source = "challengeId", target = "challenge.id")
     Project updateProjectFromDto(ProjectCreateDTO p, @MappingTarget Project existingProject);
 
-    @Mapping(
-            target = "challengeId",
-            expression = "java(project.getChallenge() != null ? project.getChallenge().getId() : null)"
-    )
+    @Mapping(target = "challengeId", ignore = true)
     @Mapping(source = "users", target = "usersSimpleDTO")
     @Mapping(target = "picture", ignore = true)
     ProjectListDTO toProjectListDTO(Project project);
 
-    // לוגיקה מותאמת אישית לטיפול בשדה התמונה
+    // לוגיקה מותאמת אישית לטיפול בשדה התמונה ו-challengeId
     @AfterMapping
     default void handleProjectPicture(@MappingTarget ProjectListDTO dto, Project project) {
-        // ודא שאתה ממלא את שדה ה-'picture' ב-DTO
+        // טיפול בתמונה
         if (project.getPicturePath() != null) {
             try {
-                // קורא את הקובץ וממיר ל-Base64
                 String imageBase64 = ImageUtils.getImage(project.getPicturePath());
                 dto.setPicture(imageBase64);
             } catch (IOException e) {
-                // הדפסת שגיאה ודאית לתהליך, והשארת picture כ-null או ריק
                 e.printStackTrace();
                 dto.setPicture(null);
             }
+        }
+
+        // 🔥 טיפול ב-challengeId
+        if (project.getChallenge() != null) {
+            dto.setChallengeId(project.getChallenge().getId());
         }
     }
 

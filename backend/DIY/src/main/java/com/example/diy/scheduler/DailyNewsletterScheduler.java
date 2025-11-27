@@ -19,17 +19,16 @@ public class DailyNewsletterScheduler {
     @Autowired
     private NewsletterService newsletterService;
 
-    // רץ כל יום ב-9:00 בבוקר
     @Scheduled(cron = "0 38 18 * * ?")
-    public void sendDailyEmails() {
+//@Scheduled(cron = "0 * * * * ?")
+
+public void sendDailyEmails() {
         // שולפים רק משתמשים שאישרו מייל וגם נרשמו לניוזלטר
         List<Users> users = usersRepository.findAllByIsSubscribedToDailyTrueAndEmailVerifiedTrue();
 
         for (Users user : users) {
             try {
                 newsletterService.createAndSendNewsletter(user);
-
-                // המתנה קצרה של חצי שנייה בין מייל למייל כדי לא להעמיס
                 Thread.sleep(500);
             } catch (Exception e) {
                 System.out.println("Error sending email to: " + user.getMail());

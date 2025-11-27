@@ -1,4 +1,6 @@
 package com.example.diy.service;
+import com.example.diy.model.Challenge;
+import com.example.diy.model.Project;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -8,8 +10,11 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AIChatService {
@@ -45,44 +50,131 @@ public class AIChatService {
 
     public Flux<String> getResponse(String prompt, String conversationId){
         List<Message> messageList=new ArrayList<>();
-        //ההודעה הראשונה - ההנחיה הראשונית
         messageList.add(new SystemMessage(SYSTEM_INSTRUCTION));
-        //מוסיפים את כל ההודעות ששייכות לאותה השיחה
         messageList.addAll(chatMemory.get(conversationId));
-        //השאלה הנוכחית
         UserMessage userMessage=new UserMessage(prompt);
         messageList.add(userMessage);
 
         Flux<String> aiResponse=chatClient.prompt().messages(messageList)
                 .stream().content();
-        //שמירת התגובה בזכרון
-        //התגובה של ה-AI
         AssistantMessage aiMessage=new AssistantMessage(aiResponse.toString());
         List<Message> messageList1=List.of(userMessage,aiMessage);
-        //מוסיפים לזכרון את השאלה והתשובה
         chatMemory.add(conversationId,messageList1);
         return aiResponse;
 
     }
-    public String generateNewsletterContent(String userName, List<String> projectTitles) {
+    public String generateEnhancedNewsletterContent(String userName, List<Project> projects, List<Challenge> challenges) {
+
+        String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", new java.util.Locale("he")));
+        String season = getCurrentSeason();
+
+        // הכנת רשימת כותרות פרויקטים
+        String projectTitles = projects.stream()
+                .map(Project::getTitle)
+                .collect(Collectors.joining(", "));
+
+        // הכנת רשימת נושאי אתגרים (theme במקום title)
+        String challengeThemes = challenges.stream()
+                .map(Challenge::getTheme)
+                .collect(Collectors.joining(", "));
 
         String prompt = String.format("""
-                כתוב פתיח קצר (עד 40 מילים) וטיפ יומי לניוזלטר בנושא DIY.
-                שם המשתמשת: %s
-                הפרויקטים שיוצגו במייל: %s
+                צור תוכן HTML עשיר ומעוצב לניוזלטר יומי של אתר DIY.
                 
-                הנחיות:
-                1. התחל בברכה חמה.
-                2. כתוב טיפ קצר ופרקטי שקשור לאחד הפרויקטים או לעונת השנה הנוכחית.
-                3. סיים במשפט שמזמין לגלול למטה ולראות את הפרויקטים.
-                4. אל תכתוב כותרות, רק את גוף הטקסט.
-                """, userName, String.join(", ", projectTitles));
+                📋 פרטי המשתמשת:
+                - שם: %s
+                - תאריך: %s
+                - עונה: %s
+                
+                🎨 הפרויקטים שיוצגו במייל:
+                %s
+                
+                🏆 נושאי האתגרים הפעילים:
+                %s
+                
+                📝 דרישות לתוכן:
+                
+                1. **פתיח אישי וחם** (2-3 משפטים):
+                   - פנייה אישית למשתמשת בשמה
+                   - התייחסות לעונה/תקופה בשנה
+                   - אנרגיה חיובית ומעוררת השראה
+                
+                2. **טיפ יומי מקצועי** - חייב להיות אחד מהסוגים הבאים:
+                   - טכניקה DIY שימושית
+                   - טריק חכם שחוסך זמן או כסף
+                   - כלי שכדאי להכיר
+                   - טיפ בטיחות חשוב
+                   - רעיון יצירתי לעונה הנוכחית
+                   
+                3. **ציטוט השראה** - משפט אחד קצר ומעצים בנושא יצירה/עשייה
+                
+                4. **קריאה לפעולה** - עודד את המשתמשת לבדוק את הפרויקטים והאתגרים
+                
+                🎨 דרישות עיצוב HTML:
+                - השתמש ב-<p>, <h3>, <blockquote>, <strong>, <em>
+                - צבעים: #667eea (סגול), #f5576c (ורוד), #333 (שחור)
+                - הוסף אימוג'ים רלוונטיים
+                - שמור על כיוון RTL
+                - עיצוב נקי ומודרני
+                
+                ⚠️ חשוב:
+                - אל תכלול כותרת ראשית (H1/H2)
+                - אל תדבר על הפרויקטים עצמם בפירוט (הם יופיעו אחרי)
+                - התמקד בהשראה וערך
+                - סגנון: חם, מקצועי, מעורר השראה
+                
+                החזר רק HTML טהור ללא הסברים.
+                """,
+                userName,
+                currentDate,
+                season,
+                projectTitles.isEmpty() ? "אין פרויקטים חדשים" : projectTitles,
+                challengeThemes.isEmpty() ? "אין אתגרים פעילים" : challengeThemes
+        );
 
         return chatClient.prompt()
                 .user(prompt)
                 .call()
                 .content();
     }
+
+    /**
+     * יצירת טיפ קצר לניוזלטר (גרסה פשוטה - אם רוצים משהו יותר קצר)
+     */
+    public String generateNewsletterContent(String userName, List<String> projectTitles) {
+        String prompt = String.format("""
+                כתוב פתיח קצר (עד 50 מילים) וטיפ יומי לניוזלטר בנושא DIY.
+                שם המשתמשת: %s
+                הפרויקטים שיוצגו במייל: %s
+                
+                הנחיות:
+                1. התחל בברכה חמה ואישית.
+                2. כתוב טיפ קצר ופרקטי שקשור לאחד הפרויקטים או לעונת השנה הנוכחית.
+                3. סיים במשפט שמזמין לגלול למטה ולראות את הפרויקטים.
+                4. סגנון: ידידותי, מעורר השראה, מקצועי.
+                5. אל תכתוב כותרות, רק את גוף הטקסט.
+                """,
+                userName,
+                String.join(", ", projectTitles)
+        );
+
+        return chatClient.prompt()
+                .user(prompt)
+                .call()
+                .content();
+    }
+
+    /**
+     * קביעת העונה הנוכחית
+     */
+    private String getCurrentSeason() {
+        int month = LocalDateTime.now().getMonthValue();
+        if (month >= 3 && month <= 5) return "אביב";
+        if (month >= 6 && month <= 8) return "קיץ";
+        if (month >= 9 && month <= 11) return "סתיו";
+        return "חורף";
+    }
+
 
 
 

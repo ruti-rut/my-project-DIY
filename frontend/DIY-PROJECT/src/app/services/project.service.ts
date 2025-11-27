@@ -43,7 +43,7 @@ export class ProjectService {
       });
     }
 
-    return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/projects`, { params });
+    return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/allProjects`, { params });
   }
 
 getMyProjects(): Observable<ProjectListDTO[]> {
@@ -52,5 +52,11 @@ getMyProjects(): Observable<ProjectListDTO[]> {
 
 assignProjectToChallenge(projectId: number, challengeId: number): Observable<any> {
   return this.http.patch(`${this.apiUrl}/${projectId}/assign-challenge/${challengeId}`, {});
+}
+
+downloadPdf(id: number): Observable<Blob> {
+  return this.http.get(`${this.apiUrl}/${id}/pdf`, {
+    responseType: 'blob'  // חשוב! כדי לקבל את זה כ-Blob
+  });
 }
 }
