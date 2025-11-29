@@ -1,4 +1,5 @@
 package com.example.diy.controller;
+import com.example.diy.DTO.UserProfileDTO;
 import com.itextpdf.layout.Document; // תיקון: ה-Document הנכון
 import com.itextpdf.layout.properties.BaseDirection;
 import com.itextpdf.layout.properties.Property; // זה משמש להגדרת RTL
@@ -363,6 +364,29 @@ public class ProjectController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(baos.toByteArray());
     }
+
+
+    @DeleteMapping("/deleteProject/{id}")
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id, Principal principal) {
+        try {
+            Project project = projectRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
+
+            Users currentUser = getCurrentUser(principal);
+
+            // בדיקת הרשאות - רק היוצר יכול למחוק
+            if (!project.getUsers().getId().equals(currentUser.getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            projectRepository.delete(project);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
 }
 
 

@@ -1,0 +1,61 @@
+<!-- src/app/profile/edit-profile/edit-profile.component.html -->
+<div class="edit-profile-page">
+  <div class="card">
+    <h1 class="title">עריכת פרופיל</h1>
+
+    <div class="avatar-section">
+      <img [src]="previewUrl()" alt="תמונת פרופיל" class="avatar-preview">
+      <label for="avatar-input" class="change-photo-btn">
+        <mat-icon>photo_camera</mat-icon>
+        שנה תמונה
+      </label>
+      <input
+        type="file"
+        id="avatar-input"
+        accept="image/*"
+        (change)="onFileSelected($event)"
+        hidden>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="profile-form">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>שם משתמש</mat-label>
+        <input matInput [value]="profile()?.userName" readonly>
+        <mat-icon matSuffix>person</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>עיר / אזור</mat-label>
+        <input matInput formControlName="city" placeholder="למשל: תל אביב">
+        <mat-icon matSuffix>location_on</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>קצת עליי</mat-label>
+        <textarea
+          matInput
+          formControlName="aboutMe"
+          rows="6"
+          placeholder="ספרו לקהילה מי אתם, מה אתם אוהבים לבנות..."></textarea>
+      </mat-form-field>
+
+      <div class="actions">
+        <button type="button" mat-stroked-button (click)="cancel()" [disabled]="loading()">
+          ביטול
+        </button>
+        <button
+          type="submit"
+          mat-raised-button
+          color="primary"
+          [disabled]="form.invalid || loading()">
+          @if (loading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            שמור שינויים
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

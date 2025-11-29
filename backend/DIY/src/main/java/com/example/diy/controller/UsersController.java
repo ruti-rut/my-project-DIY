@@ -1,6 +1,7 @@
 package com.example.diy.controller;
 
 import com.example.diy.DTO.ChatRequest;
+import com.example.diy.DTO.UserProfileDTO;
 import com.example.diy.DTO.UserResponseDTO;
 import com.example.diy.Mapper.UsersMapper;
 import com.example.diy.model.Users;
@@ -59,6 +60,17 @@ public class UsersController {
         // כמובן, תצטרכי לשנות את חתימת המתודה ב-AIChatService בהתאם
         return aiChatService.getResponse(message, conversationId);
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileDTO> getMyProfile(Principal principal) {
+        Users user = usersRepository.findByUserNameWithProjects(principal.getName());
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(usersMapper.usersToUserProfileDTO(user));
+    }
+
+
 
 //    @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 //    public Flux<String> getResponse(@RequestBody ChatRequest chatRequest){

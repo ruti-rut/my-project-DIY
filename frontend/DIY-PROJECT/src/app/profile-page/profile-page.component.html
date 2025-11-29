@@ -1,0 +1,19 @@
+<!-- src/app/profile/profile-page/profile-page.component.html -->
+<div class="profile-page">
+
+  <!-- ה-header היפה עם האווטאר הגדול -->
+  <app-profile-header></app-profile-header>
+
+  <!-- הלשוניות מתחת להדר – בדיוק כמו שרצית -->
+  <mat-tab-group class="profile-tabs" mat-stretch-tabs="false" animationDuration="300ms">
+    
+    <mat-tab label="הפרויקטים שלי">
+      <app-my-projects-tab></app-my-projects-tab>
+    </mat-tab>
+
+    <mat-tab label="מועדפים">
+      <app-favorites-tab></app-favorites-tab>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

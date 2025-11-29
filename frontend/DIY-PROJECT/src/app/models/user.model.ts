@@ -1,3 +1,5 @@
+import { ProjectListDTO } from "./project.model";
+
 export interface UsersSimpleDTO {
   id: number;
   userName: string;
@@ -31,4 +33,17 @@ export interface UsersRegisterDTO {
 export interface UserLogInDTO {
   identifier: string; // זהו ה-userName או email
   password: string;
+}
+export interface UserProfileDTO {
+  id: number;
+  userName: string;
+  mail: string;
+  city: string;
+  aboutMe: string;
+  profilePicturePath?: string;
+  joinDate: string;
+  myProjects: ProjectListDTO[];
+  favoriteProjects: ProjectListDTO[];
+  projectsCount: number;
+  favoritesCount: number;
 }

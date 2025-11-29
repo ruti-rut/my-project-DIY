@@ -8,6 +8,19 @@ public class ProjectListDTO {
     private String picture;
     private String picturePath;
     private Long challengeId;
+    private boolean isDraft;
+
+    public void setChallengeId(Long challengeId) {
+        this.challengeId = challengeId;
+    }
+
+    public boolean isDraft() {
+        return isDraft;
+    }
+
+    public void setDraft(boolean draft) {
+        isDraft = draft;
+    }
 
     public long getChallengeId() {
         return challengeId;

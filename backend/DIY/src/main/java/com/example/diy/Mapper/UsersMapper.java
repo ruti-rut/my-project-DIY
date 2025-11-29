@@ -1,5 +1,6 @@
 package com.example.diy.Mapper;
 
+import com.example.diy.DTO.UserProfileDTO;
 import com.example.diy.DTO.UserResponseDTO;
 import com.example.diy.DTO.UsersRegisterDTO;
 import com.example.diy.DTO.UsersSimpleDTO;
@@ -16,6 +17,13 @@ import java.io.IOException;
 public interface UsersMapper {
 
     UserResponseDTO usersToUserResponseDTO(Users users);
+
+
+    @Mapping(target = "projectsCount", expression = "java(users.getMyProjects() != null ? users.getMyProjects().size() : 0)")
+    @Mapping(target = "favoritesCount", expression = "java(users.getFavoriteProjects() != null ? users.getFavoriteProjects().size() : 0)")
+    UserProfileDTO usersToUserProfileDTO(Users users);
+
+
 
     Users usersRegisterDTOToUsers(UsersRegisterDTO usersRegisterDTO);
 
