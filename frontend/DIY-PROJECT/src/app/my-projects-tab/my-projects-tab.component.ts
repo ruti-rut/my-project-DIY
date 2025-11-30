@@ -22,10 +22,9 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 })
 export class MyProjectsTabComponent {
   private profileService = inject(ProfileService);
-  private http = inject(HttpClient);
   private projectService = inject(ProjectService);
   myProjects = signal<any[]>([]);
-  loading = signal(true); // לניהול מצב טעינה (ספינר)
+  loading = signal(true); 
 
   ngOnInit(): void {
     this.loadMyProjects();
@@ -48,22 +47,21 @@ export class MyProjectsTabComponent {
     });
   }
 
-  // הפונקציה deleteProject נשארת כמעט זהה, רק נשתמש ב-signal המקומי
-  deleteProject(projectId: number) {
-    if (!confirm('למחוק את הפרויקט לצמיתות? לא ניתן לשחזר!')) return;
 
-    this.http.delete(`/api/project/deleteProject/${projectId}`).subscribe({
-      next: () => {
-        // 1. עדכון לוקאלי של הרשימה (מחיקה מה-signal)
-        this.myProjects.update(projects => projects.filter(x => x.id !== projectId));
-        // 2. עדכון המונה הכללי ב-ProfileHeader (אם נדרש)
-        this.profileService.deleteMyProject(projectId);
-        // 🔥 זהו עדכון לוקאלי של המונה.
-      },
-      error: () => alert('שגיאה במחיקה')
-    });
-  }
+ deleteProject(projectId: number) {
+  if (!confirm('למחוק את הפרויקט לצמיתות? לא ניתן לשחזר!')) return;
 
+  // 🔥 שימוש ב-ProjectService
+  this.projectService.deleteProject(projectId).subscribe({
+   next: () => {
+    // עדכון לוקאלי של הרשימה (מחיקה מה-signal)
+    this.myProjects.update(projects => projects.filter(x => x.id !== projectId));
+    // עדכון מונה ב-Header
+    this.profileService.deleteMyProject(projectId);
+   },
+   error: () => alert('שגיאה במחיקה')
+  });
+ }
   // נעדכן את ה-computed כדי שישתמש ב-signal המקומי
   myProjectsComputed = computed(() => this.myProjects());
 }

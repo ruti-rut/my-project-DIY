@@ -46,21 +46,29 @@ export class ProjectService {
     return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/allProjects`, { params });
   }
 
-getMyProjects(): Observable<ProjectListDTO[]> {
-  return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myProjects`);
-}
+  getMyProjects(): Observable<ProjectListDTO[]> {
+    return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myProjects`);
+  }
 
-getFavorites(): Observable<ProjectListDTO[]> {
-  return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myFavorites`);
-}
+  getFavorites(): Observable<ProjectListDTO[]> {
+    return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myFavorites`);
+  }
 
-assignProjectToChallenge(projectId: number, challengeId: number): Observable<any> {
-  return this.http.patch(`${this.apiUrl}/${projectId}/assign-challenge/${challengeId}`, {});
-}
+  assignProjectToChallenge(projectId: number, challengeId: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${projectId}/assign-challenge/${challengeId}`, {});
+  }
 
-downloadPdf(id: number): Observable<Blob> {
-  return this.http.get(`${this.apiUrl}/${id}/pdf`, {
-    responseType: 'blob'  // חשוב! כדי לקבל את זה כ-Blob
-  });
-}
+  downloadPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/pdf`, {
+      responseType: 'blob'
+    });
+  }
+
+  deleteProject(projectId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/deleteProject/${projectId}`);
+  }
+
+  updateProject(id: number, formData: FormData): Observable<Project> {
+    return this.http.put<Project>(`${this.apiUrl}/editProject/${id}`, formData);
+  }
 }

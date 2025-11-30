@@ -9,7 +9,7 @@ export interface ProjectListDTO {
   usersSimpleDTO: UsersSimpleDTO;
   challengeId?: number | null;   
   favorited?: boolean;
-  isDraft?: boolean ;       // ← תוסיפי את זה!
+  draft?: boolean ;       // ← תוסיפי את זה!
 }
 export interface ProjectCreateDTO {
   title: string;
@@ -20,7 +20,7 @@ export interface ProjectCreateDTO {
   ages?: string;
   timePrep?: string;
   tagNames: string[]; // רשימת שמות תגיות
-  isDraft: boolean;
+  draft: boolean;
 }
 export interface Project {
   id: number;
