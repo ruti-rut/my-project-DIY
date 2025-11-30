@@ -73,6 +73,12 @@ loadComponent: () => import('./challenge-details/challenge-details.component')
     canActivate: [authGuard],
     title: 'עריכת פרופיל'
   },
+  {
+    path: 'project/edit/:id',
+    loadComponent: () => import('./project-edit/project-edit.component').then(m => m.ProjectEditComponent),
+    canActivate: [authGuard],
+    title: `edit project`
+  },
 
   // נתיב Fallback (ללא שינוי)
   { path: '**', redirectTo: '' }

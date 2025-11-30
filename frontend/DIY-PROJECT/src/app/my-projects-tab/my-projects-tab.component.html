@@ -12,8 +12,7 @@
 
       <!-- כפתורי פעולה -->
       <div class="actions-overlay">
-        <button mat-icon-button color="primary" [routerLink]="['/project/edit', project.id]" title="עריכה">
-          <mat-icon>edit</mat-icon>
+<button mat-icon-button color="primary" [routerLink]="['/project/edit', project.id]" title="עריכה">          <mat-icon>edit</mat-icon>
         </button>
         <button mat-icon-button color="warn" (click)="deleteProject(project.id)" title="מחיקה">
           <mat-icon>delete_forever</mat-icon>

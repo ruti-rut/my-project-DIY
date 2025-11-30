@@ -1,0 +1,11 @@
+/* src/app/pages/project-edit/project-edit.component.css */
+.edit-page-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.center {
+    display: block;
+    margin: 100px auto;
+}

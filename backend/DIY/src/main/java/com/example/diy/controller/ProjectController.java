@@ -132,32 +132,70 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);    }
 
     @PutMapping("/editProject/{id}")
-    public ResponseEntity<Project> updateProjectWithImage(@PathVariable Long id,
-                                                          @RequestPart(value = "image", required = false) MultipartFile file,
-                                                          @RequestPart("project") ProjectCreateDTO p) {
+    @Transactional
+    public ResponseEntity<ProjectResponseDTO> updateProjectWithImage(
+            @PathVariable Long id,
+            @RequestPart(value = "image", required = false) MultipartFile file,
+            @RequestPart("project") ProjectCreateDTO p,
+            Principal principal) {
         try {
             Project existingProject = projectRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
-            // 2. מיפוי נתונים חדשים מה-DTO לאובייקט הקיים
-            // שימוש במאפר שיודע לעדכן (למשל, mapstruct)
-            Project updatedProject = projectMapper.updateProjectFromDto(p, existingProject);
-            // 3. טיפול בתמונה (רק אם נשלחה תמונה חדשה)
-            if (file != null && !file.isEmpty()) {
-                // אם יש קובץ חדש: שמירה שלו ועדכון הנתיב
-                ImageUtils.uploadImage(file);
-                updatedProject.setPicturePath(file.getOriginalFilename());
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
+
+            // 🔥 אימות בעלות
+            Users currentUser = getCurrentUser(principal);
+            if (!existingProject.getUsers().getId().equals(currentUser.getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
-            // אם לא נשלח קובץ חדש, הנתיב הקיים נשמר.
-            // 4. שמירת הפרויקט המעודכן (יעדכן את הרשומה הקיימת בגלל שה-ID קיים)
-            Project savedProject = projectRepository.save(updatedProject);
-            return new ResponseEntity<>(savedProject, HttpStatus.OK);
+
+            // עדכון שדות בסיסיים
+            projectMapper.updateProjectFromDto(p, existingProject);
+
+            // טיפול בתמונה
+            if (file != null && !file.isEmpty()) {
+                ImageUtils.uploadImage(file);
+                existingProject.setPicturePath(file.getOriginalFilename());
+            }
+
+            // 🔥 טיפול בתגיות (כמו ב-upload)
+            if (p.getTagNames() != null) {
+                Set<Tag> tags = new HashSet<>();
+                List<Tag> existingTags = tagRepository.findByNameIn(p.getTagNames());
+                Set<String> existingNames = existingTags.stream()
+                        .map(Tag::getName)
+                        .collect(Collectors.toSet());
+                tags.addAll(existingTags);
+
+                p.getTagNames().stream()
+                        .filter(name -> !existingNames.contains(name))
+                        .forEach(name -> {
+                            Tag newTag = new Tag();
+                            newTag.setName(name);
+                            tags.add(tagRepository.save(newTag));
+                        });
+
+                existingProject.setTags(tags);
+            }
+
+            // 🔥 טיפול ב-Challenge
+            if (p.getChallengeId() != null) {
+                Challenge challenge = challengeRepository.findById(p.getChallengeId())
+                        .orElseThrow(() -> new RuntimeException("Challenge not found"));
+                existingProject.setChallenge(challenge);
+            } else {
+                existingProject.setChallenge(null); // אפשרות להסיר challenge
+            }
+
+            Project savedProject = projectRepository.save(existingProject);
+            ProjectResponseDTO responseDTO = projectMapper.projectEntityToResponseDTO(savedProject);
+
+            return ResponseEntity.ok(responseDTO);
+
         } catch (Exception e) {
-            System.out.println(e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
     @PostMapping("/{projectId}/favorite")
     @Transactional
     public ResponseEntity<Void> addToFavorites(@PathVariable Long projectId,
@@ -395,26 +433,28 @@ public class ProjectController {
 
 
     @DeleteMapping("/deleteProject/{id}")
+    @Transactional // 🔥 חובה! כדי שפעולות הניקוי והמחיקה יפעלו יחד
     public ResponseEntity<Void> deleteProject(@PathVariable Long id, Principal principal) {
         try {
             Project project = projectRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Project not found"));
 
             Users currentUser = getCurrentUser(principal);
-
-            // בדיקת הרשאות - רק היוצר יכול למחוק
             if (!project.getUsers().getId().equals(currentUser.getId())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
+            projectRepository.clearFavoriteProjectsJoinTable(id);
+            projectRepository.clearLikedProjectsJoinTable(project.getId());
+
             projectRepository.delete(project);
+
+
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
 }
 
 
