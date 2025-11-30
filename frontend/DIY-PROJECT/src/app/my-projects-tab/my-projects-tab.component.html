@@ -1,0 +1,33 @@
+<!-- my-projects-tab.component.html -->
+<div class="projects-grid">
+  @for (project of myProjects(); track project.id) {
+    <div class="project-item">
+      <!-- הכרטיס עצמו -->
+      <app-project-card [project]="project" />
+
+      <!-- תגית טיוטה -->
+      @if (project.isDraft) {
+        <div class="draft-badge">טיוטה</div>
+      }
+
+      <!-- כפתורי פעולה -->
+      <div class="actions-overlay">
+        <button mat-icon-button color="primary" [routerLink]="['/project/edit', project.id]" title="עריכה">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteProject(project.id)" title="מחיקה">
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+      </div>
+    </div>
+  } @empty {
+    <div class="empty-state">
+      <mat-icon class="big">build_circle</mat-icon>
+      <h3>עדיין אין פרויקטים</h3>
+      <p>כשיהיו – הם יופיעו כאן</p>
+      <button mat-raised-button color="primary" routerLink="/project/new">
+        צור פרויקט ראשון
+      </button>
+    </div>
+  }
+</div>

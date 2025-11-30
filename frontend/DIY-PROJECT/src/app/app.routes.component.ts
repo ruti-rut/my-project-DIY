@@ -61,6 +61,18 @@ loadComponent: () => import('./challenge-details/challenge-details.component')
     .then(m => m.ChallengeDetailsComponent), 
      title: 'פרטי אתגר'
 },
+{
+    path: 'profile',
+    loadComponent: () => import('./profile-page/profile-page.component').then(m => m.ProfilePageComponent),
+    canActivate: [authGuard],
+    title: 'הפרופיל שלי'
+  },
+  {
+    path: 'profile/edit',
+    loadComponent: () => import('./edit-profile/edit-profile.component').then(m => m.EditProfileComponent),
+    canActivate: [authGuard],
+    title: 'עריכת פרופיל'
+  },
 
   // נתיב Fallback (ללא שינוי)
   { path: '**', redirectTo: '' }

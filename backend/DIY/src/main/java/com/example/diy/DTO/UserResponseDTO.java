@@ -8,7 +8,7 @@ public class UserResponseDTO {
     private String mail;
     private String city;
     private String aboutMe;
-    private String profilePicturePath;
+    private String profilePicture;
     private AuthProvider provider;
     private boolean isSubscribedToDaily;
 
@@ -24,13 +24,13 @@ public class UserResponseDTO {
     public UserResponseDTO() {
     }
 
-    public UserResponseDTO(Long id, String userName, String mail, String city, String aboutMe, String profilePicturePath, AuthProvider provider) {
+    public UserResponseDTO(Long id, String userName, String mail, String city, String aboutMe, String profilePicture, AuthProvider provider) {
         this.id = id;
         this.userName = userName;
         this.mail = mail;
         this.city = city;
         this.aboutMe = aboutMe;
-        this.profilePicturePath = profilePicturePath;
+        this.profilePicture = profilePicture;
         this.provider = provider;
     }
 
@@ -74,12 +74,12 @@ public class UserResponseDTO {
         this.aboutMe = aboutMe;
     }
 
-    public String getProfilePicturePath() {
-        return profilePicturePath;
+    public String getProfilePicture() {
+        return profilePicture;
     }
 
-    public void setProfilePicturePath(String profilePicturePath) {
-        this.profilePicturePath = profilePicturePath;
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public AuthProvider getProvider() {

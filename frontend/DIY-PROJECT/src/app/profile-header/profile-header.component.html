@@ -1,0 +1,33 @@
+<!-- src/app/profile/profile-header/profile-header.component.html -->
+<div class="profile-header">
+
+  <div class="avatar-section">
+  @if (avatar().url) {
+    <img [src]="avatar().url" alt="תמונת פרופיל" class="big-avatar">
+  } @else {
+    <div class="big-avatar placeholder" [style.background-color]="avatar().color">
+      {{ avatar().initial }}
+    </div>
+  }
+</div>
+
+  <div class="user-info">
+    <h1>{{ profile()?.userName || 'משתמש' }}</h1>
+    <p class="joined">הצטרף {{ profile()?.joinDate ? formatDate(profile()!.joinDate) : '' }}</p>
+    
+    <div class="stats">
+      <div class="stat">
+        <strong>{{ profile()?.projectsCount || 0 }}</strong>
+        <span>פרויקטים</span>
+      </div>
+      <div class="stat">
+        <strong>{{ profile()?.favoritesCount || 0 }}</strong>
+        <span>מועדפים</span>
+      </div>
+    </div>
+
+    <button mat-stroked-button routerLink="/profile/edit" class="edit-btn">
+      Edit profile
+    </button>
+  </div>
+</div>

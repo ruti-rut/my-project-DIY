@@ -2,3 +2,31 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* src/styles.css או src/styles.scss – תוסיפי בסוף הקובץ */
+
+/* Toast ירוק – הצלחה */
+.toast-success {
+  background: linear-gradient(135deg, #4caf50, #45a049) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3) !important;
+}
+
+/* Toast אדום – שגיאה */
+.toast-error {
+  background: linear-gradient(135deg, #f44336, #d32f2f) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 25px rgba(244, 67, 54, 0.3) !important;
+}
+
+/* Toast כחול – מידע */
+.toast-info {
+  background: linear-gradient(135deg, #2196f3, #1976d2) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3) !important;
+}
