@@ -115,12 +115,16 @@ public class ProjectController {
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ProjectListDTO>> getProjectsByCategory(@PathVariable Long categoryId) {
-        List<Project> projects = projectRepository.findByCategoryId(categoryId);
-        if (projects != null)
-            return new ResponseEntity<>(projectMapper.toProjectListDTOList(projects), HttpStatus.OK);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            List<Project> projects = projectRepository.findByCategoryId(categoryId);
+            if (projects != null)
+                return new ResponseEntity<>(projectMapper.toProjectListDTOList(projects), HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
-
     @PutMapping("/editProject/{id}")
     public ResponseEntity<Project> updateProjectWithImage(@PathVariable Long id,
                                                           @RequestPart(value = "image", required = false) MultipartFile file,
@@ -363,6 +367,7 @@ public class ProjectController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(baos.toByteArray());
     }
+
 }
 
 

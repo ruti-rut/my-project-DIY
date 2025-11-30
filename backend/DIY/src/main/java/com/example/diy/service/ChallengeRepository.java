@@ -14,7 +14,7 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
     @EntityGraph(attributePaths = {"projects", "projects.users"})
     Optional<Challenge> findById(Long id);
 
-    List<Challenge> findTop2ByOrderByStartDateDesc();
+    List<Challenge> findTop6ByOrderByEndDateAsc();
     @Query("SELECT c FROM Challenge c WHERE c.endDate >= CURRENT_DATE ORDER BY c.startDate DESC")
     List<Challenge> findTop3ActiveChallenges();
 
