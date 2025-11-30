@@ -7,21 +7,25 @@
     <p>טוען תגובות...</p>
   } @else if (comments().length > 0) {
     @for (comment of comments(); track comment.id) {
-      <div class="comment">
-        <div class="user">
-          @if (comment.user.profilePicturePath) {
+    <div class="comment">
+      <div class="user">
+        @if (comment.user.profilePicture) {
+            <img [src]="'data:image/jpeg;base64,' + comment.user.profilePicture" class="avatar">
+        } 
+        @else if (comment.user.profilePicturePath) { 
             <img [src]="'http://localhost:8080' + comment.user.profilePicturePath" class="avatar">
-          } @else {
+        } 
+        @else {
             <div class="avatar-placeholder" [style.background-color]="getColor(comment.user.userName)">
               {{ getInitial(comment.user.userName) }}
             </div>
-          }
-          <strong>{{ comment.user.userName }}</strong>
-        </div>
-        <p>{{ comment.content }}</p>
-        <small>{{ comment.createdAt }}</small>
+        }
+        <strong>{{ comment.user.userName }}</strong>
       </div>
-    }
+      <p>{{ comment.content }}</p>
+      <small>{{ comment.createdAt }}</small>
+    </div>
+}
   } @else {
     <p class="no-comments">אין תגובות עדיין – היה הראשון להגיב!</p>
   }
