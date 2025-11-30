@@ -4,7 +4,7 @@
     
     @if (message().role === 'assistant') {
       <button class="copy-btn" (click)="copy()" [class.copied]="showCopied">
-        {{ showCopied ? 'הועתק!' : 'העתק' }}
+        {{ showCopied ? 'Copied!' : 'Copy' }}
       </button>
     }
   </div>

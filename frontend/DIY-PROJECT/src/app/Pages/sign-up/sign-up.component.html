@@ -1,6 +1,6 @@
 <div class="auth-wrapper">
   <mat-card class="auth-card">
-    <mat-card-title>הרשמה</mat-card-title>
+    <mat-card-title>Sign up</mat-card-title>
 
     @if (isLoading()) {
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -10,25 +10,25 @@
       <form [formGroup]="signupForm" (ngSubmit)="onSignupSubmit()">
         
         <mat-form-field appearance="outline">
-          <mat-label>שם משתמש</mat-label>
+          <mat-label>Username</mat-label>
           <input matInput formControlName="userName" required>
           
           @if (signupForm.get('userName')?.hasError('minlength')) {
-            <mat-error>שם המשתמש חייב להיות לפחות 3 תווים</mat-error>
+            <mat-error>The username must be at least 3 characters long</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>אימייל</mat-label>
+          <mat-label>Email</mat-label>
           <input matInput formControlName="mail" type="email" required>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>סיסמה</mat-label>
+          <mat-label>Password</mat-label>
           <input matInput formControlName="password" type="password" required>
           
           @if (signupForm.get('password')?.hasError('minlength')) {
-            <mat-error>הסיסמה חייבת להיות לפחות 6 תווים</mat-error>
+            <mat-error>The password must be at least 6 characters long</mat-error>
           }
         </mat-form-field>
 
@@ -37,7 +37,7 @@
         }
 
         <button mat-flat-button color="accent" type="submit" [disabled]="signupForm.invalid || isLoading()">
-          הירשם
+          Sign up
         </button>
         
       </form>
@@ -45,7 +45,7 @@
     </mat-card-content>
 
     <mat-card-footer class="auth-footer">
-      <p>כבר רשום? <a routerLink="/sign-in">התחבר עכשיו</a></p>
+      <p>Already registered? <a routerLink="/sign-in">Sign In Now</a></p>
     </mat-card-footer>
   </mat-card>
 </div>

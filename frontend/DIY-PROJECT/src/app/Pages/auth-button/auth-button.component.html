@@ -10,16 +10,16 @@
   <mat-menu #profileMenu="matMenu">
     <button mat-menu-item (click)="goToProfile()">
       <mat-icon>account_circle</mat-icon>
-      פרופיל
+      Profile
     </button>
     <button mat-menu-item (click)="auth.logout()">
       <mat-icon>logout</mat-icon>
-      התנתק
+      Log out
     </button>
   </mat-menu>
 } @else {
   <button mat-raised-button color="accent" (click)="goToLogin()">
     <mat-icon>login</mat-icon>
-    התחברות / הרשמה
+    Sign in / Sign up
   </button>
 }

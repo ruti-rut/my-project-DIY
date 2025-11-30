@@ -1,13 +1,13 @@
 <!-- src/app/profile/edit-profile/edit-profile.component.html -->
 <div class="edit-profile-page">
   <div class="card">
-    <h1 class="title">עריכת פרופיל</h1>
+    <h1 class="title">Edit profile </h1>
 
     <div class="avatar-section">
-      <img [src]="previewUrl()" alt="תמונת פרופיל" class="avatar-preview">
+      <img [src]="previewUrl()" alt="Profile picture " class="avatar-preview">
       <label for="avatar-input" class="change-photo-btn">
         <mat-icon>photo_camera</mat-icon>
-        שנה תמונה
+       Change picture
       </label>
       <input
         type="file"
@@ -26,23 +26,23 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>עיר / אזור</mat-label>
+        <mat-label>City / Region</mat-label>
         <input matInput formControlName="city" placeholder="למשל: תל אביב">
         <mat-icon matSuffix>location_on</mat-icon>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>קצת עליי</mat-label>
+        <mat-label>About me </mat-label>
         <textarea
           matInput
           formControlName="aboutMe"
           rows="6"
-          placeholder="ספרו לקהילה מי אתם, מה אתם אוהבים לבנות..."></textarea>
+          placeholder="Introduce yourselves to the community, and let us know what you like to build..."></textarea>
       </mat-form-field>
 
       <div class="actions">
         <button type="button" mat-stroked-button (click)="cancel()" [disabled]="loading()">
-          ביטול
+          Cancel
         </button>
         <button
           type="submit"
@@ -52,7 +52,7 @@
           @if (loading()) {
             <mat-spinner diameter="20"></mat-spinner>
           } @else {
-            שמור שינויים
+           Save Changes
           }
         </button>
       </div>

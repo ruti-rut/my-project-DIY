@@ -2,7 +2,7 @@
   @if (loading()) {
   <div class="loading-state">
     <mat-spinner></mat-spinner>
-    <p>טוען מועדפים...</p>
+    <p>Loading Favorites ...</p>
   </div>
   } @else {
   @for (project of favorites(); track project.id) {

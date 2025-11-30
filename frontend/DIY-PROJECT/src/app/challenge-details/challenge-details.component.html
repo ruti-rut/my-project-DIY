@@ -14,9 +14,9 @@
           <mat-chip [color]="challenge()!.status === 'OPEN' ? 'primary' : challenge()!.status === 'UPCOMING' ? 'accent' : 'warn'"
                     selected>
             @switch (challenge()!.status) {
-              @case ('OPEN') { אתגר פתוח להגשה }
-              @case ('UPCOMING') { ייפתח בקרוב }
-              @case ('CLOSED') { האתגר הסתיים }
+              @case ('OPEN') { Challenge is open for Submission }
+              @case ('UPCOMING') { Upcoming }
+              @case ('CLOSED') { Closed }
             }
           </mat-chip>
         </div>
@@ -25,25 +25,25 @@
 
     <div class="content-section">
       <div class="dates">
-        <p><mat-icon>event</mat-icon> מתחיל: {{ formatDate(challenge()!.startDate) }}</p>
-        <p><mat-icon>event_busy</mat-icon> מסתיים: {{ formatDate(challenge()!.endDate) }}</p>
+        <p><mat-icon>event</mat-icon> Begins: {{ formatDate(challenge()!.startDate) }}</p>
+        <p><mat-icon>event_busy</mat-icon> Ends: {{ formatDate(challenge()!.endDate) }}</p>
       </div>
 
       @if (canSubmit()) {
         <button mat-fab extended color="primary" class="submit-btn" (click)="openSubmitDialog()">
           <mat-icon>add</mat-icon>
-          הגש פרויקט לאתגר
+Upload a project for a challenge
         </button>
       }
 
       <div class="description" [innerHTML]="challenge()!.content"></div>
 
       <h2 class="projects-title">
-        פרויקטים שהוגשו ({{ challenge()!.projects.length }})
+        Submitted Projects ({{ challenge()!.projects.length }})
       </h2>
 
       @if (challenge()!.projects.length === 0) {
-        <p class="empty">עדיין לא הוגשו פרויקטים... תהיה הראשון!</p>
+        <p class="empty">No projects have been submitted yet... Be the first!</p>
       } @else {
         <div class="projects-grid">
           @for (project of challenge()!.projects; track project.id) {

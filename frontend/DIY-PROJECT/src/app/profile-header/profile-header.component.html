@@ -12,17 +12,17 @@
 </div>
 
   <div class="user-info">
-    <h1>{{ profile()?.userName || 'טוען...' }}</h1>
-    <p class="joined">הצטרף {{ profile()?.joinDate ? formatDate(profile()!.joinDate) : '' }}</p>
+    <h1>{{ profile()?.userName || 'Loading...' }}</h1>
+    <p class="joined">Join {{ profile()?.joinDate ? formatDate(profile()!.joinDate) : '' }}</p>
     
     <div class="stats">
       <div class="stat">
         <strong>{{ profile()?.projectsCount || 0 }}</strong>
-        <span>פרויקטים</span>
+        <span>Projects</span>
       </div>
       <div class="stat">
         <strong>{{ profile()?.favoritesCount || 0 }}</strong>
-        <span>מועדפים</span>
+        <span>Favorites</span>
       </div>
     </div>
 

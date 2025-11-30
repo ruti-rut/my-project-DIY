@@ -5,8 +5,8 @@
   <header class="header">
     <h1>עוזר DIY חכם</h1>
     <div class="header-buttons">
-      <button class="btn-new" (click)="startNewChat()">שיחה חדשה</button>
-      <button class="btn-logout" (click)="logout()">יציאה</button>
+      <button class="btn-new" (click)="startNewChat()">New Chat</button>
+      <button class="btn-logout" (click)="logout()">Log out</button>
     </div>
   </header>
 
@@ -15,7 +15,7 @@
     
     @if (messages().length === 0) {
       <div class="welcome">
-        <p>שלום! שאל אותי כל שאלה על פרויקטי DIY, תיקונים, יצירה ועבודות יד</p>
+        <p>Hello! Ask me any question about DIY projects, repairs, crafts, and handiwork.</p>
       </div>
     }
 
@@ -40,7 +40,7 @@
       <input 
         [(ngModel)]="newMessage"
         (keydown.enter)="handleEnter($event)"
-        placeholder="איך בונים מדף? איך מתקנים נזילה?..."
+        placeholder="How to build a shelf? How to fix a water leak?..."
         [disabled]="isLoading()"
         name="msg"
         autocomplete="off"
@@ -49,6 +49,6 @@
         שלח
       </button>
     </form>
-    <small class="hint">Shift + Enter לירידת שורה</small>
+    <small class="hint">Shift + Enter for a new line</small>
   </div>
 </div>

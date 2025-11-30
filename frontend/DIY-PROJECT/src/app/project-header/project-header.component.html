@@ -15,13 +15,13 @@
           {{ avatar().initial }}
         </div>
         }
-        <span>{{ proj.users?.userName || 'אנונימי' }}</span>
+        <span>{{ proj.users?.userName || 'Anonymus' }}</span>
       </div>
 
       <div class="stats">
         <span>לייקים: {{ proj.likesCount ?? 0 }}</span>
-        <span>גיל: {{ proj.ages || 'כל הגילאים' }}</span>
-        <span>זמן: {{ proj.timePrep || 'לא צוין' }}</span>
+        <span>גיל: {{ proj.ages || 'All ages' }}</span>
+        <span>זמן: {{ proj.timePrep || 'Not specified' }}</span>
       </div>
     </div>
 
@@ -30,21 +30,21 @@
       <!-- הורדת PDF -->
       <button mat-raised-button color="primary" (click)="downloadPdf(proj.id)">
         <mat-icon>download</mat-icon>
-        הורד כ-PDF
+       Download as PDF
       </button>
       <!-- הדפסה -->
       <button mat-raised-button color="accent" (click)="print()">
         <mat-icon>print</mat-icon>
-        הדפס
+        Print
       </button>
 
       <!-- שיתוף כללי (טלפון: חלון שיתוף | מחשב: העתק קישור) -->
       <button mat-raised-button color="warn" (click)="share()">
         <mat-icon>share</mat-icon>
-        שתף
+        Share
       </button>
 
-      <!-- שיתוף ישיר לווטסאפ – הכי פופולרי בישראל! -->
+      <!-- שיתוף ישיר לווטסאפ  -->
       <button mat-fab color="success" class="whatsapp-btn" (click)="shareWhatsApp()" title="שיתוף מהיר לווטסאפ">
         <mat-icon>whatsapp</mat-icon>
       </button>
