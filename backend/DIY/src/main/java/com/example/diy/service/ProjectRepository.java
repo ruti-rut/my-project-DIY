@@ -19,7 +19,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT p FROM Project p WHERE p.createdAt >= :yesterday")
     List<Project> findProjectsFromLast24Hours(@Param("yesterday") LocalDateTime yesterday);
 
-    List<Project> findTop3ByCategoryIdOrderByCreatedAtDesc(Long categoryId);
+    List<Project> findTop6ByCategoryIdOrderByCreatedAtDesc(Long categoryId);
 
     Page<Project> findAllByOrderByCreatedAtDesc(Pageable pageable);
 

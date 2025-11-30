@@ -24,7 +24,7 @@ public class HomeService {
         for (Category cat : categories) {
             // שולף את 3 הפרויקטים האחרונים של הקטגוריה
             List<Project> latestProjects = projectRepository
-                    .findTop3ByCategoryIdOrderByCreatedAtDesc(cat.getId());
+                    .findTop6ByCategoryIdOrderByCreatedAtDesc(cat.getId());
 
             // ממפה ל-DTO
             List<ProjectListDTO> dtoList = projectMapper.toProjectListDTOList(latestProjects, currentUser);

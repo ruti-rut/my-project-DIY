@@ -36,7 +36,7 @@ export class ProjectService {
       params = params.set('search', searchTerm.trim());
     }
 
-    // 🔥 שלח את כל הקטגוריות
+    //  שלח את כל הקטגוריות
     if (categoryIds.length > 0) {
       categoryIds.forEach(id => {
         params = params.append('categoryIds', id.toString());
