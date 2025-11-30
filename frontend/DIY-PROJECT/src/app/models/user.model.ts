@@ -43,8 +43,6 @@ export interface UserProfileDTO {
   profilePicture: string | null;    // ← Base64
   profilePicturePath: string | null;      // ← הנתיב
   joinDate: string;
-  myProjects: ProjectListDTO[];
-  favoriteProjects: ProjectListDTO[];
   projectsCount: number;
   favoritesCount: number;
 }

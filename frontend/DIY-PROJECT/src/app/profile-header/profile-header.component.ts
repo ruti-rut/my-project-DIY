@@ -24,31 +24,36 @@ service = inject(ProfileService);
   getColor(): string {
     return this.avatarHelper.generateColor(this.profile()?.userName);
   }
-  avatar = computed(() => {
-  const p = this.profile(); // או this.currentUserProfile() – מה שיש לך
+ avatar = computed(() => {
+  const p = this.profile();
 
-  if (!p) {
-    return { url: '', initial: '?', color: '#888' };
+  // אם עדיין אין פרופיל בכלל
+  if (!p || !p.userName) {
+    return { url: '', initial: '?', color: '#888888' };
   }
 
-  // 1. אם יש base64 – תשתמשי בו (כמו בפרויקטים!)
+  // 1. base64
   if (p.profilePicture) {
     return { 
       url: p.profilePicture.startsWith('data:') 
-           ? p.profilePicture 
-           : `data:image/jpeg;base64,${p.profilePicture}`, 
+        ? p.profilePicture 
+        : `data:image/jpeg;base64,${p.profilePicture}`, 
       initial: '', 
       color: '' 
     };
   }
 
-  // 2. אם אין base64 אבל יש path
+  // 2. path
   if (p.profilePicturePath) {
-    return { url: `http://localhost:8080${p.profilePicturePath}`, initial: '', color: '' };
+    return { 
+      url: `http://localhost:8080${p.profilePicturePath}`, 
+      initial: '', 
+      color: '' 
+    };
   }
 
-  // 3. אווטאר צבעוני
-  const name = p.userName || 'משתמש';
+  // 3. אווטאר צבעוני – בטוח שיש שם
+  const name = p.userName.trim();
   return {
     url: '',
     initial: this.avatarHelper.getFirstInitial(name),

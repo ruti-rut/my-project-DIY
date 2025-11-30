@@ -4,6 +4,7 @@ import com.example.diy.DTO.ProjectCreateDTO;
 import com.example.diy.DTO.ProjectListDTO;
 import com.example.diy.DTO.ProjectResponseDTO;
 import com.example.diy.model.Project;
+import com.example.diy.model.Users;
 import com.example.diy.service.ImageUtils;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(
         componentModel = "spring",
@@ -55,21 +57,31 @@ public interface ProjectMapper {
     Project projectCreateDTOToEntity(ProjectCreateDTO dto);
 
 
-    default Page<ProjectListDTO> toProjectListDTOList(Page<Project> projects) {
-        return projects.map(this::toProjectListDTO);
+    default Page<ProjectListDTO> toProjectListDTOList(Page<Project> projects, Users currentUser) { // <--- שינוי כאן!
+        return projects.map(project -> toProjectListDTO(project, currentUser)); // <--- שינוי כאן!
     }
 
-    List<ProjectListDTO> toProjectListDTOList(List<Project> projects);
+    // 🔥 פונקציה ל-List:
+    default List<ProjectListDTO> toProjectListDTOList(List<Project> projects, Users currentUser) { // <--- שינוי כאן!
+        if (projects == null) {
+            return List.of();
+        }
+        return projects.stream()
+                .map(project -> toProjectListDTO(project, currentUser)) // <--- שינוי כאן!
+                .collect(Collectors.toList());
+    }
 
     @Mapping(target = "id", ignore = true) // מוודא ששדה ה-ID של הישות לא יידרס
     @Mapping(source = "categoryId", target = "category.id")
     @Mapping(source = "challengeId", target = "challenge.id")
     Project updateProjectFromDto(ProjectCreateDTO p, @MappingTarget Project existingProject);
 
+    @Mapping(target = "id", source = "project.id")  // ← הוסף את זה!
     @Mapping(target = "challengeId", ignore = true)
-    @Mapping(source = "users", target = "usersSimpleDTO")
+    @Mapping(source = "project.users", target = "usersSimpleDTO")
     @Mapping(target = "picture", ignore = true)
-    ProjectListDTO toProjectListDTO(Project project);
+    @Mapping(target = "favorited", expression = "java(currentUser != null && project.getFavoritedByUsers() != null && project.getFavoritedByUsers().contains(currentUser))")
+    ProjectListDTO toProjectListDTO(Project project, Users currentUser);
 
     // לוגיקה מותאמת אישית לטיפול בשדה התמונה ו-challengeId
     @AfterMapping

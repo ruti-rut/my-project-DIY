@@ -29,10 +29,10 @@ public class Users {
     private List<Comment> myComments;
     @JsonIgnore
     @ManyToMany
-    private Set<Project> favoriteProjects;
+    private List<Project> favoriteProjects;
     @JsonIgnore
     @ManyToMany(mappedBy = "likedByUsers")
-    private Set<Project> likeProjects;
+    private List<Project> likeProjects;
     private String city;
     private String aboutMe;
     private String profilePicturePath;
@@ -106,19 +106,19 @@ public class Users {
         this.aboutMe = aboutMe;
     }
 
-    public Set<Project> getFavoriteProjects() {
+    public List<Project> getFavoriteProjects() {
         return favoriteProjects;
     }
 
-    public void setFavoriteProjects(Set<Project> favoriteProjects) {
+    public void setFavoriteProjects(List<Project> favoriteProjects) {
         this.favoriteProjects = favoriteProjects;
     }
 
-    public Set<Project> getLikeProjects() {
+    public List<Project> getLikeProjects() {
         return likeProjects;
     }
 
-    public void setLikeProjects(Set<Project> likeProjects) {
+    public void setLikeProjects(List<Project> likeProjects) {
         this.likeProjects = likeProjects;
     }
 

@@ -8,7 +8,7 @@ export interface ProjectListDTO {
   picture: string;
   usersSimpleDTO: UsersSimpleDTO;
   challengeId?: number | null;   
-  isFavorited?: boolean;
+  favorited?: boolean;
   isDraft?: boolean ;       // ← תוסיפי את זה!
 }
 export interface ProjectCreateDTO {

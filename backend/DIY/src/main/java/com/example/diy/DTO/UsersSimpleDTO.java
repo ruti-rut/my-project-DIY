@@ -4,7 +4,7 @@ public class UsersSimpleDTO {
     private Long id;
     private String userName;
     private String profilePicture;
-    private String profilePicturePath;//תמונה בפורמט של base64
+    private String profilePicturePath;
 
     public String getProfilePicturePath() {
         return profilePicturePath;

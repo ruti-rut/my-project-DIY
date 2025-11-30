@@ -1,8 +1,6 @@
 package com.example.diy.DTO;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserProfileDTO {
     private Long id;
@@ -12,10 +10,7 @@ public class UserProfileDTO {
     private String aboutMe;
     private String profilePicture;
     private String profilePicturePath;
-    // ← הנתיב המלא
     private LocalDateTime joinDate;
-    private List<ProjectListDTO> myProjects = new ArrayList<>();
-    private List<ProjectListDTO> favoriteProjects = new ArrayList<>();
     private int projectsCount;
     private int favoritesCount;
 
@@ -99,19 +94,4 @@ public class UserProfileDTO {
         this.joinDate = joinDate;
     }
 
-    public List<ProjectListDTO> getMyProjects() {
-        return myProjects;
-    }
-
-    public void setMyProjects(List<ProjectListDTO> myProjects) {
-        this.myProjects = myProjects;
-    }
-
-    public List<ProjectListDTO> getFavoriteProjects() {
-        return favoriteProjects;
-    }
-
-    public void setFavoriteProjects(List<ProjectListDTO> favoriteProjects) {
-        this.favoriteProjects = favoriteProjects;
-    }
 }

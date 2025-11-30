@@ -9,9 +9,14 @@ public class ProjectListDTO {
     private String picturePath;
     private Long challengeId;
     private boolean isDraft;
+    private boolean favorited;
 
-    public void setChallengeId(Long challengeId) {
-        this.challengeId = challengeId;
+    public boolean isFavorited() {
+        return favorited;
+    }
+
+    public void setFavorited(boolean favorited) {
+        this.favorited = favorited;
     }
 
     public boolean isDraft() {
@@ -24,6 +29,10 @@ public class ProjectListDTO {
 
     public long getChallengeId() {
         return challengeId;
+    }
+
+    public void setChallengeId(Long challengeId) {
+        this.challengeId = challengeId;
     }
 
     public void setChallengeId(long challengeId) {
