@@ -256,7 +256,7 @@ public class ProjectController {
             Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(projects, currentUser);            return ResponseEntity.ok(dtoPage);
 
         } catch (Exception e) {
-            e.printStackTrace(); // 🔥 זה יראה לך את השגיאה המלאה בקונסול!
+            e.printStackTrace(); // זה יראה לך את השגיאה המלאה בקונסול!
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
