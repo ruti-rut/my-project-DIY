@@ -36,25 +36,36 @@ export class ProjectHeaderComponent {
 
   // אווטאר – computed
   avatar = computed(() => {
-    const user = this.project()?.users;
-    if (!user) {
-      return { url: '', initial: '?', color: '#999' };
-    }
+  const user = this.project()?.users;
+  if (!user) {
+   return { url: '', initial: '?', color: '#999' };
+  }
 
-    const path = user.profilePicturePath;
+    // 🔥 שדה 1: בדיקת Base64 (נניח שהוא מגיע בשדה profilePicture)
+    const base64 = user.profilePicture; 
     const name = user.userName || 'אנונימי';
 
-    if (path) {
-      return { url: `http://localhost:8080${path}`, initial: '', color: '' };
+    if (base64 && base64.trim()) {
+        return { 
+            url: `data:image/jpeg;base64,${base64}`, // בניית Data URL
+            initial: '', 
+            color: '' 
+        };
     }
-
-    return {
-      url: '',
-      initial: this.avatarHelper.getFirstInitial(name),
-      color: this.avatarHelper.generateColor(name)
-    };
-  });
-
+    
+    // שדה 2: בדיקת נתיב ישן (כגיבוי)
+  const path = user.profilePicturePath;
+  if (path) {
+   return { url: `http://localhost:8080${path}`, initial: '', color: '' };
+  }
+    
+    // ברירת מחדל: אווטאר גנרי
+  return {
+   url: '',
+   initial: this.avatarHelper.getFirstInitial(name),
+   color: this.avatarHelper.generateColor(name)
+  };
+ });
 
   downloadPdf(projectId: number) {
     this.projectService.downloadPdf(projectId).subscribe({
