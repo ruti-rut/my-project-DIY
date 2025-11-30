@@ -1,17 +1,17 @@
 @if (isLoggedIn()) {
-  <button 
-    mat-icon-button 
-    (click)="$event.stopPropagation(); toggle()"
-    (click)="toggle()" 
-    [class.filled]="isFavorited"
-    [disabled]="loading()">
-    
-    @if (loading()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    } @else {
-      <mat-icon>
-        {{ isFavorited ? 'favorite' : 'favorite_border' }}
-      </mat-icon>
-    }
-  </button>
+ <button 
+  mat-icon-button 
+  (click)="$event.stopPropagation(); toggle()"
+  (click)="toggle()" 
+  [class.filled]="favoritedState()" 
+  [disabled]="loading()">
+  
+  @if (loading()) {
+   <mat-spinner diameter="20"></mat-spinner>
+  } @else {
+   <mat-icon>
+        {{ favoritedState() ? 'favorite' : 'favorite_border' }} 
+   </mat-icon>
+  }
+ </button>
 }

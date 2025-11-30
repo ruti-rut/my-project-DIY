@@ -1,14 +1,15 @@
-<!-- favorites-tab.component.html -->
 <div class="favorites-grid">
+  @if (loading()) {
+  <div class="loading-state">
+    <mat-spinner></mat-spinner>
+    <p>טוען מועדפים...</p>
+  </div>
+  } @else {
   @for (project of favorites(); track project.id) {
-    <app-project-card
-      [project]="project"
-      (favoriteToggled)="onFavoriteRemoved(project.id)" />
+  <app-project-card 
+  [project]="project" 
+  (favoriteRemoved)="onFavoriteRemoved(project.id)" />
   } @empty {
-    <div class="empty-state">
-      <mat-icon class="big">favorite_border</mat-icon>
-      <h3>אין מועדפים עדיין</h3>
-      <p>כשתלחץ על לב בפרויקט – הוא יופיע כאן</p>
-    </div>
+  }
   }
 </div>

@@ -68,13 +68,16 @@ public class UsersController {
         if (principal == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
-        Users user = usersRepository.findByUserNameWithProjects(principal.getName());
+        Users user = usersRepository.findByUserName(principal.getName());
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
 
+        int projectsCount = user.getMyProjects().size();
+        int favoritesCount = user.getFavoriteProjects().size();
+
         UserProfileDTO profileDTO = usersMapper.usersToUserProfileDTO(user);
+
         return ResponseEntity.ok(profileDTO);
     }
 
@@ -108,7 +111,7 @@ public class UsersController {
             Users savedUser = usersRepository.save(user);
 
             // טעינה מחדש עם כל הנתונים
-            Users fullUser = usersRepository.findByUserNameWithProjects(principal.getName());
+            Users fullUser = usersRepository.findByUserName(principal.getName());
             UserProfileDTO profileDTO = usersMapper.usersToUserProfileDTO(fullUser);
 
             return ResponseEntity.ok(profileDTO);

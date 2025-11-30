@@ -47,7 +47,11 @@ export class ProjectService {
   }
 
 getMyProjects(): Observable<ProjectListDTO[]> {
-  return this.http.get<ProjectListDTO[]>('http://localhost:8080/api/project/myProjects');
+  return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myProjects`);
+}
+
+getFavorites(): Observable<ProjectListDTO[]> {
+  return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myFavorites`);
 }
 
 assignProjectToChallenge(projectId: number, challengeId: number): Observable<any> {

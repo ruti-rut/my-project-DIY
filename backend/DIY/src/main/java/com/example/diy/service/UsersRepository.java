@@ -15,17 +15,6 @@ public interface UsersRepository extends JpaRepository<Users,Long> {
     boolean existsByUserName(String userName);
     boolean existsByMail(String mail);
     Users findByVerificationToken(String token);
-    @Query("SELECT DISTINCT u FROM Users u " +
-            "LEFT JOIN FETCH u.myProjects " +
-            "LEFT JOIN FETCH u.favoriteProjects " +
-            "WHERE u.userName = :userName")
-    Users findByUserNameWithProjects(@Param("userName") String userName);
-
-    @Query("SELECT DISTINCT u FROM Users u " +
-            "LEFT JOIN FETCH u.myProjects " +
-            "LEFT JOIN FETCH u.favoriteProjects " +
-            "WHERE u.id = :id")
-    Optional<Users> findByIdWithProjects(@Param("id") Long id);
 
 
     List<Users> findByIsSubscribedToDailyTrueAndEmailVerifiedTrue();
@@ -37,4 +26,21 @@ public interface UsersRepository extends JpaRepository<Users,Long> {
 
     @Query("SELECT u FROM Users u WHERE u.userName = :identifier OR u.mail = :identifier")
     Users findByIdentifier(@Param("identifier") String identifier);
+
+
+
+
+
+    //    @Query("SELECT DISTINCT u FROM Users u " +
+//            "LEFT JOIN FETCH u.myProjects " +
+//            "LEFT JOIN FETCH u.favoriteProjects " +
+//            "WHERE u.userName = :userName")
+//    Users findByUserNameWithProjects(@Param("userName") String userName);
+//
+//    @Query("SELECT DISTINCT u FROM Users u " +
+//            "LEFT JOIN FETCH u.myProjects " +
+//            "LEFT JOIN FETCH u.favoriteProjects " +
+//            "WHERE u.id = :id")
+//    Optional<Users> findByIdWithProjects(@Param("id") Long id);
+
 }

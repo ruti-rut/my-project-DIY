@@ -4,6 +4,7 @@ import com.example.diy.DTO.ProjectListDTO;
 import com.example.diy.Mapper.ProjectMapper;
 import com.example.diy.model.Category;
 import com.example.diy.model.Project;
+import com.example.diy.model.Users;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class HomeService {
     ProjectRepository projectRepository;
     ProjectMapper projectMapper;
 
-    public Map<Long, List<ProjectListDTO>> getLatestProjectsPerCategory() {
+    public Map<Long, List<ProjectListDTO>> getLatestProjectsPerCategory(Users currentUser) {
         List<Category> categories = categoryRepository.findAll();
         Map<Long, List<ProjectListDTO>> result = new HashMap<>();
 
@@ -26,8 +27,7 @@ public class HomeService {
                     .findTop6ByCategoryIdOrderByCreatedAtDesc(cat.getId());
 
             // ממפה ל-DTO
-            List<ProjectListDTO> dtoList = projectMapper.toProjectListDTOList(latestProjects);
-
+            List<ProjectListDTO> dtoList = projectMapper.toProjectListDTOList(latestProjects, currentUser);
             // מוסיף למפה לפי קטגוריה
             result.put(cat.getId(), dtoList);
         }

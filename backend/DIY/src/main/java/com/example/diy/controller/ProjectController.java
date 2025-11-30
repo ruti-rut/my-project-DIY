@@ -19,6 +19,7 @@ import com.example.diy.Mapper.ProjectMapper;
 import com.example.diy.model.*;
 import com.example.diy.service.*;
 import com.itextpdf.layout.properties.TextAlignment;
+import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,11 +27,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,16 +51,18 @@ public class ProjectController {
     HomeService homeService;
     ChallengeRepository  challengeRepository;
     StepRepository  stepRepository;
+    private final EntityManager entityManager;
 
 
-    public ProjectController(ProjectRepository projectRepository, ProjectMapper projectMapper, UsersRepository usersRepository, TagRepository tagRepository,HomeService homeService,ChallengeRepository  challengeRepository, StepRepository stepRepository) {
-        this.projectRepository = projectRepository;
-        this.projectMapper = projectMapper;
-        this.usersRepository = usersRepository;
-        this.tagRepository = tagRepository;
-        this.homeService = homeService;
-        this.challengeRepository = challengeRepository;
+    public ProjectController(EntityManager entityManager, StepRepository stepRepository, ChallengeRepository challengeRepository, HomeService homeService, TagRepository tagRepository, UsersRepository usersRepository, ProjectMapper projectMapper, ProjectRepository projectRepository) {
+        this.entityManager = entityManager;
         this.stepRepository = stepRepository;
+        this.challengeRepository = challengeRepository;
+        this.homeService = homeService;
+        this.tagRepository = tagRepository;
+        this.usersRepository = usersRepository;
+        this.projectMapper = projectMapper;
+        this.projectRepository = projectRepository;
     }
 
     @GetMapping("/getProject/{id}")
@@ -115,12 +120,16 @@ public class ProjectController {
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<ProjectListDTO>> getProjectsByCategory(@PathVariable Long categoryId) {
+    public ResponseEntity<List<ProjectListDTO>> getProjectsByCategory(@PathVariable Long categoryId, Principal principal) {
+        Users currentUser = principal != null ? getCurrentUser(principal) : null;
+
         List<Project> projects = projectRepository.findByCategoryId(categoryId);
-        if (projects != null)
-            return new ResponseEntity<>(projectMapper.toProjectListDTOList(projects), HttpStatus.OK);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+
+        if (projects != null) {
+            List<ProjectListDTO> dtos = projectMapper.toProjectListDTOList(projects, currentUser);
+            return new ResponseEntity<>(dtos, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);    }
 
     @PutMapping("/editProject/{id}")
     public ResponseEntity<Project> updateProjectWithImage(@PathVariable Long id,
@@ -150,6 +159,7 @@ public class ProjectController {
 
 
     @PostMapping("/{projectId}/favorite")
+    @Transactional
     public ResponseEntity<Void> addToFavorites(@PathVariable Long projectId,
                                                Principal principal) {
         Users currentUser = getCurrentUser(principal);
@@ -158,18 +168,20 @@ public class ProjectController {
 
         if (!currentUser.getFavoriteProjects().contains(project)) {
             currentUser.getFavoriteProjects().add(project);
-            usersRepository.save(currentUser); // שומר את הקשר
+            usersRepository.save(currentUser);
         }
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{projectId}/favorite")
+    @Transactional
     public ResponseEntity<Void> removeFromFavorites(@PathVariable Long projectId, Principal principal) {
         Users currentUser = getCurrentUser(principal);
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
         currentUser.getFavoriteProjects().remove(project);
+
         usersRepository.save(currentUser);
 
         return ResponseEntity.ok().build();
@@ -188,9 +200,11 @@ public class ProjectController {
             @RequestParam(defaultValue = "30") int size,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) List<Long> categoryIds,  // 🔥 מערך!
-            @RequestParam(defaultValue = "newest") String sort
+            @RequestParam(defaultValue = "newest") String sort,
+            Principal principal
     ) {
         try {
+            Users currentUser = principal != null ? getCurrentUser(principal) : null;
             Pageable pageable;
 
             // טיפול במיון
@@ -239,8 +253,7 @@ public class ProjectController {
                 }
             }
 
-            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(projects);
-            return ResponseEntity.ok(dtoPage);
+            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(projects, currentUser);            return ResponseEntity.ok(dtoPage);
 
         } catch (Exception e) {
             e.printStackTrace(); // 🔥 זה יראה לך את השגיאה המלאה בקונסול!
@@ -252,12 +265,27 @@ public class ProjectController {
     @GetMapping("/myProjects")
     public ResponseEntity<List<ProjectListDTO>> getProjectsByCurrentUser(Principal principal){
         try {
+            Users currentUser = getCurrentUser(principal); // שלוף את המשתמש
+            if (currentUser == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
             List<Project> myProjects = projectRepository.findByUsers(getCurrentUser(principal));
-            List<ProjectListDTO> myDTO = projectMapper.toProjectListDTOList(myProjects);
-            return new ResponseEntity<>(myDTO,HttpStatus.OK);
+            List<ProjectListDTO> myDTO = projectMapper.toProjectListDTOList(myProjects, currentUser);            return new ResponseEntity<>(myDTO,HttpStatus.OK);
         }
         catch(Exception e){
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/myFavorites")
+    public ResponseEntity<List<ProjectListDTO>> getMyFavorites(Principal principal) {
+        try {
+            Users currentUser = getCurrentUser(principal);
+            if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            List<Project> favoritesList = new ArrayList<>(currentUser.getFavoriteProjects());
+            List<ProjectListDTO> dtos = projectMapper.toProjectListDTOList(favoritesList, currentUser);
+            return ResponseEntity.ok(dtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

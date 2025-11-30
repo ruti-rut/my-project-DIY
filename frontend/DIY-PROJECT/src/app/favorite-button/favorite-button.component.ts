@@ -14,30 +14,42 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   styleUrl: './favorite-button.component.css'
 })
 export class FavoriteButtonComponent {
-@Input({ required: true }) projectId!: number;
-  @Input() isFavorited = false;
+  @Input({ required: true }) projectId!: number;
 
-  @Output() toggled = new EventEmitter<boolean>();  // חובה!
+  // 🔥 1. הגדרת סטר (Setter) עבור הקלט:
+  // זה מבטיח שכל ערך חדש שנכנס מבחוץ מעדכן את ה-Signal.
+  @Input() set isFavorited(value: boolean) {
+    this.favoritedState.set(value);
+  }
+
+  @Output() toggled = new EventEmitter<boolean>();
 
   private favoriteService = inject(FavoriteService);
   private authService = inject(AuthService);
 
   loading = signal(false);
 
+  // 🔥 2. הוספת Signal למצב הפנימי (במקום המשתנה הישן)
+  favoritedState = signal(false);
+
   isLoggedIn = computed(() => this.authService.currentUser() !== null);
 
   toggle() {
+    // 🔥 3. קוראים למצב מה-Signal
+    const currentState = this.favoritedState();
+
     if (this.loading() || !this.isLoggedIn()) return;
 
     this.loading.set(true);
-    const request = this.isFavorited
+    const request = currentState // 🔥 משתמשים ב-currentState
       ? this.favoriteService.removeFromFavorites(this.projectId)
       : this.favoriteService.addToFavorites(this.projectId);
 
     request.subscribe({
       next: () => {
-        this.isFavorited = !this.isFavorited;
-        this.toggled.emit(this.isFavorited);  // שולח boolean!
+        const newState = !currentState;
+        this.favoritedState.set(newState); // 🔥 4. מעדכנים את ה-Signal
+        this.toggled.emit(newState);
         this.loading.set(false);
       },
       error: () => {

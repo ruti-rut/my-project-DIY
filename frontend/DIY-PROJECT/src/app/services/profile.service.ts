@@ -41,7 +41,6 @@ this.http.get<UserProfileDTO>('http://localhost:8080/api/users/profile').subscri
       if (!p) return null;
       return {
         ...p,
-        favoriteProjects: p.favoriteProjects.filter(x => x.id !== projectId),
         favoritesCount: p.favoritesCount - 1
       };
     });
@@ -51,15 +50,16 @@ this.http.get<UserProfileDTO>('http://localhost:8080/api/users/profile').subscri
    * מוחק פרויקט שלי - עדכון לוקאלי
    */
   deleteMyProject(projectId: number) {
-    this.profile.update(p => {
-      if (!p) return null;
-      return {
-        ...p,
-        myProjects: p.myProjects.filter(x => x.id !== projectId),
-        projectsCount: p.projectsCount - 1
-      };
-    });
-    this.toast.success('הפרויקט נמחק בהצלחה');
-  }
+  this.profile.update(p => {
+   if (!p) return null;
+   return {
+    ...p,
+    // 🔥 מחקנו את השורה הזו:
+    // myProjects: p.myProjects.filter(x => x.id !== projectId), 
+    projectsCount: p.projectsCount - 1
+   };
+  });
+  this.toast.success('הפרויקט נמחק בהצלחה');
+ }
 
 }

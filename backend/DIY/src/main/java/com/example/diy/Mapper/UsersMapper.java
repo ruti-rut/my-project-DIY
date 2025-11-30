@@ -57,6 +57,13 @@ public interface UsersMapper {
         }
     }
 }
+
+
+
+
+
+
+
 // --- After Mapping Logic (Default Methods) ---
 
 //    @AfterMapping
