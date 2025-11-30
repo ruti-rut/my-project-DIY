@@ -2,15 +2,14 @@
 <div class="profile-header">
 
   <div class="avatar-section">
-    @if (profile()?.profilePicturePath) {
-      <img [src]="'http://localhost:8080/images/' + profile()!.profilePicturePath" 
-           alt="תמונת פרופיל" class="big-avatar">
-    } @else {
-      <div class="big-avatar placeholder" [style.background-color]="getColor()">
-        {{ getInitial() }}
-      </div>
-    }
-  </div>
+  @if (avatar().url) {
+    <img [src]="avatar().url" alt="תמונת פרופיל" class="big-avatar">
+  } @else {
+    <div class="big-avatar placeholder" [style.background-color]="avatar().color">
+      {{ avatar().initial }}
+    </div>
+  }
+</div>
 
   <div class="user-info">
     <h1>{{ profile()?.userName || 'משתמש' }}</h1>

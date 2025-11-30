@@ -10,12 +10,22 @@ public class UserProfileDTO {
     private String mail;
     private String city;
     private String aboutMe;
+    private String profilePicture;
     private String profilePicturePath;
+    // ← הנתיב המלא
     private LocalDateTime joinDate;
     private List<ProjectListDTO> myProjects = new ArrayList<>();
     private List<ProjectListDTO> favoriteProjects = new ArrayList<>();
     private int projectsCount;
     private int favoritesCount;
+
+    public String getProfilePicturePath() {
+        return profilePicturePath;
+    }
+
+    public void setProfilePicturePath(String profilePicturePath) {
+        this.profilePicturePath = profilePicturePath;
+    }
 
     public int getProjectsCount() {
         return projectsCount;
@@ -73,12 +83,12 @@ public class UserProfileDTO {
         this.aboutMe = aboutMe;
     }
 
-    public String getProfilePicturePath() {
-        return profilePicturePath;
+    public String getProfilePicture() {
+        return profilePicture;
     }
 
-    public void setProfilePicturePath(String profilePicturePath) {
-        this.profilePicturePath = profilePicturePath;
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public LocalDateTime getJoinDate() {

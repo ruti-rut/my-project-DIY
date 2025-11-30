@@ -16,35 +16,77 @@ import java.io.IOException;
 @Mapper(componentModel = "spring")
 public interface UsersMapper {
 
+    // --- Basic Mappings ---
+    @Mapping(target = "profilePicture", ignore = true)
     UserResponseDTO usersToUserResponseDTO(Users users);
 
+    Users usersRegisterDTOToUsers(UsersRegisterDTO usersRegisterDTO);
 
+    // --- Complex Mappings with Custom Logic ---
+
+    @Mapping(target = "profilePicture", ignore = true)
     @Mapping(target = "projectsCount", expression = "java(users.getMyProjects() != null ? users.getMyProjects().size() : 0)")
     @Mapping(target = "favoritesCount", expression = "java(users.getFavoriteProjects() != null ? users.getFavoriteProjects().size() : 0)")
     UserProfileDTO usersToUserProfileDTO(Users users);
 
-
-
-    Users usersRegisterDTOToUsers(UsersRegisterDTO usersRegisterDTO);
-
     @Mapping(target = "profilePicture", ignore = true)
     UsersSimpleDTO toSimpleDTO(Users user);
 
+
     @AfterMapping
-    default void handleProfilePicture(@MappingTarget UsersSimpleDTO dto, Users user) {
-        if (user.getProfilePicturePath() != null) {
-            try {
-                String imageBase64 = ImageUtils.getImage(user.getProfilePicturePath());
-                dto.setProfilePicture(imageBase64);
-            } catch (IOException e) {
-                e.printStackTrace(); // או טיפול מותאם אחר
-                dto.setProfilePicture(null); // במקרה של שגיאה
+    default void handleProfilePicture(@MappingTarget Object dto, Users user) {
+        if (user.getProfilePicturePath() == null || user.getProfilePicturePath().trim().isEmpty()) {
+            return;
+        }
+
+        try {
+            String base64 = ImageUtils.getImage(user.getProfilePicturePath());
+
+            if (dto instanceof UserProfileDTO profileDto) {
+                profileDto.setProfilePicture(base64);
+                profileDto.setProfilePicturePath("/images/" + user.getProfilePicturePath());
             }
+            if (dto instanceof UsersSimpleDTO simpleDto) {
+                simpleDto.setProfilePicture(base64);
+            }
+            if (dto instanceof UserResponseDTO responseDto) {
+                responseDto.setProfilePicture(base64);  // ← השורה הזו חסרה!!!
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-
 }
+// --- After Mapping Logic (Default Methods) ---
 
+//    @AfterMapping
+//    default void handleProfilePicture(@MappingTarget UserProfileDTO dto, Users user) {
+//        // בדיוק אותו קוד כמו שיש לך
+//        if (user.getProfilePicturePath() != null && !user.getProfilePicturePath().trim().isEmpty()) {
+//            try {
+//                String base64 = ImageUtils.getImage(user.getProfilePicturePath());
+//                dto.setProfilePicture(base64);  // חשוב: בלי "data:image/..." – כי אתה מוסיף את זה באנגולר!
+//                dto.setProfilePicturePath("/images/" + user.getProfilePicturePath());
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                dto.setProfilePicture(null);
+//                dto.setProfilePicturePath(null);
+//            }
+//        }
+//    }
+//    @AfterMapping
+//    default void handleProfilePicture(@MappingTarget UsersSimpleDTO dto, Users user) {
+//        if (user.getProfilePicturePath() != null) {
+//            try {
+//                String imageBase64 = ImageUtils.getImage(user.getProfilePicturePath());
+//                dto.setProfilePicture(imageBase64);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                dto.setProfilePicture(null);
+//            }
+//        }
+//    }
+//}
 //    default UsersSimpleDTO toSimpleDTO(Users user) throws IOException {
 //        if (user == null) return null;
 //

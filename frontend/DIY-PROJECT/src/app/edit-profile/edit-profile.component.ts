@@ -42,23 +42,30 @@ private fb = inject(FormBuilder);
   });
 
   ngOnInit() {
-    const p = this.profile();
-    if (p) {
-      this.form.patchValue({
-        city: p.city || '',
-        aboutMe: p.aboutMe || ''
-      });
+  const p = this.profile();
+  if (p) {
+    this.form.patchValue({
+      city: p.city || '',
+      aboutMe: p.aboutMe || ''
+    });
 
-      if (p.profilePicturePath) {
-        this.previewUrl.set(`http://localhost:8080/images/${p.profilePicturePath}`);
-      } else {
-        // אווטאר ברירת מחדל אם אין תמונה
-        const color = this.avatarHelper.generateColor(p.userName);
-        const initial = this.avatarHelper.getFirstInitial(p.userName);
-        this.previewUrl.set(`https://ui-avatars.com/api/?name=${initial}&background=${color.substring(1)}&color=fff&size=200`);
-      }
+    // סדר עדיפויות מושלם – בדיוק מה שרצית!
+    if (p.profilePicture) {
+      // יש base64 מהשרת – משתמשים בו מיידית! (הכי מהיר)
+      this.previewUrl.set(p.profilePicture);
+    }
+    else if (p.profilePicturePath) {
+      // אם אין base64 אבל יש path – בונים URL
+      this.previewUrl.set(`http://localhost:8080${p.profilePicturePath}`);
+    }
+    else {
+      // אין תמונה – אווטאר צבעוני
+      const color = this.avatarHelper.generateColor(p.userName);
+      const initial = this.avatarHelper.getFirstInitial(p.userName);
+      this.previewUrl.set(`https://ui-avatars.com/api/?name=${initial}&background=${color.substring(1)}&color=fff&size=200`);
     }
   }
+}
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -83,8 +90,8 @@ private fb = inject(FormBuilder);
       formData.append('file', file, file.name);
     }
 
-    this.http.put('/api/users/me/update-profile', formData).subscribe({
-      next: () => {
+this.http.put('http://localhost:8080/api/users/me/update-profile', formData).subscribe({
+        next: () => {
         alert('הפרופיל עודכן בהצלחה!');
         this.profileService.loadProfile(); // רענון המידע בפרופיל
         // אפשר גם לנווט חזרה: this.router.navigate(['/profile']);

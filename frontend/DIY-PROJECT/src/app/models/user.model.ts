@@ -17,7 +17,7 @@ export interface UserResponseDTO {
   mail: string;
   city: string;
   aboutMe: string;
-  profilePicturePath: string | null;
+  profilePicture: string | null;
   provider: AuthProvider;
   subscribedToDaily:boolean;
 
@@ -40,7 +40,8 @@ export interface UserProfileDTO {
   mail: string;
   city: string;
   aboutMe: string;
-  profilePicturePath?: string;
+  profilePicture: string | null;    // ← Base64
+  profilePicturePath: string | null;      // ← הנתיב
   joinDate: string;
   myProjects: ProjectListDTO[];
   favoriteProjects: ProjectListDTO[];
