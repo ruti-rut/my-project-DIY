@@ -8,6 +8,6 @@
     }
     <span>{{ currentUser()?.userName }}</span>
   </div>
-  <textarea [(ngModel)]="newComment" placeholder="כתוב תגובה..." rows="3"></textarea>
+  <textarea [(ngModel)]="newComment" placeholder="Post a reply..." rows="3"></textarea>
   <button (click)="submit()" [disabled]="!newComment.trim()">שלח</button>
 </div>

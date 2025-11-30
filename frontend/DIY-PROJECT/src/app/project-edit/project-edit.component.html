@@ -1,0 +1,9 @@
+<div class="edit-page-container">
+    @if (loading) {
+    <mat-spinner class="center"></mat-spinner>
+    } @else if (projectId !== null) {
+    <app-project-form [projectId]="projectId"></app-project-form>
+    } @else {
+    <p>טוען...</p>
+    }
+</div>

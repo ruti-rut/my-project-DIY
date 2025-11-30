@@ -4,7 +4,7 @@
   <app-comment-form [projectId]="projectId" (commentAdded)="onCommentAdded()"></app-comment-form>
 
   @if (loading()) {
-    <p>טוען תגובות...</p>
+    <p>Loading comments...</p>
   } @else if (comments().length > 0) {
     @for (comment of comments(); track comment.id) {
     <div class="comment">
@@ -27,6 +27,6 @@
     </div>
 }
   } @else {
-    <p class="no-comments">אין תגובות עדיין – היה הראשון להגיב!</p>
+    <p class="no-comments">"No comments yet – be the first to respond!"</p>
   }
 </div>

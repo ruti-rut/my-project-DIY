@@ -10,7 +10,7 @@
       <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
       <mat-datepicker #startPicker></mat-datepicker>
       @if (challengeForm.controls['startDate'].hasError('required')) {
-        <mat-error>תאריך התחלה נדרש</mat-error>
+        <mat-error>Starting date required </mat-error>
       }
     </mat-form-field>
 
@@ -21,7 +21,7 @@
       <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
       <mat-datepicker #endPicker></mat-datepicker>
       @if (challengeForm.controls['endDate'].hasError('required')) {
-        <mat-error>תאריך סיום נדרש</mat-error>
+        <mat-error>Ending date required</mat-error>
       }
     </mat-form-field>
 
@@ -33,26 +33,26 @@
         <mat-error>נושא נדרש</mat-error>
       }
       @if (challengeForm.controls['theme'].hasError('minlength')) {
-        <mat-error>לפחות 3 תווים</mat-error>
+        <mat-error>At least 3 characters</mat-error>
       }
     </mat-form-field>
 
     <!-- תיאור -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>תיאור האתגר</mat-label>
+      <mat-label>Challenge Description</mat-label>
       <textarea matInput formControlName="content" rows="4"
-                placeholder="מה צריך לעשות? איך מצטרפים?"></textarea>
+                placeholder="What do I need to do? How do I join the challenge?"></textarea>
       @if (challengeForm.controls['content'].hasError('required')) {
-        <mat-error>תיאור נדרש</mat-error>
+        <mat-error>Description required </mat-error>
       }
       @if (challengeForm.controls['content'].hasError('minlength')) {
-        <mat-error>לפחות 10 תווים</mat-error>
+        <mat-error>At least 10 characters</mat-error>
       }
     </mat-form-field>
 
     <!-- העלאת תמונה -->
     <div class="image-section">
-      <label class="mat-body-2">תמונת האתגר <span class="required">*</span></label>
+      <label class="mat-body-2">Challenge picture <span class="required">*</span></label>
       <input type="file" accept="image/*" (change)="onFileSelected($event)" class="file-input" />
       
       @if (previewImage()) {
@@ -62,7 +62,7 @@
       }
 
       @if (!selectedFile) {
-        <mat-hint class="warning">נא להעלות תמונה</mat-hint>
+        <mat-hint class="warning">Please upload an image</mat-hint>
       }
     </div>
 
@@ -71,9 +71,9 @@
             [disabled]="challengeForm.invalid || !selectedFile || isSubmitting()"
             class="submit-btn">
       @if (!isSubmitting()) {
-        <span>צור אתגר</span>
+        <span>Create Challenge</span>
       } @else {
-        <span>שולח...</span>
+        <span>Submitting...</span>
       }
     </button>
   </form>

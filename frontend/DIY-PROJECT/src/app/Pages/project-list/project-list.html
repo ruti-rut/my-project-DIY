@@ -2,10 +2,10 @@
   <!-- שורת חיפוש -->
   <div class="search-section">
     <mat-form-field appearance="outline" class="search-field">
-      <mat-label>חיפוש פרויקט או תגית</mat-label>
+      <mat-label>Search project</mat-label>
       <input
         matInput
-        placeholder="הקלד שם פרויקט או תגית..."
+        placeholder="Search..."
         [formControl]="searchControl"
         autocomplete="off"
       />
@@ -20,7 +20,7 @@
 
   <!-- קטגוריות עם CHECKBOX -->
   <div class="categories-section">
-    <label class="section-label">קטגוריות:</label>
+    <label class="section-label">Categories:</label>
     <div class="categories-checkboxes">
       @for (cat of categories(); track cat.id) {
         <mat-checkbox 
@@ -42,9 +42,9 @@
     <mat-form-field appearance="outline" class="sort-field">
       <mat-label>מיון לפי</mat-label>
       <mat-select [formControl]="sortControl">
-        <mat-option value="newest">מהחדש לישן</mat-option>
-        <mat-option value="oldest">מהישן לחדש</mat-option>
-        <mat-option value="popular">פופולריים</mat-option>
+        <mat-option value="newest">Newest to oldest</mat-option>
+        <mat-option value="oldest">Oldest to newest</mat-option>
+        <mat-option value="popular">Populars</mat-option>
       </mat-select>
     </mat-form-field>
   </div>
@@ -69,17 +69,17 @@
         @if (loading()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
-          טען עוד
+           Load more
         }
       </button>
     </div>
   }
 
   @if (!hasMore() && projects().length > 0) {
-    <p class="no-more">אין עוד פרויקטים להצגה</p>
+    <p class="no-more">No more projects to display</p>
   }
 
   @if (!loading() && projects().length === 0) {
-    <p class="no-results">לא נמצאו פרויקטים</p>
+    <p class="no-results">Sorry, no projects could be found</p>
   }
 </div>

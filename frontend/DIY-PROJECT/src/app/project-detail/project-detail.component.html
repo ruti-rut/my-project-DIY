@@ -10,16 +10,16 @@
     @defer (on viewport) {
     <app-project-steps [steps]="proj.steps || []"></app-project-steps>
     } @placeholder {
-    <div class="placeholder">טוען שלבים...</div>
+    <div class="placeholder">Loading Steps...</div>
     }
 
     @defer (on viewport) {
     <app-project-comments [projectId]="proj.id"></app-project-comments>
     } @placeholder {
-    <div class="placeholder">טוען תגובות...</div>
+    <div class="placeholder">Loading comments...</div>
     }
     } @else {
-    <p>הפרויקט לא נמצא</p>
+    <p>Project not found</p>
     }
     }
 </div>

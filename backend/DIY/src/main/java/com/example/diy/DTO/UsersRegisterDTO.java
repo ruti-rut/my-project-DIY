@@ -4,19 +4,19 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class UsersRegisterDTO {
-    @NotBlank(message = "שם משתמש הוא שדה חובה.")
-    @Size(min = 4, max = 50, message = "שם המשתמש חייב להיות בין 4 ל-50 תווים.")
+    @NotBlank(message = "Username is a required field ")
+    @Size(min = 4, max = 50, message = "Username must be between 4 and 50 characters long")
     private String userName;
 
     // 2. וולידציה לסיסמה
-    @NotBlank(message = "סיסמה היא שדה חובה.")
+    @NotBlank(message = "Password is a required field")
     // חשוב: לוודא אורך מינימלי סביר לחוזק
-    @Size(min = 8, message = "הסיסמה חייבת להיות באורך של 8 תווים לפחות.")
+    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
     // 3. וולידציה למייל
-    @NotBlank(message = "דואר אלקטרוני הוא שדה חובה.")
-    @Email(message = "פורמט הדואר האלקטרוני אינו תקין.")
+    @NotBlank(message = "Email is a required field.")
+    @Email(message = "Invalid email format")
     private String mail;
 
     public String getUserName() {

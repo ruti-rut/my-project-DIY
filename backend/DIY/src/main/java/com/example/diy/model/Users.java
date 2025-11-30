@@ -14,7 +14,6 @@ public class Users {
     private Long id;
     private String password;
     private String userName;
-
     @Column(name = "user_email") // <-- התיקון הקריטי למילה שמורה
     private String mail;
     // --- שדות OAuth2 ---

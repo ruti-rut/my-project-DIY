@@ -1,12 +1,11 @@
 package com.example.diy.DTO;
 
-import com.example.diy.model.Challenge;
-import com.example.diy.model.Step;
-import com.example.diy.model.Tag;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
 public class ProjectCreateDTO {
+    @Size(min=3, max=20, message="Title should be between 3 to 20 characters Long")
     private String title;
     private String description;
     private String materials;
