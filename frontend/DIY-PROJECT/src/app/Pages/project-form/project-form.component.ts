@@ -28,21 +28,16 @@ import { StepService } from '../../services/step.service';
   styleUrl: './project-form.css'
 })
 export class ProjectFormComponent implements OnInit {
-  @Input() projectId: number | null = null;
+@Input() projectId: number | null = null;
   @Input() challengeId: number | null = null;
 
-  // === DI ===
   private fb = inject(FormBuilder);
-  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private projectService = inject(ProjectService);
   private stepService = inject(StepService);
-
   private categoryService = inject(CategoryService);
-  private authService = inject(AuthService);
 
-  // === Signals ===
-  form = signal<FormGroup>(this.createForm());
+  form = signal<FormGroup>(this.createEmptyForm());
   isEditMode = signal(false);
   loading = signal(false);
 
@@ -56,18 +51,17 @@ export class ProjectFormComponent implements OnInit {
   ngOnInit() {
     this.loadCategories();
 
-    // קבע מצב עריכה לפי @Input
     if (this.projectId) {
       this.isEditMode.set(true);
-      this.loadProject(this.projectId);
+      this.loadProjectForEdit();
     } else {
       this.isEditMode.set(false);
       this.addStep();
     }
   }
 
-  private createForm(): FormGroup {
-    const form = this.fb.group({
+  private createEmptyForm(): FormGroup {
+    return this.fb.group({
       title: ['', Validators.required],
       description: ['', Validators.required],
       materials: [''],
@@ -75,65 +69,77 @@ export class ProjectFormComponent implements OnInit {
       ages: [''],
       timePrep: [''],
       tagNames: [[]],
-      picture: [null],
+      picture: [null as File | null],
       isDraft: [true],
       steps: this.fb.array([], Validators.minLength(1))
     });
-    return form;
   }
 
   private loadCategories() {
     this.categoryService.getAllCategories().subscribe(cats => this.categories.set(cats));
   }
 
-  private loadProject(id: number) {
-    this.loading.set(true);
-    this.projectService.getById(id).subscribe({
-      next: (project: Project) => {
-        this.form().patchValue({
-          title: project.title,
-          description: project.description,
-          materials: project.materials,
-          categoryId: project.category?.id,
-          ages: project.ages,
-          timePrep: project.timePrep,
-          isDraft: project.isDraft
-        });
+ private loadProjectForEdit() {
+  this.loading.set(true);
+  this.projectService.getById(this.projectId!).subscribe({
+    next: (project: Project) => {
+      // איפוס מלא של הטופס
+      this.form.set(this.createEmptyForm());
 
-        this.tags.set(project.tags?.map(t => t.name) || []);
-        this.coverPreview.set(project.picture ? `/assets/images/projects/${project.picture}` : null);
+      this.form().patchValue({
+        title: project.title,
+        description: project.description,
+        materials: project.materials || '',
+        categoryId: project.category?.id,
+        ages: project.ages || '',
+        timePrep: project.timePrep || '',
+        isDraft: project.isDraft
+      });
 
-        this.steps().clear();
-        this.stepPreviews.set([]);
-        project.steps?.forEach(step => {
-          this.addStep(step);
-          const i = this.steps().length - 1;
-          this.stepPreviews.set([
-            ...this.stepPreviews(),
-            step.picture ? `/assets/images/steps/${step.picture}` : null
-          ]);
-        });
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false)
-    });
-  }
+      // תגיות
+      this.tags.set(project.tags?.map(t => t.name) || []);
+
+      // תמונת שער – Base64 או null
+      this.coverPreview.set(project.picture || null);
+      // אם אתה מקבל לפעמים נתיב ולפעמים Base64 – אפשר גם:
+      // this.coverPreview.set(project.picture?.startsWith('data:') ? project.picture : null);
+
+      // שלבים + תמונות שלהם
+      this.steps().clear();
+      this.stepPreviews.set([]);
+
+      project.steps?.forEach((step) => {
+        this.addStep(step);
+
+        // תמונת שלב – Base64 ישירות
+        const stepPreview = step.picture || null;
+        this.stepPreviews.update(prev => [...prev, stepPreview]);
+      });
+
+      this.loading.set(false);
+    },
+    error: () => {
+      this.loading.set(false);
+      alert('שגיאה בטעינת הפרויקט');
+      this.router.navigate(['/profile']);
+    }
+  });
+}
 
   addStep(existing?: any) {
     const step = this.fb.group({
       title: [existing?.title || '', Validators.required],
       content: [existing?.content || '', Validators.required],
-      picture: [null]
+      picture: [null as File | null]
     });
     this.steps().push(step);
-    this.stepPreviews.set([...this.stepPreviews(), null]);
+    this.stepPreviews.update(prev => [...prev, null]);
   }
 
   removeStep(i: number) {
-    if (this.steps().length > 1) {
-      this.steps().removeAt(i);
-      this.stepPreviews.set(this.stepPreviews().filter((_, index) => index !== i));
-    }
+    if (this.steps().length <= 1) return;
+    this.steps().removeAt(i);
+    this.stepPreviews.update(prev => prev.filter((_, idx) => idx !== i));
   }
 
   onCoverChange(event: Event) {
@@ -157,15 +163,13 @@ export class ProjectFormComponent implements OnInit {
   addTag(event: MatChipInputEvent) {
     const value = (event.value || '').trim();
     if (value && this.tags().length < 5 && !this.tags().includes(value)) {
-      this.tags.set([...this.tags(), value]);
-      this.form().get('tagNames')?.setValue(this.tags());
+      this.tags.update(t => [...t, value]);
     }
     event.chipInput!.clear();
   }
 
   removeTag(tag: string) {
-    this.tags.set(this.tags().filter(t => t !== tag));
-    this.form().get('tagNames')?.setValue(this.tags());
+    this.tags.update(t => t.filter(x => x !== tag));
   }
 
   submit(isDraft: boolean) {
@@ -182,38 +186,36 @@ export class ProjectFormComponent implements OnInit {
       description: formValue.description,
       materials: formValue.materials,
       categoryId: formValue.categoryId,
-      challengeId: this.challengeId,           // ← חשוב! כאן זה נכנס!
+      challengeId: this.challengeId || undefined,
       ages: formValue.ages,
       timePrep: formValue.timePrep,
       tagNames: this.tags(),
-      isDraft: isDraft
+      draft: isDraft
     };
 
     const formData = new FormData();
     formData.append('project', new Blob([JSON.stringify(data)], { type: 'application/json' }));
     if (formValue.picture) {
-      formData.append('image', formValue.picture, formValue.picture.name);
+      formData.append('image', formValue.picture);
     }
 
-    this.projectService.uploadProject(formData).subscribe({
-      next: (saved) => {
-        // ... שאר הקוד של השלבים
-        const obs = formValue.steps.map((s: any, i: number) => {
-          const step: StepDTO = { ...s, stepNumber: i + 1, projectId: saved.id };
+    const request$ = this.isEditMode()
+      ? this.projectService.updateProject(this.projectId!, formData)
+      : this.projectService.uploadProject(formData);
+
+    request$.subscribe({
+      next: (savedProject) => {
+        const stepObs = formValue.steps.map((s: any, i: number) => {
+          const step: StepDTO = { ...s, stepNumber: i + 1, projectId: savedProject.id };
           const fd = new FormData();
           fd.append('step', new Blob([JSON.stringify(step)], { type: 'application/json' }));
-          if (s.picture) fd.append('image', s.picture, s.picture.name);
+          if (s.picture) fd.append('image', s.picture);
           return this.stepService.uploadStep(fd);
         });
 
-        forkJoin(obs).subscribe({
+        forkJoin(stepObs).subscribe({
           next: () => {
-            // אם הגיע מ-challenge – חזור לשם!
-            if (this.challengeId) {
-              this.router.navigate(['/challenge', this.challengeId]);
-            } else {
-              this.router.navigate(['/project', saved.id]);
-            }
+            this.router.navigate(['/project', savedProject.id]);
           },
           error: () => this.loading.set(false)
         });
