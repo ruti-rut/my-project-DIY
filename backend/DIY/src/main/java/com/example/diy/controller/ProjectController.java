@@ -1,8 +1,11 @@
 package com.example.diy.controller;
-import com.example.diy.DTO.UserProfileDTO;
-import com.itextpdf.layout.Document; // תיקון: ה-Document הנכון
-import com.itextpdf.layout.properties.BaseDirection;
-import com.itextpdf.layout.properties.Property; // זה משמש להגדרת RTL
+
+import com.example.diy.DTO.ProjectCreateDTO;
+import com.example.diy.DTO.ProjectListDTO;
+import com.example.diy.DTO.ProjectResponseDTO;
+import com.example.diy.Mapper.ProjectMapper;
+import com.example.diy.model.*;
+import com.example.diy.service.*;
 import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -10,14 +13,11 @@ import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
-import com.example.diy.DTO.ProjectCreateDTO;
-import com.example.diy.DTO.ProjectListDTO;
-import com.example.diy.DTO.ProjectResponseDTO;
-import com.example.diy.Mapper.ProjectMapper;
-import com.example.diy.model.*;
-import com.example.diy.service.*;
+import com.itextpdf.layout.properties.BaseDirection;
+import com.itextpdf.layout.properties.Property;
 import com.itextpdf.layout.properties.TextAlignment;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
@@ -44,14 +45,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/project")
 public class ProjectController {
 
+    private final EntityManager entityManager;
     ProjectRepository projectRepository;
     ProjectMapper projectMapper;
     UsersRepository usersRepository;
     TagRepository tagRepository;
     HomeService homeService;
-    ChallengeRepository  challengeRepository;
-    StepRepository  stepRepository;
-    private final EntityManager entityManager;
+    ChallengeRepository challengeRepository;
+    StepRepository stepRepository;
 
 
     public ProjectController(EntityManager entityManager, StepRepository stepRepository, ChallengeRepository challengeRepository, HomeService homeService, TagRepository tagRepository, UsersRepository usersRepository, ProjectMapper projectMapper, ProjectRepository projectRepository) {
@@ -129,7 +130,8 @@ public class ProjectController {
             List<ProjectListDTO> dtos = projectMapper.toProjectListDTOList(projects, currentUser);
             return new ResponseEntity<>(dtos, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);    }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
     @PutMapping("/editProject/{id}")
     @Transactional
@@ -196,6 +198,7 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PostMapping("/{projectId}/favorite")
     @Transactional
     public ResponseEntity<Void> addToFavorites(@PathVariable Long projectId,
@@ -291,7 +294,8 @@ public class ProjectController {
                 }
             }
 
-            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(projects, currentUser);            return ResponseEntity.ok(dtoPage);
+            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(projects, currentUser);
+            return ResponseEntity.ok(dtoPage);
 
         } catch (Exception e) {
             e.printStackTrace(); // 🔥 זה יראה לך את השגיאה המלאה בקונסול!
@@ -299,16 +303,17 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
-        }
+    }
+
     @GetMapping("/myProjects")
-    public ResponseEntity<List<ProjectListDTO>> getProjectsByCurrentUser(Principal principal){
+    public ResponseEntity<List<ProjectListDTO>> getProjectsByCurrentUser(Principal principal) {
         try {
             Users currentUser = getCurrentUser(principal); // שלוף את המשתמש
             if (currentUser == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
             List<Project> myProjects = projectRepository.findByUsers(getCurrentUser(principal));
-            List<ProjectListDTO> myDTO = projectMapper.toProjectListDTOList(myProjects, currentUser);            return new ResponseEntity<>(myDTO,HttpStatus.OK);
-        }
-        catch(Exception e){
+            List<ProjectListDTO> myDTO = projectMapper.toProjectListDTOList(myProjects, currentUser);
+            return new ResponseEntity<>(myDTO, HttpStatus.OK);
+        } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -340,7 +345,6 @@ public class ProjectController {
 
         return ResponseEntity.ok(project);
     }
-
 
 
     @GetMapping("/{id}/pdf")
@@ -455,6 +459,33 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping("/{projectId}/like")
+    @Transactional
+    public ResponseEntity<Void> likeProject(@PathVariable Long projectId, Principal principal) {
+        Users currentUser = getCurrentUser(principal);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        project.getLikedByUsers().add(currentUser);
+        projectRepository.save(project);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{projectId}/like")
+    @Transactional
+    public ResponseEntity<Void> unlikeProject(@PathVariable Long projectId, Principal principal) {
+        Users currentUser = getCurrentUser(principal);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        project.getLikedByUsers().remove(currentUser);
+        projectRepository.save(project);
+
+        return ResponseEntity.ok().build();
+    }
+
 }
 
 
