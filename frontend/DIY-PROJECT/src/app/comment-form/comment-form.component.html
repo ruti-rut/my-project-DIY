@@ -1,7 +1,7 @@
 <div class="comment-form">
   <div class="user-preview">
-    @if (currentUser()?.profilePicturePath) {
-      <img [src]="'http://localhost:8080' + currentUser()?.profilePicturePath" class="avatar">
+    @if (currentUser()?.profilePicture) {
+      <img [src]="'http://localhost:8080' + currentUser()?.profilePicture" class="avatar">
     } @else {
       <div class="avatar-placeholder" [style.background-color]="avatarColor()">
         {{ avatarInitial() }}
