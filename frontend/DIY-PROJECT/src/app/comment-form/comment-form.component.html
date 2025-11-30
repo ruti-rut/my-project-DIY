@@ -1,15 +1,13 @@
 <div class="comment-form">
   <div class="user-preview">
-    @if (currentUser()?.profilePicture) {
-      <img [src]="'http://localhost:8080' + currentUser()?.profilePicture" class="avatar">
+    @if (userAvatarUrl()) { <img [src]="userAvatarUrl()!" class="avatar">
     } @else {
-      <div class="avatar-placeholder" [style.background-color]="avatarColor()">
-        {{ avatarInitial() }}
-      </div>
+    <div class="avatar-placeholder" [style.background-color]="avatarColor()">
+      {{ avatarInitial() }}
+    </div>
     }
     <span>{{ currentUser()?.userName }}</span>
   </div>
-
   <textarea [(ngModel)]="newComment" placeholder="כתוב תגובה..." rows="3"></textarea>
   <button (click)="submit()" [disabled]="!newComment.trim()">שלח</button>
 </div>

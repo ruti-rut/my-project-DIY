@@ -16,7 +16,7 @@ import { AvatarHelperService } from '../services/avatar-helper.service';
   styleUrl: './comment-form.component.css'
 })
 export class CommentFormComponent {
-@Input({ required: true }) projectId!: number;
+  @Input({ required: true }) projectId!: number;
   @Output() commentAdded = new EventEmitter<void>();
 
   newComment = '';
@@ -28,6 +28,25 @@ export class CommentFormComponent {
   currentUser = this.auth.currentUser;
   avatarInitial = computed(() => this.avatarHelper.getFirstInitial(this.currentUser()?.userName || '?'));
   avatarColor = computed(() => this.avatarHelper.generateColor(this.currentUser()?.userName || '?'));
+
+  userAvatarUrl = computed(() => {
+    const user = this.currentUser();
+    if (!user) return null;
+
+    // 1. קדימות ל-Base64 (אם יש לך שדה כזה ב-Users model)
+    // אם ה-Base64 נמצא בשדה profilePicture:
+    if (user.profilePicture && user.profilePicture.startsWith('data:image')) {
+      return user.profilePicture;
+    }
+    if (user.profilePicture && user.profilePicture.trim()) {
+      return `data:image/jpeg;base64,${user.profilePicture}`;
+    }
+
+    // 2. חזרה לנתיב (אם אין Base64)
+    
+    return null;
+  });
+
 
   submit() {
     if (!this.newComment.trim()) return;
