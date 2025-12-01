@@ -55,7 +55,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
 
     List<Project> findByTags_NameContainingIgnoreCase(String keyword);
 
-
+    boolean existsByChallengeIdAndUsersId(Long challengeId, Long userId);
 
 
     //    // חיפוש לפי כותרת או תגיות

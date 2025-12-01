@@ -1257,3 +1257,9 @@ UPDATE "PUBLIC"."PROJECT" SET "CREATED_AT"=? ,"IS_DRAFT"=? ,"CATEGORY_ID"=? ,"CH
 2025-12-01 18:59:36.358673+02:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLDataException: Value too long for column "CONTENT CHARACTER VARYING(255)": "U&'Do you ever find yourself enchanted by the beauty of a well-decorated space o... (1041)"; SQL statement:
 insert into challenge (content,end_date,picture_path,start_date,theme,id) values (?,?,?,?,?,default) [22001-232]
+2025-12-01 20:11:17.842244+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'n' (PROJECT: ""CHALLENGE_ID"" BIGINT)"; SQL statement:
+UPDATE "PUBLIC"."PROJECT" SET "CREATED_AT"=? ,"IS_DRAFT"=? ,"CATEGORY_ID"=? ,"CHALLENGE_ID"=? ,"ID"=? ,"USERS_ID"=? ,"AGES"=? ,"DESCRIPTION"=? ,"PICTURE_PATH"=? ,"TIME_PREP"=? ,"TITLE"=? ,"MATERIALS"=?  WHERE "ID"=? [22018-232]
+2025-12-01 20:11:17.842244+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'n' (PROJECT: ""CHALLENGE_ID"" BIGINT)"; SQL statement:
+UPDATE "PUBLIC"."PROJECT" SET "CREATED_AT"=? ,"IS_DRAFT"=? ,"CATEGORY_ID"=? ,"CHALLENGE_ID"=? ,"ID"=? ,"USERS_ID"=? ,"AGES"=? ,"DESCRIPTION"=? ,"PICTURE_PATH"=? ,"TIME_PREP"=? ,"TITLE"=? ,"MATERIALS"=?  WHERE "ID"=? [22018-232]

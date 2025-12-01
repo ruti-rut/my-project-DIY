@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
-
+import org.springframework.http.HttpMethod;
 import java.util.List;
 
 // הגדרות אבטחה
@@ -85,11 +85,18 @@ public class WebSecurityConfig {
                         auth.requestMatchers("/h2-console/**", "/oauth2/**", "/login", "/favicon.ico", "/error").permitAll()
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/api/category/**").permitAll()
-                                .requestMatchers("/api/project/**").permitAll()
-                                .requestMatchers("/api/comment/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/project/**").permitAll()
+
+                                // 2. פרויקטים (POST, PATCH, PUT, DELETE) - דורשים אימות
+                                // 🌟 זו הדרך הנכונה לתקן את שגיאת ה-401 שלך:
+                                .requestMatchers(HttpMethod.POST, "/api/project/**").authenticated()
+                                .requestMatchers(HttpMethod.PATCH, "/api/project/**").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/project/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/project/**").authenticated()                                .requestMatchers("/api/comment/**").permitAll()
                                 .requestMatchers("/api/users/**").permitAll()
+                                .requestMatchers("/api/AIAssistant/**").permitAll() // <--- הוספת שורה זו
                                 .requestMatchers("/images/**").permitAll() // <--- הוספת השורה הזו
-                                .requestMatchers("api/challenge/**").permitAll()
+                                .requestMatchers("/api/challenge/**").permitAll()
 
 
                                 .anyRequest().authenticated()

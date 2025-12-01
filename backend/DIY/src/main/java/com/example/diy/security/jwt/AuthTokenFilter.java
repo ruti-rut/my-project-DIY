@@ -31,8 +31,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         try{
             String jwt=jwtUtils.getJwtFromCookies(httpServletRequest);
-            //*********מהי השאלה כאן???
+            if (jwt != null) {
+                System.out.println("--- JWT Token Found: " + jwt.substring(0, 10) + "..."); // מדפיס רק את ההתחלה
+            } else {
+                System.out.println("--- JWT Token NOT Found in Cookies.");
+            }
+
             if(jwt !=null && jwtUtils.validateJwtToken(jwt)){
+                System.out.println("--- JWT Token IS VALID for user: " + jwtUtils.getUserNameFromJwtToken(jwt));
                 String userName=jwtUtils.getUserNameFromJwtToken(jwt);
                 UserDetails userDetails= userDetailsService.loadUserByUsername(userName);
 
@@ -43,6 +49,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             }
+        else if (jwt != null) {
+            System.out.println("--- JWT Token FAILED VALIDATION or is null.");
+        }
 
         }
         catch (Exception e)

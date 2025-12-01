@@ -45,71 +45,105 @@ export class ChatService {
   sendMessage(userText: string) {
     if (!userText.trim() || this.isLoading()) return;
 
-    // 1. מוסיפים מיד את הודעת המשתמש
-    this.messages.update(msgs => [...msgs, {
-      role: 'user',
-      content: userText,
-      timestamp: new Date()
-    }]);
+    // 1. הודעת המשתמש
+    this.messages.update(msgs => [
+      ...msgs,
+      { role: 'user', content: userText, timestamp: new Date() }
+    ]);
 
     this.isLoading.set(true);
 
-    // סוגרים חיבור קיים אם יש (בטיחות)
-    if (this.currentEventSource) {
-      this.currentEventSource.close();
-    }
+    // הוספת הודעת assistant ריקה שתתמלא בזמן אמת
+    this.messages.update(msgs => [
+      ...msgs,
+      { role: 'assistant', content: '', timestamp: new Date() }
+    ]);
 
-    // 2. פותחים SSE חדש
     const url = `${this.baseUrl}/chat?message=${encodeURIComponent(userText)}&conversationId=${this.conversationId()}`;
-    this.currentEventSource = new EventSource(url);
 
-    let aiResponse = '';
-
-    this.currentEventSource.onmessage = (event) => {
-      const data = event.data;
-
-      // Spring AI שולח [DONE] בסוף הסטרימינג
-      if (data === '[DONE]' || data === 'data: [DONE]') {
-        this.currentEventSource!.close();
-        this.currentEventSource = null;
-        this.isLoading.set(false);
+    fetch(url, {
+      method: 'GET',
+      credentials: 'include',                 // חובה בשביל ה‑cookie של Spring Security
+      headers: { 'Accept': 'text/event-stream' }
+    })
+    .then(response => {
+      if (response.status === 401) {
+        this.handleAuthError();
         return;
       }
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-      // לפעמים מגיע עם "data: " לפני – ננקה
-      const cleanChunk = data.replace(/^data: /, '');
-      aiResponse += cleanChunk;
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
 
-      // עדכון זורם של ההודעה האחרונה (או יצירת חדשה)
-      this.messages.update(msgs => {
-        const last = msgs[msgs.length - 1];
-        if (last?.role === 'assistant') {
-          return [...msgs.slice(0, -1), { ...last, content: aiResponse }];
-        } else {
-          return [...msgs, {
-            role: 'assistant',
-            content: aiResponse,
-            timestamp: new Date()
-          }];
-        }
-      });
-    };
+      const processChunk = () => {
+        reader.read().then(({ done, value }) => {
+          if (done) {
+            this.isLoading.set(false);
+            return;
+          }
 
-    this.currentEventSource.onerror = () => {
-      this.currentEventSource!.close();
-      this.currentEventSource = null;
+          buffer += decoder.decode(value, { stream: true });
+
+          // פיצול לפי שורות SSE
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';               // השורה האחרונה עלולה להיות חלקית
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6).trim();
+
+              if (data === '[DONE]') {
+                this.isLoading.set(false);
+                return;
+              }
+
+              // עדכון זורם של ההודעה האחרונה
+              this.messages.update(msgs => {
+                const last = msgs[msgs.length - 1];
+                if (last.role === 'assistant') {
+                  return [
+                    ...msgs.slice(0, -1),
+                    { ...last, content: last.content + data }
+                  ];
+                }
+                return msgs;
+              });
+            }
+          }
+
+          processChunk(); // ממשיך לקרוא את הצ'אנק הבא
+        });
+      };
+
+      processChunk();
+    })
+    .catch(err => {
+      console.error(err);
       this.isLoading.set(false);
-
-      if (!aiResponse) {
-        this.messages.update(msgs => [...msgs, {
+      this.messages.update(msgs => [
+        ...msgs.slice(0, -1), // מסיר את ההודעה הריקה שהוספנו
+        {
           role: 'assistant',
-          content: 'אופס... יש בעיה בחיבור לשרת. נסה שוב מאוחר יותר.',
+          content: `שגיאה: ${err.message || 'חיבור נכשל'}`,
           timestamp: new Date()
-        }]);
-      }
-    };
+        }
+      ]);
+    });
   }
 
+  private handleAuthError() {
+    this.isLoading.set(false);
+    this.messages.update(msgs => [
+      ...msgs,
+      {
+        role: 'assistant',
+        content: 'נדרשת התחברות מחדש.',
+        timestamp: new Date()
+      }
+    ]);
+  }
   // שיחה חדשה לגמרי
   newConversation() {
     this.conversationId.set(crypto.randomUUID());

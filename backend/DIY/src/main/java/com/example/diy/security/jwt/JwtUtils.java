@@ -81,7 +81,13 @@ public class JwtUtils {
     }
 
     public ResponseCookie getCleanJwtCookie() {
-        ResponseCookie cookie = ResponseCookie.from("securitySample", null).path("/").build();
-        return cookie;
+        return ResponseCookie.from("securitySample", "")
+                .path("/")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .domain("localhost") // 🔥 הוסף את זה!
+                .build();
     }
 }
