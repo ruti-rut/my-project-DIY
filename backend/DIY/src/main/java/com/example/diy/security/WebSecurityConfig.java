@@ -90,6 +90,8 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/users/**").permitAll()
                                 .requestMatchers("/images/**").permitAll() // <--- הוספת השורה הזו
                                 .requestMatchers("api/challenge/**").permitAll()
+//                                .requestMatchers("api/AIAssistant/**").permitAll()
+
 
 
                                 .anyRequest().authenticated()

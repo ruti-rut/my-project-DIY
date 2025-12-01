@@ -56,7 +56,7 @@ private baseUrl = 'http://localhost:8080/api/auth';
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/logout определить`, {}, { withCredentials: true }).pipe(
+    return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true }).pipe(
       tap(() => {
         this.updateCurrentUser(null);
         this.router.navigate(['/']);
