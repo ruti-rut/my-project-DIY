@@ -73,4 +73,11 @@ export class SubmitProjectDialogComponent implements OnInit {
     }
     return '/assets/default-project.jpg';
   }
+  navigateToMyProjects(): void {
+  this.dialogRef.close(); // סגירת הדיאלוג
+  // ניווט לדף הפרויקטים האישיים והעברת challengeId כפרמטר ב-URL
+  this.router.navigate(['/my-projects'], {
+    queryParams: { challengeId: this.data.challengeId } 
+  });
+}
 }
