@@ -50,7 +50,7 @@ public class ChallengeController {
     @GetMapping("/challenge/{id}")
     public ResponseEntity<ChallengeResponseDTO> getChallenge(@PathVariable Long id) {
         try {
-            Challenge challenge = challengeRepository.findById(id)
+            Challenge challenge = challengeRepository.findByIdWithProjectsAndUsers(id)
                     .orElseThrow(() -> new RuntimeException("Challenge not found"));
 
             ChallengeResponseDTO dto = challengeMapper.toChallengeResponseDTO(challenge);
