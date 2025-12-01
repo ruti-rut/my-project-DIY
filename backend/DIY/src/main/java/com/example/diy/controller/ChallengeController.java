@@ -33,21 +33,41 @@ public class ChallengeController {
 
     @GetMapping("/allChallenges")
     public ResponseEntity<List<ChallengeListDTO>> getAllChallenges() {
-        List<Challenge> list = challengeRepository.findAll();
-        if (list != null) {
-            return new ResponseEntity<>(challengeMapper.toChallengeListDTOList(list), HttpStatus.OK);
+        try {
+            List<Challenge> list = challengeRepository.findAll();
+
+            if (list.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(challengeMapper.toChallengeListDTOList(list));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/challenge/{id}")
     public ResponseEntity<ChallengeResponseDTO> getChallenge(@PathVariable Long id) {
-        Challenge challenge = challengeRepository.findByIdWithProjectsAndUsers(id)
-                .orElseThrow(() -> new RuntimeException("Challenge not found"));
+        try {
+            Challenge challenge = challengeRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Challenge not found"));
 
-        ChallengeResponseDTO dto = challengeMapper.toChallengeResponseDTO(challenge);
-        return ResponseEntity.ok(dto);
+            ChallengeResponseDTO dto = challengeMapper.toChallengeResponseDTO(challenge);
+            return ResponseEntity.ok(dto);
+
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Challenge not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
+
     @PostMapping("/uploadChallenge")
     public ResponseEntity<Challenge> uploadChallengeWithImage(@RequestPart("image") MultipartFile file
             , @RequestPart("challenge") ChallengeCreateDTO challengeDto) {
@@ -57,11 +77,21 @@ public class ChallengeController {
             challenge.setPicturePath(file.getOriginalFilename());
 
             Challenge savedChallenge = challengeRepository.save(challenge);
-            return new ResponseEntity<>(savedChallenge, HttpStatus.CREATED);
+
+            // שימוש בשיטת נוחות: Created (201)
+            // נמנעים מלהעביר null ל-created ומשתמשים ב-status() או בבניית URI כפי שהוסבר
+            // לצורך היצמדות מינימלית, נשתמש ב-status(CREATED) כדי להימנע מה-@NotNull warning
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedChallenge);
 
         } catch (IOException e) {
-            System.out.println(e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            System.err.println("Error uploading image: " + e.getMessage());
+            // שימוש בשיטת נוחות: Internal Server Error (500)
+            return ResponseEntity.internalServerError().build();
+        } catch (Exception e) {
+            System.err.println("Error saving challenge: " + e.getMessage());
+            e.printStackTrace();
+            // שימוש בשיטת נוחות: Internal Server Error (500)
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

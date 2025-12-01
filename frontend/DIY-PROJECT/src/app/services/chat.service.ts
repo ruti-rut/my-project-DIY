@@ -13,7 +13,7 @@ export interface ChatMessage {
 })
 export class ChatService {
 
-  private baseUrl = 'http://localhost:8080/api/users'; // תתקני אם הפורט שלך שונה
+  private baseUrl = 'http://localhost:8080/api/AIAssistant'; // תתקני אם הפורט שלך שונה
 
   // מזהה השיחה – נשמר גם ב-localStorage כדי שימשיך אחרי רענון דף
   private conversationId = signal<string>(this.loadOrCreateConversationId());

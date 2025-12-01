@@ -59,25 +59,25 @@ export const routes: Routes = [
   path: 'challenge/:id',
 loadComponent: () => import('./challenge-details/challenge-details.component')
     .then(m => m.ChallengeDetailsComponent), 
-     title: 'פרטי אתגר'
+     title: 'Challenge Details'
 },
 {
     path: 'profile',
     loadComponent: () => import('./profile-page/profile-page.component').then(m => m.ProfilePageComponent),
     canActivate: [authGuard],
-    title: 'הפרופיל שלי'
+    title: 'My Profile'
   },
   {
     path: 'profile/edit',
     loadComponent: () => import('./edit-profile/edit-profile.component').then(m => m.EditProfileComponent),
     canActivate: [authGuard],
-    title: 'עריכת פרופיל'
+    title: 'Edit Profile'
   },
   {
     path: 'project/edit/:id',
     loadComponent: () => import('./project-edit/project-edit.component').then(m => m.ProjectEditComponent),
     canActivate: [authGuard],
-    title: `edit project`
+    title: `Edit Project`
   },
   {
     path: 'my-projects',

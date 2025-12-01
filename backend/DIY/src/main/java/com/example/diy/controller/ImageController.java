@@ -42,9 +42,10 @@ public class ImageController {
                     .body(resource);
 
         } catch (MalformedURLException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -52,6 +53,7 @@ public class ImageController {
      * קובע את ה-Content-Type לפי סיומת הקובץ
      */
     private String determineContentType(String filename) {
+        // אין צורך ב-try-catch כאן כי זו לוגיקה פנימית ופשוטה
         String lowerFilename = filename.toLowerCase();
 
         if (lowerFilename.endsWith(".png")) {
@@ -79,6 +81,10 @@ public class ImageController {
             Resource resource = new UrlResource(file.toUri());
             return ResponseEntity.ok(resource.exists() && resource.isReadable());
         } catch (MalformedURLException e) {
+            return ResponseEntity.ok(false);
+        } catch (Exception e) {
+            // טיפול בשגיאות אחרות (כגון בעיות הרשאות קריאה ב-Paths)
+            e.printStackTrace();
             return ResponseEntity.ok(false);
         }
     }

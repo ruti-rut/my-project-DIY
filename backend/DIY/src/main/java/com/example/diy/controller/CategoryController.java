@@ -1,10 +1,8 @@
 package com.example.diy.controller;
 
 import com.example.diy.DTO.CategoryDTO;
-import com.example.diy.DTO.ChallengeListDTO;
 import com.example.diy.Mapper.CategoryMapper;
 import com.example.diy.model.Category;
-import com.example.diy.model.Challenge;
 import com.example.diy.service.CategoryRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +26,19 @@ public class CategoryController {
 
     @GetMapping("/allCategories")
     public ResponseEntity<List<CategoryDTO>> getAllCategories() {
-        List<Category> list = categoryRepository.findAll();
-        if (list != null) {
-            return new ResponseEntity<>(categoryMapper.CategoryToCategoryDTO(list), HttpStatus.OK);
+        try {
+            List<Category> list = categoryRepository.findAll();
+
+            if (list == null || list.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok(categoryMapper.CategoryToCategoryDTO(list));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
 
