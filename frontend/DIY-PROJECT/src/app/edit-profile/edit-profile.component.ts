@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { ProfileService } from '../services/profile.service';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -10,6 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { UserProfileDTO } from '../models/user.model';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-edit-profile',
@@ -25,15 +27,13 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
 })
 export class EditProfileComponent {
 private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
   private profileService = inject(ProfileService);
   private avatarHelper = inject(AvatarHelperService);
+  private toast = inject(ToastService);
 
-  profile = this.profileService.profile;
   loading = signal(false);
-
-  // תצוגה מקדימה של התמונה
   previewUrl = signal<string>('');
+  profile = this.profileService.profile;
 
   form = this.fb.group({
     city: [''],
@@ -41,37 +41,42 @@ private fb = inject(FormBuilder);
     profilePicture: [null as File | null]
   });
 
-  ngOnInit() {
-  const p = this.profile();
-  if (p) {
-    this.form.patchValue({
-      city: p.city || '',
-      aboutMe: p.aboutMe || ''
+  constructor() {
+    this.profileService.loadProfile(); // טוען את הפרופיל מיד
+
+    effect(() => {
+      const p = this.profileService.profile();
+      if (!p?.userName) return;
+
+      // מילוי הטופס
+      this.form.patchValue({
+        city: p.city || '',
+        aboutMe: p.aboutMe || ''
+      });
+
+      // תמונת הפרופיל – את עדיין מחזירה base64 אז זה בטוח עובד
+      if (p.profilePicture) {
+        const url = p.profilePicture.startsWith('data:')
+          ? p.profilePicture
+          : `data:image/jpeg;base64,${p.profilePicture}`;
+
+        this.previewUrl.set(url);           // ← זה יציג את התמונה הישנה
+      } else {
+        // fallback לאווטאר
+        const color = this.avatarHelper.generateColor(p.userName);
+        const initial = this.avatarHelper.getFirstInitial(p.userName);
+        this.previewUrl.set(
+          `https://ui-avatars.com/api/?name=${initial}&background=${color.substring(1)}&color=fff&size=200`
+        );
+      }
     });
-
-    // סדר עדיפויות מושלם – בדיוק מה שרצית!
-    if (p.profilePicture) {
-      // יש base64 מהשרת – משתמשים בו מיידית! (הכי מהיר)
-      this.previewUrl.set(p.profilePicture);
-    }
-    else if (p.profilePicturePath) {
-      // אם אין base64 אבל יש path – בונים URL
-      this.previewUrl.set(`http://localhost:8080${p.profilePicturePath}`);
-    }
-    else {
-      // אין תמונה – אווטאר צבעוני
-      const color = this.avatarHelper.generateColor(p.userName);
-      const initial = this.avatarHelper.getFirstInitial(p.userName);
-      this.previewUrl.set(`https://ui-avatars.com/api/?name=${initial}&background=${color.substring(1)}&color=fff&size=200`);
-    }
   }
-}
-
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
       this.form.patchValue({ profilePicture: file });
+      // הצגת התמונה החדשה שבחר המשתמש
       this.previewUrl.set(URL.createObjectURL(file));
     }
   }
@@ -79,28 +84,23 @@ private fb = inject(FormBuilder);
   save() {
     if (this.form.invalid) return;
 
-    this.loading.set(true);
-    const formData = new FormData();
+    // ... הנתונים המלאים כבר מועברים כפי שצריך
+    const city = this.form.value.city ?? '';
+    const aboutMe = this.form.value.aboutMe ?? '';
+    const file = this.form.value.profilePicture ?? null;
 
-    formData.append('city', this.form.value.city || '');
-    formData.append('aboutMe', this.form.value.aboutMe || '');
+    this.profileService.loading.set(true); // עדכון ה-loading לפני הבקשה
 
-    const file = this.form.value.profilePicture;
-    if (file) {
-      formData.append('file', file, file.name);
-    }
-
-this.http.put('http://localhost:8080/api/users/me/update-profile', formData).subscribe({
-        next: () => {
-        alert('הפרופיל עודכן בהצלחה!');
-        this.profileService.loadProfile(); // רענון המידע בפרופיל
-        // אפשר גם לנווט חזרה: this.router.navigate(['/profile']);
+    this.profileService.updateProfile(city, aboutMe, file).subscribe({
+      next: data => {
+        this.profileService.profile.set(data);
+        this.toast.success('הפרופיל עודכן בהצלחה!');
       },
-      error: (err) => {
+      error: err => {
         console.error(err);
-        alert('שגיאה בעדכון הפרופיל');
+        this.toast.error('שגיאה בעדכון הפרופיל');
       },
-      complete: () => this.loading.set(false)
+      complete: () => this.profileService.loading.set(false)
     });
   }
 
@@ -108,3 +108,7 @@ this.http.put('http://localhost:8080/api/users/me/update-profile', formData).sub
     history.back();
   }
 }
+
+      
+
+      

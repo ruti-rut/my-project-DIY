@@ -20,6 +20,31 @@ export class ProjectService {
     return this.http.get<Project>(`${this.apiUrl}/getProject/${id}`);
   }
 
+  // getProjects(
+  //   page: number,
+  //   searchTerm: string = '',
+  //   categoryIds: number[] = [],
+  //   sort: 'newest' | 'oldest' | 'popular' = 'newest',
+  //   size: number = 30
+  // ): Observable<Page<ProjectListDTO>> {
+  //   let params = new HttpParams()
+  //     .set('page', page.toString())
+  //     .set('size', size.toString())
+  //     .set('sort', sort);
+
+  //   if (searchTerm.trim()) {
+  //     params = params.set('search', searchTerm.trim());
+  //   }
+
+  //   //  שלח את כל הקטגוריות
+  //   if (categoryIds.length > 0) {
+  //     categoryIds.forEach(id => {
+  //       params = params.append('categoryIds', id.toString());
+  //     });
+  //   }
+
+  //   return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/allProjects`, { params });
+  // }
   getProjects(
     page: number,
     searchTerm: string = '',
@@ -27,25 +52,28 @@ export class ProjectService {
     sort: 'newest' | 'oldest' | 'popular' = 'newest',
     size: number = 30
   ): Observable<Page<ProjectListDTO>> {
+
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString())
       .set('sort', sort);
 
-    if (searchTerm.trim()) {
+    // שליחה רק אם יש ערך אמיתי
+    if (searchTerm && searchTerm.trim().length > 0) {
       params = params.set('search', searchTerm.trim());
     }
 
-    //  שלח את כל הקטגוריות
-    if (categoryIds.length > 0) {
-      categoryIds.forEach(id => {
+    // טיפול קפדני במערך הקטגוריות
+    if (categoryIds && categoryIds.length > 0) {
+      // מוחק כפילויות במערך אם יש (ליתר ביטחון)
+      const uniqueIds = [...new Set(categoryIds)];
+      uniqueIds.forEach(id => {
         params = params.append('categoryIds', id.toString());
       });
     }
 
     return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/allProjects`, { params });
   }
-
   getMyProjects(): Observable<ProjectListDTO[]> {
     return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myProjects`);
   }

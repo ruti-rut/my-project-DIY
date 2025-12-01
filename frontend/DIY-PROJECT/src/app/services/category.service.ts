@@ -11,5 +11,7 @@ export class CategoryService {
   getAllCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(`${this.apiUrl}/allCategories`);
   }
-  
+  getCategoryById(id:number): Observable<Category>{
+    return this.http.get<Category>(`${this.apiUrl}/category`)
+  }
 }

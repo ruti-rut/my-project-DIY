@@ -20,7 +20,8 @@ import java.util.List;
                 ProjectMapper.class // 🌟 הוסף את ה-ProjectMapper
                 , UsersMapper.class // אם קיים ומשתמשים בו ישירות
         }
-)public interface ChallengeMapper {
+)
+public interface ChallengeMapper {
     List<ChallengeListDTO> toChallengeListDTOList(List<Challenge> challenges);
 
     Challenge challengeCreateDTOToEntity(ChallengeCreateDTO challengeCreateDTO);

@@ -1,34 +1,20 @@
-<!-- submit-project-dialog.component.html -->
-
 <h2 mat-dialog-title>Submit a project to the challenge</h2>
 
 <mat-dialog-content class="dialog-content">
   <button mat-stroked-button color="primary" class="full-width large-btn" (click)="createNewProject()">
     <mat-icon>add_circle</mat-icon>
-Create new project  </button>
+    Create new project
+  </button>
 
   <div class="separator">
     <span>Or</span>
   </div>
 
-  @if (loading()) {
-    <div class="loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
-  } @else if (myProjects().length === 0) {
-    <p class="no-projects">You have no existing projects to submit</p>
-  } @else {
-    <p class="hint">Select an existing project from the list</p>
-    <div class="projects-list">
-      @for (project of myProjects(); track project.id) {
-        <div class="project-item" (click)="submitExistingProject(project.id)">
-          <img [src]="getImageUrl(project)" alt="{{ project.title }}" class="thumb">
-          <span class="title">{{ project.title }}</span>
-          <mat-icon>arrow_forward_ios</mat-icon>
-        </div>
-      }
-    </div>
-  }
+  <button mat-stroked-button color="accent" class="full-width large-btn" (click)="navigateToMyProjects()">
+    <mat-icon>folder_shared</mat-icon>
+    Select existing project
+  </button>
+  
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">

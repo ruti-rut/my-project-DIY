@@ -1,0 +1,185 @@
+.filters-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 28px 24px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+  border-radius: 24px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  margin-bottom: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.filters-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, 
+    rgba(124, 58, 237, 0.04) 0%, 
+    rgba(72, 149, 239, 0.04) 50%, 
+    rgba(236, 72, 153, 0.04) 100%);
+  pointer-events: none;
+  border-radius: 24px;
+}
+
+/* חיפוש */
+.search-wrapper {
+  flex: 1;
+  min-width: 320px;
+}
+
+.search-input {
+  width: 100%;
+}
+
+.search-input .mat-mdc-form-field-outline {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.search-input .mat-mdc-form-field-infix {
+  padding: 16px 0 14px !important;
+}
+
+.search-input input {
+  font-size: 1.08rem;
+  font-weight: 500;
+}
+
+.search-icon {
+  color: #6366f1;
+  font-size: 24px;
+}
+
+.clear-search {
+  color: #94a3b8;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.clear-search:hover {
+  opacity: 1;
+}
+
+/* קטגוריות – עכשיו עם mat-chip-option */
+.categories-section {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.chips-label {
+  font-weight: 700;
+  color: #374151;
+  font-size: 0.98rem;
+  letter-spacing: 0.3px;
+}
+
+/* עיצוב ה-chips האמיתי – עובד עם mat-chip-option */
+mat-chip-set {
+  gap: 10px;
+}
+
+mat-chip-option {
+  background: #f8fafc !important;
+  color: #1e293b !important;
+  font-weight: 600 !important;
+  border-radius: 50px !important;
+  height: 40px !important;
+  padding: 0 18px !important;
+  font-size: 0.94rem !important;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 2px solid transparent !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+mat-chip-option:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
+}
+
+mat-chip-option.selected {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+  color: white !important;
+  border-color: transparent !important;
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 28px rgba(99, 102, 241, 0.4) !important;
+}
+
+mat-chip-option.selected:hover {
+  transform: translateY(-5px) scale(1.06);
+  box-shadow: 0 16px 32px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* כפתור ניקוי הכל */
+.clear-all-btn {
+  background: rgba(148, 163, 184, 0.18);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  color: #64748b;
+  transition: all 0.3s ease;
+}
+
+.clear-all-btn:hover {
+  background: rgba(148, 163, 184, 0.3);
+  transform: scale(1.1);
+}
+
+/* מיון */
+.sort-wrapper {
+  min-width: 220px;
+}
+
+.sort-select .mat-mdc-form-field-outline {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.sort-select mat-icon[matPrefix] {
+  color: #8b5cf6;
+  font-size: 22px;
+}
+
+/* רספונסיביות */
+@media (max-width: 960px) {
+  .filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .search-wrapper,
+  .sort-wrapper {
+    min-width: unset;
+  }
+
+  .categories-section {
+    order: 3;
+  }
+}
+
+@media (max-width: 600px) {
+  .filters-bar {
+    border-radius: 18px;
+    padding: 20px;
+  }
+
+  mat-chip-option {
+    height: 38px !important;
+    font-size: 0.9rem !important;
+    padding: 0 16px !important;
+  }
+
+  .chips-label {
+    font-size: 0.92rem;
+  }
+}

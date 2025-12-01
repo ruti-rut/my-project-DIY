@@ -9,6 +9,25 @@
       @if (project.isDraft) {
         <div class="draft-badge">טיוטה</div>
       }
+      @if (challengeIdToAssign() !== null && !project.challengeId) { 
+    <div class="challenge-assign-overlay">
+     <button mat-raised-button color="accent" (click)="assignProject(project.id)">
+      <mat-icon>link</mat-icon>
+      Assign to Challenge
+     </button>
+    </div>
+
+    }
+    @if (challengeIdToAssign() === null) {
+   <div class="actions-overlay">
+        <button mat-icon-button color="primary" [routerLink]="['/project/edit', project.id]" title="עריכה">     <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button color="warn" (click)="deleteProject(project.id)" title="מחיקה">
+     <mat-icon>delete_forever</mat-icon>
+    </button>
+   </div>
+      }
+  
 
       <!-- כפתורי פעולה -->
       <div class="actions-overlay">

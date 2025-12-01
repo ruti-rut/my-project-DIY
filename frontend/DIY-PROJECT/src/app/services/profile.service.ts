@@ -14,13 +14,10 @@ export class ProfileService {
   profile = signal<UserProfileDTO | null>(null);
   loading = signal(true);
 
-  /**
-   * טוען את הפרופיל המלא של המשתמש הנוכחי
-   */
   loadProfile() {
     this.loading.set(true);
-this.http.get<UserProfileDTO>('http://localhost:8080/api/users/profile').subscribe({
-          next: (data) => {
+    this.http.get<UserProfileDTO>('http://localhost:8080/api/users/profile').subscribe({
+      next: (data) => {
         console.log('Profile loaded:', data); // לדיבוג
         this.profile.set(data);
         this.loading.set(false);
@@ -33,9 +30,6 @@ this.http.get<UserProfileDTO>('http://localhost:8080/api/users/profile').subscri
     });
   }
 
-  /**
-   * מוחק פרויקט מהמועדפים - עדכון לוקאלי
-   */
   removeFavorite(projectId: number) {
     this.profile.update(p => {
       if (!p) return null;
@@ -46,20 +40,30 @@ this.http.get<UserProfileDTO>('http://localhost:8080/api/users/profile').subscri
     });
   }
 
-  /**
-   * מוחק פרויקט שלי - עדכון לוקאלי
-   */
   deleteMyProject(projectId: number) {
-  this.profile.update(p => {
-   if (!p) return null;
-   return {
-    ...p,
-    // 🔥 מחקנו את השורה הזו:
-    // myProjects: p.myProjects.filter(x => x.id !== projectId), 
-    projectsCount: p.projectsCount - 1
-   };
-  });
-  this.toast.success('הפרויקט נמחק בהצלחה');
- }
+    this.profile.update(p => {
+      if (!p) return null;
+      return {
+        ...p,
+        // 🔥 מחקנו את השורה הזו:
+        // myProjects: p.myProjects.filter(x => x.id !== projectId), 
+        projectsCount: p.projectsCount - 1
+      };
+    });
+    this.toast.success('הפרויקט נמחק בהצלחה');
+  }
+  updateProfile(city: string, aboutMe: string, file: File | null) {
+  const formData = new FormData();
+  formData.append('city', city || '');
+  formData.append('aboutMe', aboutMe || '');
+  if (file) {
+    formData.append('file', file, file.name);
+  }
 
+  this.loading.set(true);
+
+  // ✅ הסר את withCredentials: false כדי לאפשר שליחת קוקי האימות
+  return this.http.post<UserProfileDTO>('http://localhost:8080/api/users/me/update-profile', formData);
 }
+  
+  }

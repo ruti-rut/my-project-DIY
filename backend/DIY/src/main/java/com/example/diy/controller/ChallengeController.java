@@ -50,7 +50,7 @@ public class ChallengeController {
     @GetMapping("/challenge/{id}")
     public ResponseEntity<ChallengeResponseDTO> getChallenge(@PathVariable Long id) {
         try {
-            Challenge challenge = challengeRepository.findById(id)
+            Challenge challenge = challengeRepository.findByIdWithProjectsAndUsers(id)
                     .orElseThrow(() -> new RuntimeException("Challenge not found"));
 
             ChallengeResponseDTO dto = challengeMapper.toChallengeResponseDTO(challenge);
@@ -78,9 +78,6 @@ public class ChallengeController {
 
             Challenge savedChallenge = challengeRepository.save(challenge);
 
-            // שימוש בשיטת נוחות: Created (201)
-            // נמנעים מלהעביר null ל-created ומשתמשים ב-status() או בבניית URI כפי שהוסבר
-            // לצורך היצמדות מינימלית, נשתמש ב-status(CREATED) כדי להימנע מה-@NotNull warning
             return ResponseEntity.status(HttpStatus.CREATED).body(savedChallenge);
 
         } catch (IOException e) {

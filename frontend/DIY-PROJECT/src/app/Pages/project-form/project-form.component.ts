@@ -57,6 +57,7 @@ export class ProjectFormComponent implements OnInit {
     } else {
       this.isEditMode.set(false);
       this.addStep();
+      this.stepPreviews.update(prev => [...prev, null]); // ✅ הוספת preview ריק לשלב הראשון במצב יצירה חדש
     }
   }
 
@@ -100,20 +101,34 @@ export class ProjectFormComponent implements OnInit {
       this.tags.set(project.tags?.map(t => t.name) || []);
 
       // תמונת שער – Base64 או null
-      this.coverPreview.set(project.picture || null);
-      // אם אתה מקבל לפעמים נתיב ולפעמים Base64 – אפשר גם:
-      // this.coverPreview.set(project.picture?.startsWith('data:') ? project.picture : null);
+      if (project.picture) {
+        const fullCoverUrl = project.picture.startsWith('data:')
+          ? project.picture
+          : `data:image/jpeg;base64,${project.picture}`;
+        this.coverPreview.set(fullCoverUrl);
+      } else {
+        this.coverPreview.set(null);
+      }
 
       // שלבים + תמונות שלהם
       this.steps().clear();
       this.stepPreviews.set([]);
 
-      project.steps?.forEach((step) => {
+     project.steps?.forEach((step) => {
         this.addStep(step);
 
-        // תמונת שלב – Base64 ישירות
-        const stepPreview = step.picture || null;
-        this.stepPreviews.update(prev => [...prev, stepPreview]);
+        // 1. הגדרת משתנה לתמונה
+        let stepPreviewUrl: string | null = null;
+        
+        // 2. ✅ הוספת התיקון: בדיקת קידומת Base64
+        if (step.picture) {
+          stepPreviewUrl = step.picture.startsWith('data:')
+            ? step.picture
+            : `data:image/jpeg;base64,${step.picture}`;
+        }
+        
+        // 3. עדכון הסיגנל
+        this.stepPreviews.update(prev => [...prev, stepPreviewUrl]);
       });
 
       this.loading.set(false);
@@ -133,7 +148,6 @@ export class ProjectFormComponent implements OnInit {
       picture: [null as File | null]
     });
     this.steps().push(step);
-    this.stepPreviews.update(prev => [...prev, null]);
   }
 
   removeStep(i: number) {
