@@ -68,9 +68,13 @@ public class ProjectController {
 
     @GetMapping("/getProject/{id}")
     public ResponseEntity<ProjectResponseDTO> get(@PathVariable Long id) {
-        return projectRepository.findById(id)
-                .map(project -> ResponseEntity.ok(projectMapper.projectEntityToResponseDTO(project)))
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            return projectRepository.findById(id)
+                    .map(project -> ResponseEntity.ok(projectMapper.projectEntityToResponseDTO(project)))
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/uploadProject")
@@ -83,6 +87,9 @@ public class ProjectController {
 
             // 1. מציאת משתמש וקישור
             Users currentUser = getCurrentUser(principal);
+            if (currentUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
             project.setUsers(currentUser);
             project.setPicturePath(file.getOriginalFilename());
 
@@ -112,25 +119,34 @@ public class ProjectController {
             Project savedProject = projectRepository.save(project);
             // 3. מיפוי לתגובה
             ProjectResponseDTO responseDTO = projectMapper.projectEntityToResponseDTO(savedProject);
-            return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
-
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
         } catch (IOException e) {
-            System.out.println(e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            System.out.println("Error during image upload: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        } catch (RuntimeException e) {
+            System.out.println("Error processing challenge or saving project: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            System.out.println("General error in uploadProject: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ProjectListDTO>> getProjectsByCategory(@PathVariable Long categoryId, Principal principal) {
-        Users currentUser = principal != null ? getCurrentUser(principal) : null;
+        try {
+            Users currentUser = principal != null ? getCurrentUser(principal) : null;
 
-        List<Project> projects = projectRepository.findByCategoryId(categoryId);
+            List<Project> projects = projectRepository.findByCategoryId(categoryId);
 
-        if (projects != null) {
-            List<ProjectListDTO> dtos = projectMapper.toProjectListDTOList(projects, currentUser);
-            return new ResponseEntity<>(dtos, HttpStatus.OK);
+            if (projects != null && !projects.isEmpty()) {
+                List<ProjectListDTO> dtos = projectMapper.toProjectListDTOList(projects, currentUser);
+                return ResponseEntity.ok(dtos);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/editProject/{id}")
@@ -146,7 +162,7 @@ public class ProjectController {
 
             // 🔥 אימות בעלות
             Users currentUser = getCurrentUser(principal);
-            if (!existingProject.getUsers().getId().equals(currentUser.getId())) {
+            if (currentUser == null || !existingProject.getUsers().getId().equals(currentUser.getId())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
@@ -193,9 +209,21 @@ public class ProjectController {
 
             return ResponseEntity.ok(responseDTO);
 
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            if (e.getMessage().contains("Project not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            if (e.getMessage().contains("Challenge not found")) {
+                return ResponseEntity.badRequest().build();
+            }
+            return ResponseEntity.internalServerError().build();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -203,35 +231,63 @@ public class ProjectController {
     @Transactional
     public ResponseEntity<Void> addToFavorites(@PathVariable Long projectId,
                                                Principal principal) {
-        Users currentUser = getCurrentUser(principal);
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+        try {
+            Users currentUser = getCurrentUser(principal);
+            if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        if (!currentUser.getFavoriteProjects().contains(project)) {
-            currentUser.getFavoriteProjects().add(project);
-            usersRepository.save(currentUser);
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
+
+            if (!currentUser.getFavoriteProjects().contains(project)) {
+                currentUser.getFavoriteProjects().add(project);
+                usersRepository.save(currentUser);
+            }
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Project not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.internalServerError().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{projectId}/favorite")
     @Transactional
     public ResponseEntity<Void> removeFromFavorites(@PathVariable Long projectId, Principal principal) {
-        Users currentUser = getCurrentUser(principal);
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+        try {
+            Users currentUser = getCurrentUser(principal);
+            if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        currentUser.getFavoriteProjects().remove(project);
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        usersRepository.save(currentUser);
+            currentUser.getFavoriteProjects().remove(project);
 
-        return ResponseEntity.ok().build();
+            usersRepository.save(currentUser);
+
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Project not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.internalServerError().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     // פונקציית עזר
     private Users getCurrentUser(Principal principal) {
+        if (principal == null) return null;
         String username = principal.getName(); // מהטוקן
-        return usersRepository.findByUserName(username);
+        try {
+            return usersRepository.findByUserName(username);
+        } catch (Exception e) {
+            // טיפול בשגיאה בשליפה מבסיס הנתונים, למרות שבדרך כלל זה לא קורה כאן אם ה-Principal תקין
+            return null;
+        }
     }
 
 
@@ -265,7 +321,7 @@ public class ProjectController {
             // לוגיקת החיפוש
             if (search != null && !search.trim().isEmpty()) {
                 // יש חיפוש
-                if (categoryIds != null) {
+                if (categoryIds != null && !categoryIds.isEmpty()) {
                     // חיפוש + קטגוריה
                     projects = projectRepository.searchByTitleOrTagsAndCategories(search, categoryIds, pageable);
                 } else {
@@ -276,7 +332,7 @@ public class ProjectController {
                         projects = projectRepository.searchByTitleOrTags(search, pageable);
                     }
                 }
-            } else if (categoryIds != null) {
+            } else if (categoryIds != null && !categoryIds.isEmpty()) {
                 // רק קטגוריה בלי חיפוש
                 if ("popular".equals(sort)) {
                     projects = projectRepository.findByCategoryIdsOrderByLikes(categoryIds, pageable);
@@ -300,7 +356,7 @@ public class ProjectController {
         } catch (Exception e) {
             e.printStackTrace(); // זה יראה לך את השגיאה המלאה בקונסול!
 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.internalServerError().build();
         }
 
     }
@@ -310,11 +366,11 @@ public class ProjectController {
         try {
             Users currentUser = getCurrentUser(principal); // שלוף את המשתמש
             if (currentUser == null) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-            List<Project> myProjects = projectRepository.findByUsers(getCurrentUser(principal));
+            List<Project> myProjects = projectRepository.findByUsers(currentUser);
             List<ProjectListDTO> myDTO = projectMapper.toProjectListDTOList(myProjects, currentUser);
-            return new ResponseEntity<>(myDTO, HttpStatus.OK);
+            return ResponseEntity.ok(myDTO);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -328,7 +384,7 @@ public class ProjectController {
             return ResponseEntity.ok(dtos);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -336,103 +392,125 @@ public class ProjectController {
     public ResponseEntity<Project> assignToChallenge(
             @PathVariable Long projectId,
             @PathVariable Long challengeId) {
+        try {
+            Project project = projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project not found"));
+            Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(() -> new RuntimeException("Challenge not found"));
 
-        Project project = projectRepository.findById(projectId).orElseThrow();
-        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow();
+            project.setChallenge(challenge);
+            Project savedProject = projectRepository.save(project);
 
-        project.setChallenge(challenge);
-        projectRepository.save(project);
-
-        return ResponseEntity.ok(project);
+            return ResponseEntity.ok(savedProject);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Project not found") || e.getMessage().contains("Challenge not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.internalServerError().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 
     @GetMapping("/{id}/pdf")
-    public ResponseEntity<byte[]> generateProjectPdf(@PathVariable Long id) throws Exception {
+    public ResponseEntity<byte[]> generateProjectPdf(@PathVariable Long id) {
+        try {
+            Project project = projectRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+            // ייתכן ותרצי להשתמש ב-project.getSteps() אם קיים קשר @OneToMany
+            List<Step> steps = stepRepository.findByProjectId(id);
 
-        // ייתכן ותרצי להשתמש ב-project.getSteps() אם קיים קשר @OneToMany
-        List<Step> steps = stepRepository.findByProjectId(id);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            // **תיקון 3:** העברת יצירת ה-PdfWriter וה-PdfDocument לתוך ה-try-catch
+            PdfWriter writer = new PdfWriter(baos);
+            PdfDocument pdf = new PdfDocument(writer);
 
-        PdfWriter writer = new PdfWriter(baos);
-        PdfDocument pdf = new PdfDocument(writer);
+            // **תיקון 1:** יצירת אובייקט Document הנכון של iText
+            Document document = new Document(pdf);
 
-        // **תיקון 1:** יצירת אובייקט Document הנכון של iText
-        Document document = new Document(pdf);
+            // ----- תמיכה בעברית ופונט -----
+            // **תיקון 2:** טעינת הפונט. ודאי שקובץ 'arial.ttf' קיים בנתיב היחסי או המוחלט.
+            // אם השגיאה עדיין קיימת, בדקי את גרסת ה-iText ואת המיקום של הקובץ.
+            PdfFont font = PdfFontFactory.createFont("fonts/arial.ttf", PdfEncodings.IDENTITY_H);
 
-        // ----- תמיכה בעברית ופונט -----
-        // **תיקון 2:** טעינת הפונט. ודאי שקובץ 'arial.ttf' קיים בנתיב היחסי או המוחלט.
-        // אם השגיאה עדיין קיימת, בדקי את גרסת ה-iText ואת המיקום של הקובץ.
-        PdfFont font = PdfFontFactory.createFont("fonts/arial.ttf", PdfEncodings.IDENTITY_H);
+            document.setFont(font);
+            document.setProperty(Property.BASE_DIRECTION, BaseDirection.RIGHT_TO_LEFT);
 
-        document.setFont(font);
-        document.setProperty(Property.BASE_DIRECTION, BaseDirection.RIGHT_TO_LEFT);
-
-        // ----- כותרת, תיאור, תמונה ראשית -----
-        Paragraph title = new Paragraph(project.getTitle())
-                .setFontSize(24)
-                .setBold()
-                .setTextAlignment(TextAlignment.CENTER);
-        document.add(title);
-
-        if (project.getDescription() != null) {
-            document.add(new Paragraph(project.getDescription()).setFontSize(14));
-        }
-
-        if (project.getPicturePath() != null) {
-            String coverPath = System.getProperty("user.dir") + "/images/" + project.getPicturePath();
-            try {
-                ImageData imgData = ImageDataFactory.create(coverPath);
-                // ממורכז את התמונה
-                Image img = new Image(imgData).setWidth(350).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
-                document.add(img);
-            } catch (IOException e) {
-                System.err.println("Error loading cover image: " + coverPath + " - " + e.getMessage());
-            }
-        }
-
-        // ----- שלבים -----
-        document.add(new Paragraph("\n"));
-        document.add(new Paragraph("שלבי העבודה").setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
-        document.add(new Paragraph("\n"));
-
-        for (Step step : steps) {
-
-            document.add(new Paragraph("שלב " + step.getStepNumber() + ": " + step.getTitle())
+            // ----- כותרת, תיאור, תמונה ראשית -----
+            Paragraph title = new Paragraph(project.getTitle())
+                    .setFontSize(24)
                     .setBold()
-                    .setFontSize(16));
+                    .setTextAlignment(TextAlignment.CENTER);
+            document.add(title);
 
-            document.add(new Paragraph(step.getContent()).setFontSize(12));
+            if (project.getDescription() != null) {
+                document.add(new Paragraph(project.getDescription()).setFontSize(14));
+            }
 
-            // תמונת שלב
-            if (step.getPicturePath() != null) {
-
-                String imgPath = System.getProperty("user.dir")
-                        + "/images/" + step.getPicturePath();
-
+            if (project.getPicturePath() != null) {
+                String coverPath = System.getProperty("user.dir") + "/images/" + project.getPicturePath();
                 try {
-                    ImageData imgData2 = ImageDataFactory.create(imgPath);
-                    Image img2 = new Image(imgData2).setWidth(300).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
-                    document.add(img2);
+                    ImageData imgData = ImageDataFactory.create(coverPath);
+                    // ממורכז את התמונה
+                    Image img = new Image(imgData).setWidth(350).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+                    document.add(img);
                 } catch (IOException e) {
-                    System.err.println("Error loading step image: " + imgPath + " - " + e.getMessage());
+                    System.err.println("Error loading cover image: " + coverPath + " - " + e.getMessage());
                 }
             }
+
+            // ----- שלבים -----
             document.add(new Paragraph("\n"));
+            document.add(new Paragraph("שלבי העבודה").setBold().setFontSize(20).setTextAlignment(TextAlignment.CENTER));
+            document.add(new Paragraph("\n"));
+
+            for (Step step : steps) {
+
+                document.add(new Paragraph("שלב " + step.getStepNumber() + ": " + step.getTitle())
+                        .setBold()
+                        .setFontSize(16));
+
+                document.add(new Paragraph(step.getContent()).setFontSize(12));
+
+                // תמונת שלב
+                if (step.getPicturePath() != null) {
+
+                    String imgPath = System.getProperty("user.dir")
+                            + "/images/" + step.getPicturePath();
+
+                    try {
+                        ImageData imgData2 = ImageDataFactory.create(imgPath);
+                        Image img2 = new Image(imgData2).setWidth(300).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+                        document.add(img2);
+                    } catch (IOException e) {
+                        System.err.println("Error loading step image: " + imgPath + " - " + e.getMessage());
+                    }
+                }
+                document.add(new Paragraph("\n"));
+            }
+
+            document.close();
+
+            // החזרת ה-PDF כבייט-אייריי. שם הקובץ נשלח ב-Content-Disposition.
+            return ResponseEntity.ok()
+                    // שם הקובץ הדינמי:
+                    .header("Content-Disposition", "attachment; filename=\"" + project.getTitle().replaceAll("[^a-zA-Z0-9.-]", "_") + ".pdf\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(baos.toByteArray());
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Project not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            // כולל שגיאות FontFactory
+            return ResponseEntity.internalServerError().build();
+        } catch (IOException e) {
+            // שגיאות I/O ב-PdfWriter או יצירת הפונט
+            return ResponseEntity.internalServerError().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
-
-        document.close();
-
-        // החזרת ה-PDF כבייט-אייריי. שם הקובץ נשלח ב-Content-Disposition.
-        return ResponseEntity.ok()
-                // שם הקובץ הדינמי:
-                .header("Content-Disposition", "attachment; filename=\"" + project.getTitle().replaceAll("[^a-zA-Z0-9.-]", "_") + ".pdf\"")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(baos.toByteArray());
     }
 
 
@@ -444,7 +522,7 @@ public class ProjectController {
                     .orElseThrow(() -> new RuntimeException("Project not found"));
 
             Users currentUser = getCurrentUser(principal);
-            if (!project.getUsers().getId().equals(currentUser.getId())) {
+            if (currentUser == null || !project.getUsers().getId().equals(currentUser.getId())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
@@ -455,58 +533,62 @@ public class ProjectController {
 
 
             return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Project not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.internalServerError().build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
     @PostMapping("/{projectId}/like")
     @Transactional
     public ResponseEntity<Void> likeProject(@PathVariable Long projectId, Principal principal) {
-        Users currentUser = getCurrentUser(principal);
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+        try {
+            Users currentUser = getCurrentUser(principal);
+            if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        project.getLikedByUsers().add(currentUser);
-        projectRepository.save(project);
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        return ResponseEntity.ok().build();
+            project.getLikedByUsers().add(currentUser);
+            projectRepository.save(project);
+
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Project not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.internalServerError().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @DeleteMapping("/{projectId}/like")
     @Transactional
     public ResponseEntity<Void> unlikeProject(@PathVariable Long projectId, Principal principal) {
-        Users currentUser = getCurrentUser(principal);
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+        try {
+            Users currentUser = getCurrentUser(principal);
+            if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        project.getLikedByUsers().remove(currentUser);
-        projectRepository.save(project);
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        return ResponseEntity.ok().build();
+            project.getLikedByUsers().remove(currentUser);
+            projectRepository.save(project);
+
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Project not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.internalServerError().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

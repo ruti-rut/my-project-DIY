@@ -48,10 +48,10 @@ public class AuthController {
         this.jwtUtils = jwtUtils;
         this.emailSenderService = emailSenderService;
     }
+
     // --- 2. כניסת משתמש (Signin) ---
     @PostMapping("/signin")
     public ResponseEntity<?> login(@Valid @RequestBody UserLogInDTO loginRequest) {
-
         try {
             // 1. אימות המשתמש (מפעיל את DaoAuthenticationProvider)
             Authentication authentication = authenticationManager.authenticate(
@@ -62,29 +62,52 @@ public class AuthController {
             // 4. יצירת JWT והצבת ה-Cookie
             ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
             UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(userDetails.getUser());
+
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                     .body(responseDto);
+
         } catch (AuthenticationException e) {
-            return new ResponseEntity<>(Map.of("error", "שם משתמש או סיסמה שגויים."), HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "שם משתמש או סיסמה שגויים."));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "שגיאת שרת פנימית במהלך ההתחברות."));
         }
     }
+
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getCurrentUser(Principal principal) {
-        if (principal == null) {
-            return ResponseEntity.status(401).build();
+        try {
+            if (principal == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            Users user = usersRepository.findByUserName(principal.getName());
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(usersMapper.usersToUserResponseDTO(user));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
-        Users user = usersRepository.findByUserName(principal.getName());
-        return ResponseEntity.ok(usersMapper.usersToUserResponseDTO(user));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser() {
-        ResponseCookie cleanCookie = jwtUtils.getCleanJwtCookie();
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cleanCookie.toString())
-                .body(Map.of("message", "התנתקת בהצלחה!"));
+        try {
+            ResponseCookie cleanCookie = jwtUtils.getCleanJwtCookie();
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cleanCookie.toString())
+                    .body(Map.of("message", "התנתקת בהצלחה!"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
+
+    // --- אין שינוי ב-login (Redirect) מכיוון שזו לא מחזירה ResponseEntity ---
     @GetMapping("/login")
     public void login(@RequestParam(value = "error", required = false) String error,
                       HttpServletResponse response) throws IOException {
@@ -97,27 +120,32 @@ public class AuthController {
 
         response.sendRedirect("/oauth2/authorization/google");
     }
+
     @GetMapping("/verify")
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {
+        try {
+            Users user = usersRepository.findByVerificationToken(token);
 
-        Users user = usersRepository.findByVerificationToken(token);
+            if (user == null) {
+                return ResponseEntity.badRequest().body("Token לא תקף");
+            }
 
-        if (user == null) {
-            return ResponseEntity.badRequest().body("Token לא תקף");
+            user.setEmailVerified(true);
+            user.setVerificationToken(null);
+            usersRepository.save(user);
+
+            return ResponseEntity.ok("המייל אומת בהצלחה!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("שגיאה במהלך אימות המייל.");
         }
-
-        user.setEmailVerified(true);
-        user.setVerificationToken(null);
-        usersRepository.save(user);
-
-        return ResponseEntity.ok("המייל אומת בהצלחה!");
     }
 
     @PostMapping("/signup")
     public ResponseEntity<UserResponseDTO> signUp(@Valid @RequestBody UsersRegisterDTO user) {
         try {
             if (usersRepository.existsByUserName(user.getUserName())) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return ResponseEntity.badRequest().build();
             }
 
             Users newUser = usersMapper.usersRegisterDTOToUsers(user);
@@ -154,11 +182,12 @@ public class AuthController {
 
             UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(saved);
 
-            return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+
         } catch (Exception e) {
             System.err.println("Signup failed: " + e.getMessage());
             e.printStackTrace();
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

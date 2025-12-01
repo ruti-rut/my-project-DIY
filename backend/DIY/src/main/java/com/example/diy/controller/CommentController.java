@@ -43,37 +43,55 @@ public class CommentController {
         try {
             // 1. בדיקה: האם המשתמש מחובר?
             if (principal == null || principal.getName() == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(null);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             // 2. בדיקה: האם התוכן לא ריק?
             if (dto.getContent() == null || dto.getContent().trim().isEmpty()) {
-                return ResponseEntity.badRequest()
-                        .body(null); // או תשלחי הודעת שגיאה
+                return ResponseEntity.badRequest().build();
             }
             // 3. מציאת המשתמש
             Users currentUser = usersRepository.findByUserName(principal.getName());
             if (currentUser == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(null);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-            // 4. מציאת הפרויקט
+            // 4. מציאת הפרויקט - חסר קריאה לפרויקט, נניח שהוא מגיע ב-DTO
+
+            // בדיקה שדות קריטיים נוספים (אם נדרש)
+            if (dto.getProjectId() == null) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            // נשלים את מציאת הפרויקט
+            Project project = projectRepository.findById(dto.getProjectId())
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
+
+
             // 5. יצירת ההערה
             Comment comment = commentMapper.commentCreateDTOtoEntity(dto);
             comment.setContent(dto.getContent().trim());
             comment.setUser(currentUser);
+            comment.setProject(project); // קישור הפרויקט שנמצא
+
             // createdAt יתווסף אוטומטית
             // 6. שמירה במסד
             Comment saved = commentRepository.save(comment);
+
             // 7. החזרת DTO
             return ResponseEntity.ok(commentMapper.commentToDTO(saved));
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Project not found")) {
+                return ResponseEntity.notFound().build();
+            }
             // לוג של השגיאה (חשוב!)
             System.err.println("Error adding comment: " + e.getMessage());
             e.printStackTrace();
 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+            return ResponseEntity.internalServerError().build();
+        } catch (Exception e) {
+            // לוג של השגיאה (חשוב!)
+            System.err.println("Error adding comment: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -82,11 +100,22 @@ public class CommentController {
             @PathVariable Long projectId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
+        try {
+            // בדיקה אם הפרויקט קיים (אופציונלי אך מומלץ)
+            if (!projectRepository.existsById(projectId)) {
+                return ResponseEntity.notFound().build();
+            }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Comment> commentPage = commentRepository.findByProjectIdOrderByCreatedAtDesc(projectId, pageable);
+            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            Page<Comment> commentPage = commentRepository.findByProjectIdOrderByCreatedAtDesc(projectId, pageable);
 
-        return ResponseEntity.ok(commentMapper.toDtoPage(commentPage));
+            return ResponseEntity.ok(commentMapper.toDtoPage(commentPage));
+
+        } catch (Exception e) {
+            System.err.println("Error fetching comments for project " + projectId + ": " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 }

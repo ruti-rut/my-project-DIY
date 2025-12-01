@@ -36,49 +36,51 @@ public class UsersController {
     // *** ENDPOINT לניהול הרשמה: PUT /api/users/subscription/toggle ***
     @PutMapping("/subscription/toggle")
     public ResponseEntity<UserResponseDTO> toggleSubscription(Principal principal) {
-        if (principal == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        try {
+            if (principal == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            Users user = usersRepository.findByUserName(principal.getName());
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            boolean newStatus = !user.isSubscribedToDaily();
+            user.setSubscribedToDaily(newStatus);
+            Users updatedUser = usersRepository.save(user);
+
+            // ← חשוב! תחזיר את ה-user המעודכן עם כל השדות!
+            UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(updatedUser);
+
+            return ResponseEntity.ok(responseDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
-        Users user = usersRepository.findByUserName(principal.getName());
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        boolean newStatus = !user.isSubscribedToDaily();
-        user.setSubscribedToDaily(newStatus);
-        Users updatedUser = usersRepository.save(user);
-
-        // ← חשוב! תחזיר את ה-user המעודכן עם כל השדות!
-        UserResponseDTO responseDto = usersMapper.usersToUserResponseDTO(updatedUser);
-
-        return ResponseEntity.ok(responseDto);  // ← חייב להחזיר את זה!
     }
-    @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> getResponse(
-            @RequestParam String message,
-            @RequestParam String conversationId) {
 
-        // קריאה לשירות עם הפרמטרים החדשים
-        // כמובן, תצטרכי לשנות את חתימת המתודה ב-AIChatService בהתאם
-        return aiChatService.getResponse(message, conversationId);
-    }
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileDTO> getMyProfile(Principal principal) {
-        if (principal == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        try {
+            if (principal == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            Users user = usersRepository.findByUserName(principal.getName());
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // שדות אלה צריכים להיות מחושבים אוטומטית במאפר או ב-DTO
+
+
+            UserProfileDTO profileDTO = usersMapper.usersToUserProfileDTO(user);
+
+            return ResponseEntity.ok(profileDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
-        Users user = usersRepository.findByUserName(principal.getName());
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        int projectsCount = user.getMyProjects().size();
-        int favoritesCount = user.getFavoriteProjects().size();
-
-        UserProfileDTO profileDTO = usersMapper.usersToUserProfileDTO(user);
-
-        return ResponseEntity.ok(profileDTO);
     }
 
     @PutMapping("/me/update-profile")
@@ -88,6 +90,9 @@ public class UsersController {
             @RequestPart(required = false) String aboutMe,
             Principal principal) {
         try {
+            if (principal == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
             Users user = usersRepository.findByUserName(principal.getName());
             if (user == null) {
                 return ResponseEntity.notFound().build();
@@ -109,25 +114,13 @@ public class UsersController {
             }
 
             Users savedUser = usersRepository.save(user);
-
-            // טעינה מחדש עם כל הנתונים
-            Users fullUser = usersRepository.findByUserName(principal.getName());
-            UserProfileDTO profileDTO = usersMapper.usersToUserProfileDTO(fullUser);
+            UserProfileDTO profileDTO = usersMapper.usersToUserProfileDTO(savedUser);
 
             return ResponseEntity.ok(profileDTO);
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.internalServerError().build();
         }
     }
-
-
-//    @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-//    public Flux<String> getResponse(@RequestBody ChatRequest chatRequest){
-//        return aiChatService.getResponse(chatRequest.message(), chatRequest.conversationId());
-//    }
-
 }
-
-
