@@ -20,10 +20,13 @@ import com.itextpdf.layout.properties.BaseDirection;
 import com.itextpdf.layout.properties.Property;
 import com.itextpdf.layout.properties.TextAlignment;
 import jakarta.persistence.EntityManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +47,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/project")
 public class ProjectController {
+    private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
 
     private final EntityManager entityManager;
     ProjectRepository projectRepository;
@@ -240,69 +244,54 @@ public class ProjectController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "30") int size,
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) List<Long> categoryIds,  // 🔥 מערך!
+            @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(defaultValue = "newest") String sort,
             Principal principal
     ) {
+        logger.info("--- STARTING PROJECTS FETCH ---");
+        logger.info("Received Params: Page={}, Size={}, Sort={}, Search='{}', Categories={}",
+                page, size, sort, search, categoryIds);
+
         try {
             Users currentUser = principal != null ? getCurrentUser(principal) : null;
+            Page<Project> projects;
             Pageable pageable;
 
-            // טיפול במיון
-            switch (sort) {
-                case "oldest":
-                    pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-                    break;
-                case "popular":
-                    pageable = PageRequest.of(page, size);
-                    break;
-                default: // newest
-                    pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            }
+            String usedSort;
 
-            Page<Project> projects;
+            if ("popular".equals(sort)) {
+                usedSort = "CUSTOM POPULAR (findPopularProjects)"; // הגדרת שם המיון
 
-            // לוגיקת החיפוש
-            if (search != null && !search.trim().isEmpty()) {
-                // יש חיפוש
-                if (categoryIds != null) {
-                    // חיפוש + קטגוריה
-                    projects = projectRepository.searchByTitleOrTagsAndCategories(search, categoryIds, pageable);
-                } else {
-                    // חיפוש בלי קטגוריה
-                    if ("popular".equals(sort)) {
-                        projects = projectRepository.searchByTitleOrTagsOrderByLikes(search, pageable);
-                    } else {
-                        projects = projectRepository.searchByTitleOrTags(search, pageable);
-                    }
-                }
-            } else if (categoryIds != null) {
-                // רק קטגוריה בלי חיפוש
-                if ("popular".equals(sort)) {
-                    projects = projectRepository.findByCategoryIdsOrderByLikes(categoryIds, pageable);
-                } else {
-                    projects = projectRepository.findByCategoryIds(categoryIds, pageable);
-                }
+                pageable = PageRequest.of(page, size);
+                projects = projectRepository.findPopularProjects(search, categoryIds, pageable);
+
             } else {
-                // בלי חיפוש ובלי קטגוריה - הכל
-                if ("popular".equals(sort)) {
-                    projects = projectRepository.findAllOrderByLikesCountDesc(pageable);
-                } else {
-                    projects = sort.equals("oldest")
-                            ? projectRepository.findAllByOrderByCreatedAtAsc(pageable)
-                            : projectRepository.findAllByOrderByCreatedAtDesc(pageable);
-                }
+
+                usedSort = sort; // השארת שם המיון כפי שהגיע (newest/oldest)
+
+                Sort sortObj = "oldest".equals(sort)
+                        ? Sort.by("createdAt").ascending()
+                        : Sort.by("createdAt").descending(); // ברירת מחדל newest
+
+                pageable = PageRequest.of(page, size, sortObj);
+
+                Specification<Project> spec = Specification.where(ProjectSpecifications.search(search))
+                        .and(ProjectSpecifications.categoryIn(categoryIds));
+
+                projects = projectRepository.findAll(spec, pageable);
             }
 
+            logger.info("Using DB Query: {} strategy. Total records found: {}", usedSort, projects.getTotalElements());
+
+            logger.info("Query successful. Returning {} projects on page {}.", projects.getNumberOfElements(), projects.getNumber());
             Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(projects, currentUser);
             return ResponseEntity.ok(dtoPage);
 
         } catch (Exception e) {
-            e.printStackTrace(); // זה יראה לך את השגיאה המלאה בקונסול!
-
+            logger.error("Error fetching projects:", e); // הדפסה מלאה של השגיאה ללוג
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 
     @GetMapping("/myProjects")
@@ -333,7 +322,7 @@ public class ProjectController {
     }
 
     @PatchMapping("/{projectId}/assign-challenge/{challengeId}")
-    public ResponseEntity<Project> assignToChallenge(
+    public ResponseEntity<Void> assignToChallenge(
             @PathVariable Long projectId,
             @PathVariable Long challengeId) {
 
@@ -341,11 +330,11 @@ public class ProjectController {
         Challenge challenge = challengeRepository.findById(challengeId).orElseThrow();
 
         project.setChallenge(challenge);
+        project.setDraft(false);
         projectRepository.save(project);
 
-        return ResponseEntity.ok(project);
+        return ResponseEntity.ok().build();
     }
-
 
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generateProjectPdf(@PathVariable Long id) throws Exception {
@@ -485,6 +474,92 @@ public class ProjectController {
 
         return ResponseEntity.ok().build();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //    @GetMapping("/allProjects")
+//    public ResponseEntity<Page<ProjectListDTO>> getAllProjectsWithFilters(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "30") int size,
+//            @RequestParam(required = false) String search,
+//            @RequestParam(required = false) List<Long> categoryIds,  // 🔥 מערך!
+//            @RequestParam(defaultValue = "newest") String sort,
+//            Principal principal
+//    ) {
+//        try {
+//            Users currentUser = principal != null ? getCurrentUser(principal) : null;
+//            Pageable pageable;
+//
+//            // טיפול במיון
+//            switch (sort) {
+//                case "oldest":
+//                    pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+//                    break;
+//                case "popular":
+//                    pageable = PageRequest.of(page, size);
+//                    break;
+//                default: // newest
+//                    pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+//            }
+//
+//            Page<Project> projects;
+//
+//            // לוגיקת החיפוש
+//            if (search != null && !search.trim().isEmpty()) {
+//                // יש חיפוש
+//                if (categoryIds != null) {
+//                    // חיפוש + קטגוריה
+//                    projects = projectRepository.searchByTitleOrTagsAndCategories(search, categoryIds, pageable);
+//                } else {
+//                    // חיפוש בלי קטגוריה
+//                    if ("popular".equals(sort)) {
+//                        projects = projectRepository.searchByTitleOrTagsOrderByLikes(search, pageable);
+//                    } else {
+//                        projects = projectRepository.searchByTitleOrTags(search, pageable);
+//                    }
+//                }
+//            } else if (categoryIds != null) {
+//                // רק קטגוריה בלי חיפוש
+//                if ("popular".equals(sort)) {
+//                    projects = projectRepository.findByCategoryIdsOrderByLikes(categoryIds, pageable);
+//                } else {
+//                    projects = projectRepository.findByCategoryIds(categoryIds, pageable);
+//                }
+//            } else {
+//                // בלי חיפוש ובלי קטגוריה - הכל
+//                if ("popular".equals(sort)) {
+//                    projects = projectRepository.findAllOrderByLikesCountDesc(pageable);
+//                } else {
+//                    projects = sort.equals("oldest")
+//                            ? projectRepository.findAllByOrderByCreatedAtAsc(pageable)
+//                            : projectRepository.findAllByOrderByCreatedAtDesc(pageable);
+//                }
+//            }
+//
+//            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(projects, currentUser);
+//            return ResponseEntity.ok(dtoPage);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace(); // זה יראה לך את השגיאה המלאה בקונסול!
+//
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//
+//    }
+
+
 
 }
 

@@ -27,9 +27,10 @@ public class ProjectListDTO {
         isDraft = draft;
     }
 
-    public long getChallengeId() {
+    public Long getChallengeId() {
         return challengeId;
     }
+
 
     public void setChallengeId(Long challengeId) {
         this.challengeId = challengeId;

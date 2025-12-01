@@ -1,55 +1,61 @@
 @if (project(); as proj) {
-<div class="header">
-  <img [src]="getImageUrl()" [alt]="proj.title" class="main-image">
+<div class="project-header">
+  <div class="header-image">
+    <img [src]="getImageUrl()" [alt]="proj.title">
+  </div>
 
-  <div class="info">
-    <h1>{{ proj.title }}</h1>
+  <div class="header-content">
+    <h1 class="title">{{ proj.title }}</h1>
     <p class="description">{{ proj.description }}</p>
 
-    <div class="meta">
-      <div class="user">
+    <div class="meta-bar">
+      <div class="author">
         @if (avatar().url) {
-        <img [src]="avatar().url" class="avatar" alt="אווטאר">
+        <img [src]="avatar().url" class="avatar" alt="avatar">
         } @else {
-        <div class="avatar-placeholder" [style.background-color]="avatar().color">
+        <div class="avatar placeholder" [style.background-color]="avatar().color">
           {{ avatar().initial }}
         </div>
         }
-        <span>{{ proj.users?.userName || 'Anonymus' }}</span>
+        <span class="author-name">{{ proj.users?.userName || 'Anonymous' }}</span>
       </div>
 
       <div class="stats">
-        <span>לייקים: {{ proj.likesCount ?? 0 }}</span>
-        <span>גיל: {{ proj.ages || 'All ages' }}</span>
-        <span>זמן: {{ proj.timePrep || 'Not specified' }}</span>
+        <span class="stat">
+          <mat-icon>favorite_border</mat-icon>
+          {{ proj.likesCount ?? 0 }}
+        </span>
+        <span class="stat">
+          <mat-icon>access_time</mat-icon>
+          {{ proj.timePrep || 'Not specified' }}
+        </span>
+        <span class="stat">
+          <mat-icon>person_outline</mat-icon>
+          {{ proj.ages || 'All ages' }}
+        </span>
       </div>
     </div>
 
-
-    <div class="project-actions">
-      <!-- הורדת PDF -->
-      <button mat-raised-button color="primary" (click)="downloadPdf(proj.id)">
+    <div class="actions">
+      <button mat-stroked-button (click)="downloadPdf(proj.id)">
         <mat-icon>download</mat-icon>
-       Download as PDF
+        Download PDF
       </button>
-      <!-- הדפסה -->
-      <button mat-raised-button color="accent" (click)="print()">
+      
+      <button mat-stroked-button (click)="print()">
         <mat-icon>print</mat-icon>
         Print
       </button>
 
-      <!-- שיתוף כללי (טלפון: חלון שיתוף | מחשב: העתק קישור) -->
-      <button mat-raised-button color="warn" (click)="share()">
+      <button mat-stroked-button (click)="share()">
         <mat-icon>share</mat-icon>
         Share
       </button>
-
-      <!-- שיתוף ישיר לווטסאפ  -->
-      <button mat-fab color="success" class="whatsapp-btn" (click)="shareWhatsApp()" title="שיתוף מהיר לווטסאפ">
-        <mat-icon>whatsapp</mat-icon>
-      </button>
     </div>
-
   </div>
+
+  <button mat-fab class="whatsapp-btn" (click)="shareWhatsApp()">
+    <mat-icon>whatsapp</mat-icon>
+  </button>
 </div>
 }

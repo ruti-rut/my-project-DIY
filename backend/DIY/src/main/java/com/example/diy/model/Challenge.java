@@ -1,5 +1,6 @@
 package com.example.diy.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -12,9 +13,13 @@ public class Challenge {
     private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
+    @Column(columnDefinition = "TEXT")
     private String theme;
+    @Column(columnDefinition = "TEXT")
+
     private String content;
     @OneToMany(mappedBy = "challenge")
+    @JsonIgnore
     private List<Project> projects;
     private String picturePath;
 

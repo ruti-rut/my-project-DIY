@@ -81,7 +81,7 @@ public class UsersController {
         return ResponseEntity.ok(profileDTO);
     }
 
-    @PutMapping("/me/update-profile")
+    @PostMapping("/me/update-profile")
     public ResponseEntity<UserProfileDTO> updateProfile(
             @RequestPart(required = false) MultipartFile file,
             @RequestPart(required = false) String city,

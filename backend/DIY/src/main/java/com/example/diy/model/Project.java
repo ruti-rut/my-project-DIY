@@ -47,13 +47,12 @@ public class Project {
     //לבדוק איך להגדיל את הטקסט
     @Lob//@Column(length = 5000)
     @Column(columnDefinition = "TEXT")
-
-
     private String materials;
     private String title;
     private String ages;
     private String timePrep;
     private String picturePath;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private boolean isDraft;
 

@@ -76,17 +76,19 @@ public interface ProjectMapper {
     @Mapping(source = "challengeId", target = "challenge.id")
     Project updateProjectFromDto(ProjectCreateDTO p, @MappingTarget Project existingProject);
 
-    @Mapping(target = "id", source = "project.id")  // ← הוסף את זה!
-    @Mapping(target = "challengeId", ignore = true)
+    @Mapping(target = "id", source = "project.id")
+    // **החלף את שתי השורות הבאות (target ו-AfterMapping)**
+    @Mapping(target = "challengeId", expression = "java(project.getChallenge() != null ? project.getChallenge().getId() : null)")
     @Mapping(source = "project.users", target = "usersSimpleDTO")
     @Mapping(target = "picture", ignore = true)
     @Mapping(target = "favorited", expression = "java(currentUser != null && project.getFavoritedByUsers() != null && project.getFavoritedByUsers().contains(currentUser))")
     ProjectListDTO toProjectListDTO(Project project, Users currentUser);
 
+
     // לוגיקה מותאמת אישית לטיפול בשדה התמונה ו-challengeId
     @AfterMapping
     default void handleProjectPicture(@MappingTarget ProjectListDTO dto, Project project) {
-        // טיפול בתמונה
+        // טיפול בתמונה (השאר את זה)
         if (project.getPicturePath() != null) {
             try {
                 String imageBase64 = ImageUtils.getImage(project.getPicturePath());
@@ -97,10 +99,6 @@ public interface ProjectMapper {
             }
         }
 
-        // 🔥 טיפול ב-challengeId
-        if (project.getChallenge() != null) {
-            dto.setChallengeId(project.getChallenge().getId());
-        }
     }
 
     ProjectCreateDTO projectCreateToDTO(Project project);

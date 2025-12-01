@@ -42,13 +42,12 @@ public class ChallengeController {
 
     @GetMapping("/challenge/{id}")
     public ResponseEntity<ChallengeResponseDTO> getChallenge(@PathVariable Long id) {
-        Challenge challenge = challengeRepository.findById(id)
+        Challenge challenge = challengeRepository.findByIdWithProjectsAndUsers(id)
                 .orElseThrow(() -> new RuntimeException("Challenge not found"));
 
         ChallengeResponseDTO dto = challengeMapper.toChallengeResponseDTO(challenge);
         return ResponseEntity.ok(dto);
     }
-
     @PostMapping("/uploadChallenge")
     public ResponseEntity<Challenge> uploadChallengeWithImage(@RequestPart("image") MultipartFile file
             , @RequestPart("challenge") ChallengeCreateDTO challengeDto) {
