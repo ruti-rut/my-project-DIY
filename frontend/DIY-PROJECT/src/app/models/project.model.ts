@@ -9,6 +9,7 @@ export interface ProjectListDTO {
   usersSimpleDTO: UsersSimpleDTO;
   challengeId?: number | null;   
   favorited?: boolean;
+  liked?:boolean
   draft?: boolean ;       // ← תוסיפי את זה!
 }
 export interface ProjectCreateDTO {

@@ -32,5 +32,4 @@ public class AIChatController {
             return Flux.error(e);
         }
     }
-
 }

@@ -4,18 +4,21 @@ import { RouterModule } from '@angular/router';
 import { ProjectListDTO } from '../../../../models/project.model';
 import { AvatarHelperService } from '../../../../services/avatar-helper.service';
 import { FavoriteButtonComponent } from '../../favorite-button/favorite-button/favorite-button.component';
+import { LikeButtonComponent } from "../../like-button/like-button.component";
 
 @Component({
   selector: 'app-project-card',
   imports: [RouterModule,
     MatCardModule,
-    FavoriteButtonComponent],
+    FavoriteButtonComponent, LikeButtonComponent],
   templateUrl: './project-card.component.html',
   styleUrl: './project-card.component.css'
 })
 export class ProjectCardComponent {
   @Input({ required: true }) project!: ProjectListDTO;
   @Output() favoriteRemoved = new EventEmitter<number>();
+  @Output() likeRemoved = new EventEmitter<number>();
+
   private avatarHelper = inject(AvatarHelperService);
 
   ngOnInit() {
@@ -73,6 +76,12 @@ export class ProjectCardComponent {
     }
   };
 
+  toggleLiked = (isLiked: boolean): void => {
+    this.project.liked = isLiked;
+    if (!isLiked) {
+      this.likeRemoved.emit(this.project.id);
+    }
+  };
   // בדיוק כמו onImageError באתגרים!
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;

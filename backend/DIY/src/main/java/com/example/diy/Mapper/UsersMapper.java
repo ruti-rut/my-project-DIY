@@ -35,6 +35,8 @@ public interface UsersMapper {
 
     @AfterMapping
     default void handleProfilePicture(@MappingTarget Object dto, Users user) {
+        if(user==null)
+            return;
         if (user.getProfilePicturePath() == null || user.getProfilePicturePath().trim().isEmpty()) {
             return;
         }

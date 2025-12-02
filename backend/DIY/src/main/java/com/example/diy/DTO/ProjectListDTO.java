@@ -10,6 +10,15 @@ public class ProjectListDTO {
     private Long challengeId;
     private boolean isDraft;
     private boolean favorited;
+    private boolean liked;
+
+    public boolean isLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
+    }
 
     public boolean isFavorited() {
         return favorited;
