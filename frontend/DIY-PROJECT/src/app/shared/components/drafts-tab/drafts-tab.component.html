@@ -1,0 +1,36 @@
+<!-- drafts-tab.component.html – גרסה משופרת ומעוצבת 100% כמו הלשונית השנייה -->
+@if (loading()) {
+  <div class="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+} @else {
+  <div class="projects-grid">
+    @for (project of draftProjects(); track project.id) {
+      <div class="project-item">
+        <app-project-card [project]="project" />
+
+        <!-- תגית טיוטה – תמיד מופיעה בטיוטות -->
+        <!-- <div class="draft-badge">טיוטה</div> -->
+
+        <!-- כפתורי פעולה – עריכה + מחיקה -->
+        <div class="actions-overlay">
+          <button mat-icon-button color="primary" [routerLink]="['/project/edit', project.id]" title="עריכה">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteProject(project.id)" title="מחיקה">
+            <mat-icon>delete_forever</mat-icon>
+          </button>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <mat-icon class="big">drafts</mat-icon>
+        <h3>אין טיוטות כרגע</h3>
+        <p>כשתתחילי פרויקט חדש ותשמרי אותו כטיוטה – הוא יופיע כאן</p>
+        <button mat-raised-button color="primary" routerLink="/create-project">
+          צרי פרויקט חדש
+        </button>
+      </div>
+    }
+  </div>
+}

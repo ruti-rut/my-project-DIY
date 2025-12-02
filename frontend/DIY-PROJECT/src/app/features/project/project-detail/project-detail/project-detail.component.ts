@@ -7,6 +7,7 @@ import { ProjectService } from '../../../../services/project.service';
 import { ProjectCommentsComponent } from '../../project-comments/project-comments/project-comments.component';
 import { ProjectHeaderComponent } from '../../project-header/project-header/project-header.component';
 import { ProjectStepsComponent } from '../../project-steps/project-steps/project-steps.component';
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: 'app-project-detail',
@@ -14,7 +15,9 @@ import { ProjectStepsComponent } from '../../project-steps/project-steps/project
     MatProgressSpinnerModule,
     ProjectHeaderComponent,
     ProjectStepsComponent,
-    ProjectCommentsComponent],
+    ProjectCommentsComponent,
+    MatIcon
+],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.css'
 })
@@ -42,5 +45,11 @@ export class ProjectDetailComponent {
       }
     });
   }
-
+getMaterialsLines(): string[] {
+  const materials = this.project()?.materials || '';
+  return materials
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0);
+}
 }

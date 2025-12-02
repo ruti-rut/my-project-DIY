@@ -27,10 +27,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
     @Query("SELECT p FROM Project p " +
             "LEFT JOIN p.tags t " +
             "LEFT JOIN p.likedByUsers u " +
-            "WHERE (:searchTerm IS NULL OR :searchTerm = '' OR " +
+            "WHERE p.isDraft = false AND " + // ✅ הוספת תנאי הטיוטה כאן!
+            "(:searchTerm IS NULL OR :searchTerm = '' OR " +
             "(UPPER(p.title) LIKE UPPER(CONCAT('%', :searchTerm, '%')) " +
             "OR UPPER(t.name) LIKE UPPER(CONCAT('%', :searchTerm, '%')))) " +
-            "AND (:categoryIds IS NULL OR p.category.id IN :categoryIds) " + // תנאי קטגוריה אופציונלי
+            "AND (:categoryIds IS NULL OR p.category.id IN :categoryIds) " +
             "GROUP BY p.id " +
             "ORDER BY COUNT(u) DESC")
     Page<Project> findPopularProjects(
@@ -38,7 +39,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
             @Param("categoryIds") List<Long> categoryIds,
             Pageable pageable
     );
-
     List<Project> findTop3ByOrderByCreatedAtDesc();
 
     @Modifying

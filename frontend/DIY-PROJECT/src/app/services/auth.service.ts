@@ -8,7 +8,7 @@ import { UserResponseDTO, UsersRegisterDTO, UserLogInDTO } from '../models/user.
   providedIn: 'root'
 })
 export class AuthService {
-private baseUrl = 'http://localhost:8080/api/auth';
+  private baseUrl = 'http://localhost:8080/api/auth';
 
   private currentUserSignal = signal<UserResponseDTO | null>(null);
   public currentUser = this.currentUserSignal.asReadonly();
@@ -25,6 +25,24 @@ private baseUrl = 'http://localhost:8080/api/auth';
     console.log('AuthService: updateCurrentUser', user); // לוג לבדיקה
     this.currentUserSignal.set(user);
   }
+  
+  loadCurrentUser(): Observable<UserResponseDTO> {
+    return this.http.get<UserResponseDTO>(`${this.baseUrl}/me`, {
+      withCredentials: true
+    }).pipe(
+      tap(user => {
+        console.log('✅ User loaded from server:', user);
+        this.updateCurrentUser(user);
+      }),
+      catchError(err => {
+        console.error('❌ Failed to load user:', err);
+        this.updateCurrentUser(null);
+        localStorage.removeItem('jwt_token');
+        throw err;
+      })
+    );
+  }
+
 
   checkAuthentication(): Observable<UserResponseDTO | null> {
     return this.http.get<UserResponseDTO>(`${this.baseUrl}/me`).pipe(

@@ -24,41 +24,33 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private UsersRepository usersRepository;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        // 1. קבלת פרטי המשתמש מ-OAuth2
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
+        // 1. קבלת פרטי המשתמש מגוגל
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-
-        // 2. קבלת האימייל מהמידע שהתקבל מגוגל
         String email = oAuth2User.getAttribute("email");
 
-        // 3. איתור המשתמש ב-DB באמצעות האימייל
+        // 2. חיפוש המשתמש ב-DB
         Optional<Users> userOptional = usersRepository.findByMail(email);
 
-        Users user;
-
-        if (userOptional.isPresent()) {
-            user = userOptional.get();
-        } else {
-            // ** המשתמש לא קיים ב-DB - מאחר שאינך רוצה הרשמה, נסרב לכניסה
-            // ניתן להפנות לדף שגיאה או לדף התחברות עם הודעה מתאימה
-            System.out.println("User with email " + email + " not found in database. Login denied.");
-            String redirectUrl = "http://localhost:4200/login?error=user_not_found"; // שנה לכתובת ה-FE שלך
+        // 3. אם המשתמש לא קיים - דחה כניסה
+        if (!userOptional.isPresent()) {
+            System.out.println("❌ User with email " + email + " not found in database.");
+            String redirectUrl = "http://localhost:4200/sign-in?error=user_not_found";
             getRedirectStrategy().sendRedirect(request, response, redirectUrl);
             return;
         }
 
-        // 4. אם המשתמש נמצא - הנפקת JWT ו-Cookie
+        // 4. אם המשתמש קיים - יצור JWT
+        Users user = userOptional.get();
         CustomUserDetails userDetails = new CustomUserDetails(user);
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        String jwt = jwtUtils.generateTokenFromUsername(userDetails.getUsername());
 
-        // 5. הוספת ה-Cookie לתגובה
-        response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+        // 5. הפנה ל-Angular עם ה-Token ב-URL
+        String targetUrl = "http://localhost:4200/oauth2/callback?token=" + jwt;
+        System.out.println("✅ Redirecting to: " + targetUrl);
 
-        // 6. הפנייה חזרה ל-Frontend לאחר כניסה מוצלחת
-        String targetUrl = "http://localhost:4200/dashboard";
-        // שנה לכתובת המתאימה ב-Angular שלך
-        this.setDefaultTargetUrl(targetUrl);
-        // מבצע את ההפניה באמצעות הלוגיקה המובנית של Spring Security
-        super.onAuthenticationSuccess(request, response, authentication);
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }
+

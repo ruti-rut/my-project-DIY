@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { 
   Validators, 
   FormBuilder, 
@@ -8,7 +8,7 @@ import {
   AbstractControl,
   ValidatorFn 
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -52,11 +52,24 @@ function conditionalEmailValidator(): ValidatorFn {
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.css'
 })
-export class SignInComponent {
+export class SignInComponent implements OnInit{
+  errorMessage = signal<string | null>(null);
 
 public authService = inject(AuthService);
 
-  errorMessage = signal<string | null>(null);
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const error = params['error'];
+      if (error === 'user_not_found') {
+        this.errorMessage.set('❌ המשתמש לא נמצא במערכת. יש להירשם תחילה.');
+      } else if (error) {
+        this.errorMessage.set('❌ שגיאה בהתחברות. נסה שוב.');
+      }
+    });
+  }
+
   isLoading = signal(false);
 
   // השתמש בוולידטור המותאם במקום Validators.email

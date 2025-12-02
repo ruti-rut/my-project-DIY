@@ -79,6 +79,11 @@ loadComponent: () => import('./features/challenge/challenge-details/challenge-de
     canActivate: [authGuard],
     title: 'הפרויקטים שלי'
   },
+    {
+    path: 'oauth2/callback',
+    loadComponent: () => import('./oauth2-callback/oauth2-callback.component').then(m => m.Oauth2CallbackComponent),
+  },
+
 
   // נתיב Fallback (ללא שינוי)
   { path: '**', redirectTo: '' }
