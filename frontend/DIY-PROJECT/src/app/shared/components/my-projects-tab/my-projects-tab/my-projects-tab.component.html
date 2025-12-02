@@ -9,10 +9,9 @@
     @if (project.isDraft) {
     <div class="draft-badge">טיוטה</div>
     }
-@if (project.challengeId && project.challengeId !== challengeIdToAssign()) {
-    <div class="assigned-badge">משויך לאתגר אחר</div>
-  }
-
+@if (challengeIdToAssign() !== null && project.challengeId && project.challengeId !== challengeIdToAssign()) {
+  <div class="assigned-badge">משויך לאתגר אחר</div>
+}
   <!-- מצב שיוך לאתגר ספציפי -->
   @if (challengeIdToAssign() !== null) {
     <div class="actions-overlay assign-mode"
