@@ -9,5 +9,5 @@
     <span>{{ currentUser()?.userName }}</span>
   </div>
   <textarea [(ngModel)]="newComment" placeholder="Post a reply..." rows="3"></textarea>
-  <button (click)="submit()" [disabled]="!newComment.trim()">שלח</button>
+  <button (click)="submit()" [disabled]="!newComment.trim()">Comment</button>
 </div>

@@ -6,9 +6,23 @@ export const authInterceptor: HttpInterceptorFn = (
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> => {
 
-  const clonedReq = req.clone({
+  // קבל את ה-Token מ-localStorage
+  const token = localStorage.getItem('jwt_token');
+
+  // שכפל את הבקשה עם withCredentials
+  let clonedReq = req.clone({
     withCredentials: true
   });
+
+  // אם יש Token, הוסף אותו ל-Authorization Header
+  if (token) {
+    clonedReq = clonedReq.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      },
+      withCredentials: true
+    });
+  }
 
   return next(clonedReq);
 };

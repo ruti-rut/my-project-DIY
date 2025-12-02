@@ -7,7 +7,23 @@
     @let proj = project();
     @if (proj) {
     <app-project-header [projectInput]="proj"></app-project-header>
-    @defer (on viewport) {
+<div class="materials-section">
+
+  <div class="materials-number">
+    <span>Supplies</span>
+  </div>
+
+  @if (getMaterialsLines().length > 0) {
+    <ul class="materials-list">
+      @for (line of getMaterialsLines(); track line) {
+        <li>{{ line }}</li>
+      }
+      </ul>
+  } @else {
+    <p class="no-materials">לא צוינו חומרים לפרויקט זה</p>
+  }
+</div>
+   @defer (on viewport) {
     <app-project-steps [steps]="proj.steps || []"></app-project-steps>
     } @placeholder {
     <div class="placeholder">Loading Steps...</div>
