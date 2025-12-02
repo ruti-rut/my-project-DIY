@@ -1,0 +1,38 @@
+.toggle-btn {
+  position: relative;
+  width: 60px;
+  height: 30px;
+  background: #ccc;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.slider {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+  left: 4px;
+}
+
+.slider.dark { transform: translateX(30px); background: #333; }
+
+.sun, .moon {
+  font-size: 18px;
+  transition: 0.3s;
+  z-index: 1;
+}
+
+.sun { margin-left: 8px; opacity: 1; }
+.moon { margin-left: auto; margin-right: 8px; opacity: 0; }
+
+.sun.active { opacity: 1; }
+.moon.active { opacity: 1; }
+.sun:not(.active) { opacity: 0; }

@@ -1,0 +1,10 @@
+<button 
+  (click)="toggle()" 
+  class="toggle-btn"
+  [attr.aria-label]="isDark ? 'עבור למצב בהיר' : 'עבור למצב כהה'">
+  
+  <span class="sun" [class.active]="!isDark">☀️</span>
+  <span class="moon" [class.active]="isDark">🌙</span>
+  
+  <div class="slider" [class.dark]="isDark"></div>
+</button>

@@ -1,0 +1,40 @@
+<mat-toolbar color="primary" class="header-toolbar">
+
+  <a routerLink="/" class="logo" routerLinkActive="active">
+    <mat-icon>build</mat-icon>
+    <span class="logo-text">InstructaBuild</span>
+  </a>
+
+  <span class="spacer"></span>
+
+  <a mat-button routerLink="/projects-list" routerLinkActive="active">
+    <mat-icon>folder_open</mat-icon>
+    Projects
+  </a>
+
+  <a mat-button routerLink="/challenges" routerLinkActive="active">
+    <mat-icon>flag</mat-icon>
+    Challenges
+  </a>
+
+  <a mat-button routerLink="/create-project" routerLinkActive="active">
+    <mat-icon>add_box</mat-icon>
+    Upload Project
+  </a>
+  <!-- הקישור החדש לצ'אט DIY – יפה ומקצועי -->
+  <a mat-button routerLink="/diy-question" routerLinkActive="active">
+    <mat-icon svgIcon="chat-bubble" class="icon-small"></mat-icon>
+    Assistant AI
+    <mat-chip color="accent" selected class="new-badge">NEW</mat-chip>
+  </a>
+  
+@if (currentUser(); as user) {
+    <app-user-profile-menu [user]="user" />
+    <app-daily-bell />
+    <app-dark-mode-toggle></app-dark-mode-toggle>
+  } 
+  
+  @else { 
+    <app-login-button />
+  }
+</mat-toolbar>

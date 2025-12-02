@@ -1,0 +1,47 @@
+<div class="auth-wrapper">
+  <mat-card class="auth-card">
+    <mat-card-title>התחברות</mat-card-title>
+
+    @if (isLoading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <mat-card-content>
+      <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email or Username</mat-label>
+          <input matInput formControlName="identifier" type="text" required>
+          <mat-error *ngIf="loginForm.get('identifier')?.hasError('required')">
+            This field is required </mat-error>
+          <mat-error
+            *ngIf="loginForm.get('identifier')?.hasError('email') && !loginForm.get('identifier')?.hasError('required')">
+            Please enter a valid email address </mat-error>
+        </mat-form-field> <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" type="password" required>
+        </mat-form-field>
+
+        @if (errorMessage()) {
+        <p class="error-message">{{ errorMessage() }}</p>
+        }
+
+        <button mat-flat-button color="primary" type="submit" [disabled]="loginForm.invalid || isLoading()">
+          Sign in
+        </button>
+
+      </form>
+
+      <mat-divider class="divider"></mat-divider>
+
+      <button mat-stroked-button class="google-btn" (click)="authService.signInWithGoogle()">
+        <mat-icon>public</mat-icon>
+Sign in with google      </button>
+
+    </mat-card-content>
+
+    <mat-card-footer class="auth-footer">
+      <p>Not registered yet? <a routerLink="/sign-up">Create account</a></p>
+    </mat-card-footer>
+  </mat-card>
+</div>

@@ -1,51 +1,73 @@
 <!-- my-projects-tab.component.html -->
 <div class="projects-grid">
   @for (project of myProjects(); track project.id) {
-    <div class="project-item">
-      <!-- הכרטיס עצמו -->
-      <app-project-card [project]="project" />
+  <div class="project-item">
+    <!-- הכרטיס עצמו -->
+    <app-project-card [project]="project" />
 
-      <!-- תגית טיוטה -->
-      @if (project.isDraft) {
-        <div class="draft-badge">טיוטה</div>
-      }
-      @if (challengeIdToAssign() !== null && !project.challengeId) { 
-    <div class="challenge-assign-overlay">
-     <button mat-raised-button color="accent" (click)="assignProject(project.id)">
-      <mat-icon>link</mat-icon>
-      Assign to Challenge
-     </button>
-    </div>
-
+    <!-- תגית טיוטה -->
+    @if (project.isDraft) {
+    <div class="draft-badge">טיוטה</div>
     }
-    @if (challengeIdToAssign() === null) {
-   <div class="actions-overlay">
-        <button mat-icon-button color="primary" [routerLink]="['/project/edit', project.id]" title="עריכה">     <mat-icon>edit</mat-icon>
-    </button>
-    <button mat-icon-button color="warn" (click)="deleteProject(project.id)" title="מחיקה">
-     <mat-icon>delete_forever</mat-icon>
-    </button>
-   </div>
-      }
-  
+@if (project.challengeId && project.challengeId !== challengeIdToAssign()) {
+    <div class="assigned-badge">משויך לאתגר אחר</div>
+  }
 
-      <!-- כפתורי פעולה -->
-      <div class="actions-overlay">
-<button mat-icon-button color="primary" [routerLink]="['/project/edit', project.id]" title="עריכה">          <mat-icon>edit</mat-icon>
+  <!-- מצב שיוך לאתגר ספציפי -->
+  @if (challengeIdToAssign() !== null) {
+    <div class="actions-overlay assign-mode"
+         [class.disabled]="project.challengeId">
+      
+      <!-- כפתור שיוך – רק אם לא משויך בכלל -->
+      @if (!project.challengeId) {
+        <button mat-icon-button 
+                color="accent" 
+                (click)="assignProject(project.id)" 
+                title="שייך לאתגר זה">
+          <mat-icon>link</mat-icon>
         </button>
-        <button mat-icon-button color="warn" (click)="deleteProject(project.id)" title="מחיקה">
-          <mat-icon>delete_forever</mat-icon>
+      }
+      
+      <!-- אם כבר משויך (כולל לאתגר אחר) – רק אייקון נעול -->
+      @if (project.challengeId) {
+        <button mat-icon-button disabled title="הפרויקט כבר משויך">
+          <mat-icon>lock</mat-icon>
         </button>
-      </div>
+      }
     </div>
-  } @empty {
-    <div class="empty-state">
-      <mat-icon class="big">build_circle</mat-icon>
-      <h3>No projects yet</h3>
-      <p>Once you have some, they will appear here</p>
-      <button mat-raised-button color="primary" routerLink="/project/new">
-Create First Project
+  }
+
+  <!-- מצב רגיל – עריכה ומחיקה -->
+  @if (challengeIdToAssign() === null) {
+    <div class="actions-overlay">
+      <button mat-icon-button color="primary" [routerLink]="['/project/edit', project.id]" title="עריכה">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="deleteProject(project.id)" title="מחיקה">
+        <mat-icon>delete_forever</mat-icon>
       </button>
     </div>
+  }
+
+
+    <!-- כפתורי פעולה -->
+    <div class="actions-overlay">
+      <button mat-icon-button color="primary" [routerLink]="['/project/edit', project.id]" title="עריכה">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="deleteProject(project.id)" title="מחיקה">
+        <mat-icon>delete_forever</mat-icon>
+      </button>
+    </div>
+  </div>
+  } @empty {
+  <div class="empty-state">
+    <mat-icon class="big">build_circle</mat-icon>
+    <h3>No projects yet</h3>
+    <p>Once you have some, they will appear here</p>
+    <button mat-raised-button color="primary" routerLink="/create-project">
+      Create First Project
+    </button>
+  </div>
   }
 </div>
