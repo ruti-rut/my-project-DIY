@@ -15,7 +15,6 @@ export interface ChallengeResponseDTO {
   endDate: string;
   picturePath?: string;
   picture?: string;
-  projects: ProjectListDTO[];
   status: 'OPEN' | 'UPCOMING' | 'CLOSED';
 }
 export interface ChallengeCreateDTO {

@@ -11,6 +11,7 @@ import { AuthService } from '../../../../services/auth.service';
 import { ChallengeService } from '../../../../services/challenge.service';
 import { ProjectCardComponent } from '../../../../shared/components/project-card/project-card/project-card.component';
 import { SubmitProjectDialogComponent } from '../../../project/submit-project-dialog/submit-project-dialog/submit-project-dialog.component';
+import { ProjectListDTO } from '../../../../models/project.model';
 
 @Component({
   selector: 'app-challenge-details',
@@ -32,6 +33,8 @@ private route = inject(ActivatedRoute);
 
   challenge = signal<ChallengeResponseDTO | null>(null);
   loading = signal(true);
+  projects = signal<ProjectListDTO[]>([]); // ✅ חדש: רשימת הפרויקטים
+  projectsLoading = signal(false); // ✅ חדש: סטטוס טעינת הפרויקטים
 
   isLoggedIn = computed(() => !!this.authService.currentUser());
   canSubmit = computed(() => 
@@ -39,15 +42,36 @@ private route = inject(ActivatedRoute);
   );
 
   ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.challengeService.getChallengeById(id).subscribe({
-      next: (data) => {
-        this.challenge.set(data);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false)
-    });
-  }
+        const id = Number(this.route.snapshot.paramMap.get('id'));
+        
+        // 1. טעינת נתוני האתגר הראשיים
+        this.challengeService.getChallengeById(id).subscribe({
+            next: (data) => {
+                this.challenge.set(data);
+                this.loading.set(false);
+                
+                // 2. ✅ קריאה נפרדת לטעינת הפרויקטים
+                this.loadChallengeProjects(id); 
+            },
+            error: () => this.loading.set(false)
+        });
+    }
+
+    // ✅ מתודה חדשה לטעינת הפרויקטים
+    loadChallengeProjects(challengeId: number): void {
+        this.projectsLoading.set(true);
+        this.challengeService.getProjectsForChallenge(challengeId).subscribe({
+            next: (data) => {
+                this.projects.set(data);
+                this.projectsLoading.set(false);
+            },
+            error: (err) => {
+                console.error("Failed to load challenge projects:", err);
+                this.projectsLoading.set(false);
+                this.projects.set([]); // אם יש שגיאה, מציגים רשימה ריקה
+            }
+        });
+    }
 
   getImageUrl(): string {
     const base64 = this.challenge()?.picture;

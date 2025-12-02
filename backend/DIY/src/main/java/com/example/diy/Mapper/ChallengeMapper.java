@@ -4,6 +4,7 @@ import com.example.diy.DTO.ChallengeCreateDTO;
 import com.example.diy.DTO.ChallengeListDTO;
 import com.example.diy.DTO.ChallengeResponseDTO;
 import com.example.diy.model.Challenge;
+import com.example.diy.model.Project;
 import com.example.diy.service.ImageUtils;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -18,7 +19,7 @@ import java.util.List;
         componentModel = "spring",
         uses = {
                 ProjectMapper.class // 🌟 הוסף את ה-ProjectMapper
-                , UsersMapper.class // אם קיים ומשתמשים בו ישירות
+                ,UsersMapper.class // אם קיים ומשתמשים בו ישירות
         }
 )
 public interface ChallengeMapper {
@@ -43,8 +44,6 @@ public interface ChallengeMapper {
         }
     }
 
-
-    @Mapping(target = "projects", source = "projects")
     @Mapping(target = "status", ignore = true)
     ChallengeResponseDTO toChallengeResponseDTO(Challenge challenge);
 
@@ -63,6 +62,17 @@ public interface ChallengeMapper {
                 dto.setPicture(null);
             }
         }
+        if (challenge.getProjects() != null) {
+            for (Project p : challenge.getProjects()) {
+                System.out.println("Project ID: " + p.getId());
+                System.out.println("Project User: " + p.getUsers());
+                System.out.println("User is null? " + (p.getUsers() == null));
+                if (p.getUsers() != null) {
+                    System.out.println("Username: " + p.getUsers().getUserName());
+                }
+            }
+        }
+
     }
 
     // מתודת עזר לקביעת הסטטוס
