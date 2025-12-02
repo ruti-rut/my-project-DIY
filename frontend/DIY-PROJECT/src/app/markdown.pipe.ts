@@ -9,7 +9,7 @@ export class MarkdownPipe implements PipeTransform {
 
   transform(value: string): SafeHtml {
     if (!value) return '';
-    const html = marked(value, { gfm: true, breaks: true }); // ← סינכרוני לחלוטין
+    const html = marked(value, { gfm: true, breaks: true }); 
     return this.sanitizer.bypassSecurityTrustHtml(html as string);
   }
 }
