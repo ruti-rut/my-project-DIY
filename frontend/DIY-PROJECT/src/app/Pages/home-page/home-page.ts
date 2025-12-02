@@ -10,9 +10,9 @@ import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/category.model';
 import { HomeResponseDTO } from '../../models/home-page.model';
 import { ProjectListDTO } from '../../models/project.model';
-import { ProjectCardComponent } from '../../project-card/project-card.component';
 import { MatSpinner } from '@angular/material/progress-spinner';
 import { ChallengeListDTO } from '../../models/challenge.model';
+import { ProjectCardComponent } from '../../shared/components/project-card/project-card/project-card.component';
 
 @Component({
   selector: 'app-home-page',
@@ -53,28 +53,26 @@ export class HomePageComponent implements OnInit {
     this.loadHomeData();
   }
 
-  loadHomeData(): void {
+// שם הפרויקט חייב להיות בקטגוריה נפרדת
+loadHomeData(): void {
     this.isLoading = true;
     this.homeService.getHomeData().subscribe({
       next: (data: HomeResponseDTO) => {
         this.homeData = data;
-        this.isLoading = false;
-
-        // המרת המפה לרשימה של KeyValue לצורך לולאה ב-HTML
         this.projectsMap = Object.keys(data.projectsPerCategory).map(key => ({
           key: parseInt(key),
           value: data.projectsPerCategory[parseInt(key)]
-        })).sort((a, b) => a.key - b.key); // אופציונלי: מיון לפי ID
-        this.challengeMap = data.latestChallenges
-        console.log(data)
-        console.log(this.challengeMap)
+        })).sort((a, b) => a.key - b.key);
+        
+        this.challengeMap = data.latestChallenges;
+        this.isLoading = false;
       },
       error: (err) => {
         console.error("Failed to load home data", err);
         this.isLoading = false;
       }
     });
-  }
+}
 
   // --- פונקציות עזר ל-HTML ---
 
@@ -86,7 +84,6 @@ export class HomePageComponent implements OnInit {
 
   // פונקציה להצגת תמונה (נניח שיש לך שירות תמונות)
   getImageUrl(base64Image: string): string {
-    // אם התמונה היא Base64
     return `data:image/jpeg;base64,${base64Image}`;
   }
 

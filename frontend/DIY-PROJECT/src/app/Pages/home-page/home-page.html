@@ -1,62 +1,56 @@
 @if (isLoading) {
-  <div class="loading-spinner">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p>Loading home data...</p>
-  </div>
+<div class="loading-spinner">
+  <mat-spinner diameter="50"></mat-spinner>
+  <p>Loading home data...</p>
+</div>
 } @else if (homeData) {
-  
-  <section class="challenges-section">
-    <h2>Open Challenges 🏆</h2>
-    
-    <mat-grid-list [cols]="4" rowHeight="420px" gutterSize="16px"> 
-        
-        @for (c of challengeMap; track c.id) {
-            <mat-grid-tile>
-                <mat-card class="challenge-card">
-                    
-                    <img 
-                        [src]="getImageUrl(c.picture)" 
-                        [alt]="c.theme"
-                        class="challenge-image">
 
-                    <mat-card-content class="card-content">
-                        <h3 class="challenge-title">{{ c.theme }}</h3>
-                        <p class="challenge-date">
-                            <mat-icon>event</mat-icon>
-                            Ending at: {{ formatDate(c.endDate) }}
-                        </p>
-                    </mat-card-content>
+<section class="challenges-section">
+  <h2>Open Challenges 🏆</h2>
 
-                    <mat-card-actions>
-                        <button mat-raised-button color="primary" routerLink="/challenge/{{c.id}}">
-                            <mat-icon>arrow_forward</mat-icon>
-                            Details
-                        </button>
-                    </mat-card-actions>
-                </mat-card>
-            </mat-grid-tile>
-        } 
-        
-    </mat-grid-list> 
+  <mat-grid-list [cols]="4" rowHeight="380px" gutterSize="16px">
+    @for (c of challengeMap; track c.id) {
+    <mat-grid-tile>
+      <mat-card class="challenge-card">
+        <img [src]="getImageUrl(c.picture)" [alt]="c.theme" class="challenge-image">
+
+        <mat-card-content class="card-content">
+          <h3 class="challenge-title">{{ c.theme }}</h3>
+          <p class="challenge-date">
+            <mat-icon>event</mat-icon>
+            Ending at: {{ formatDate(c.endDate) }}
+          </p>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-raised-button color="primary" [routerLink]="'/challenge/' + c.id">
+            <mat-icon>arrow_forward</mat-icon>
+            Details
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+    }
+  </mat-grid-list>
 </section>
 
-  <hr>
 
-  <section class="projects-section">
-    <h2>Latest Projects 🛠️</h2>
-    
-    @for (categoryGroup of projectsMap; track categoryGroup.key) {
-      
-        <h3>{{ getCategoryName(categoryGroup.key) }}</h3> 
-        
-        <mat-grid-list [cols]="4" rowHeight="380px" gutterSize="16px"> 
-          @for (project of categoryGroup.value; track trackById($index, project)) {
-            <mat-grid-tile>
-              <app-project-card [project]="project"></app-project-card>
-            </mat-grid-tile>
-          }
-        </mat-grid-list>
-        <hr>
+<section class="projects-section">
+  <h2>Latest Projects 🛠️</h2>
+
+  @for (categoryGroup of projectsMap; track categoryGroup.key) {
+
+  <h3>{{ getCategoryName(categoryGroup.key) }}</h3>
+
+  <mat-grid-list [cols]="4" rowHeight="460px" gutterSize="16px">
+    @for (project of categoryGroup.value; track trackById($index, project)) {
+    <mat-grid-tile>
+      <app-project-card [project]="project"></app-project-card>
+    </mat-grid-tile>
     }
+
+  </mat-grid-list>
+  <br>
+  }
 </section>
 }

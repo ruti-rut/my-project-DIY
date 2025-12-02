@@ -23,7 +23,10 @@
       }
       <span class="username">{{ project.usersSimpleDTO.userName || 'משתמש אנונימי' }}</span>
     </div>
-
+<app-like-button [projectId]="project.id"
+      [isLiked]="project.liked || false"
+      (toggled)="toggleLiked($event)">
+</app-like-button>
     <app-favorite-button 
       [projectId]="project.id"
       [isFavorited]="project.favorited || false"
