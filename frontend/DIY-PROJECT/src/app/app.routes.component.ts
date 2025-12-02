@@ -3,8 +3,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 
-// אין צורך יותר לייבא את הקומפוננטות בראש הקובץ!
-// Angular מטפל בזה באופן דינאמי בתוך loadComponent.
 
 export const routes: Routes = [
   {
@@ -12,76 +10,72 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/home-page/home-page').then(m => m.HomePageComponent)
   },
   {
-    path: 'add-project',
-    loadComponent: () => import('./pages/add-project/add-project.component').then(m => m.AddProjectComponent)
-  },
-  {
     path: 'challenges',
-    loadComponent: () => import('./pages/challenge/challenge.component').then(m => m.ChallengesComponent)
+    loadComponent: () => import('./features/challenge/challenge/challenge.component').then(m => m.ChallengesComponent)
   },
   {
     path: 'add-challenge',
-    loadComponent: () => import('./pages/add-challenge/add-challenge.component').then(m => m.AddChallengeComponent)
+    loadComponent: () => import('./features/challenge/add-challenge/add-challenge.component').then(m => m.AddChallengeComponent)
   },
   {
     path: 'sign-in',
-    loadComponent: () => import('./pages/sign-in/sign-in.component').then(m => m.SignInComponent)
+    loadComponent: () => import('./features/auth/oauth2-success/sign-in/sign-in.component').then(m => m.SignInComponent)
   },
   {
     path: 'sign-up',
-    loadComponent: () => import('./pages/sign-up/sign-up.component').then(m => m.SignUpComponent)
+    loadComponent: () => import('./features/auth/oauth2-success/sign-up/sign-up.component').then(m => m.SignUpComponent)
   },
   {
     path: 'create-project',
-    loadComponent: () => import('./project-create/project-create.component').then(m => m.ProjectCreateComponent),
+    loadComponent: () => import('./guards/project-create/project-create.component').then(m => m.ProjectCreateComponent),
     canActivate: [authGuard]
   },
   {
     path: 'projects-list',
-    loadComponent: () => import('./pages/project-list/project-list.component').then(m => m.ProjectListComponent)
+    loadComponent: () => import('./features/project/project-list/project-list.component').then(m => m.ProjectListComponent)
   },
 {
   path: 'oauth2/success',
-  loadComponent: () => import('./oauth2-success.component').then(m => m.OAuth2SuccessComponent)
+  loadComponent: () => import('./features/auth/oauth2-success/oauth2-success.component').then(m => m.OAuth2SuccessComponent)
 },
 {
   path: 'projects/:id',
-  loadComponent: () => import('./project-detail/project-detail.component')
+  loadComponent: () => import('./features/project/project-detail/project-detail/project-detail.component')
     .then(m => m.ProjectDetailComponent)
 },
 {
   path: 'diy-question',
-  loadComponent: () => import('./diy-chat/diy-chat.component')
+  loadComponent: () => import('./features/chat/diy-chat/diy-chat/diy-chat.component')
     .then(m => m.DiyChatComponent),
   canActivate: [authGuard]
 },
 {
   path: 'challenge/:id',
-loadComponent: () => import('./challenge-details/challenge-details.component')
+loadComponent: () => import('./features/challenge/challenge-details/challenge-details/challenge-details.component')
     .then(m => m.ChallengeDetailsComponent), 
      title: 'Challenge Details'
 },
 {
     path: 'profile',
-    loadComponent: () => import('./profile-page/profile-page.component').then(m => m.ProfilePageComponent),
+    loadComponent: () => import('./features/profile/profile-page/profile-page/profile-page.component').then(m => m.ProfilePageComponent),
     canActivate: [authGuard],
     title: 'My Profile'
   },
   {
     path: 'profile/edit',
-    loadComponent: () => import('./edit-profile/edit-profile.component').then(m => m.EditProfileComponent),
+    loadComponent: () => import('./features/profile/edit-profile/edit-profile/edit-profile.component').then(m => m.EditProfileComponent),
     canActivate: [authGuard],
     title: 'Edit Profile'
   },
   {
     path: 'project/edit/:id',
-    loadComponent: () => import('./project-edit/project-edit.component').then(m => m.ProjectEditComponent),
+    loadComponent: () => import('./features/project/project-edit/project-edit/project-edit.component').then(m => m.ProjectEditComponent),
     canActivate: [authGuard],
     title: `Edit Project`
   },
   {
     path: 'my-projects',
-    loadComponent: () => import('./profile-page/profile-page.component').then(m => m.ProfilePageComponent),
+    loadComponent: () => import('./features/profile/profile-page/profile-page/profile-page.component').then(m => m.ProfilePageComponent),
     canActivate: [authGuard],
     title: 'הפרויקטים שלי'
   },

@@ -8,13 +8,14 @@
   <section class="challenges-section">
     <h2>Open Challenges 🏆</h2>
     
-    <!-- @if (homeData.latestChallenges.length > 0) { -->
-        <div class="challenges-grid">
-            @for (c of challengeMap; track c.id) {
+    <mat-grid-list [cols]="4" rowHeight="420px" gutterSize="16px"> 
+        
+        @for (c of challengeMap; track c.id) {
+            <mat-grid-tile>
                 <mat-card class="challenge-card">
                     
                     <img 
-                        [src]="getImageUrl(c.picturePath)" 
+                        [src]="getImageUrl(c.picture)" 
                         [alt]="c.theme"
                         class="challenge-image">
 
@@ -33,16 +34,11 @@
                         </button>
                     </mat-card-actions>
                 </mat-card>
-            } 
-        </div>
-    <!-- } @else {
-        <div class="empty">
-            <mat-icon>flag</mat-icon>
-            <h3>No active challenges right now</h3>
-            <p>Check back soon!</p>
-        </div>
-    } -->
-  </section>
+            </mat-grid-tile>
+        } 
+        
+    </mat-grid-list> 
+</section>
 
   <hr>
 
@@ -62,5 +58,5 @@
         </mat-grid-list>
         <hr>
     }
-  </section>
+</section>
 }

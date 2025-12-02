@@ -1,0 +1,18 @@
+/* בתוך app.component.css או .scss */
+
+.challenges-grid {
+    display: grid;
+    /* הגדר 3 עמודות בגודל שווה */
+    grid-template-columns: repeat(3, 1fr); 
+    /* רווח בין הפריטים */
+    gap: 16px; 
+}
+
+/* הגדרות נוספות כדי לוודא שהכרטיסים נמתחים כראוי */
+.challenge-card {
+    /* נמתח לרוחב העמודה */
+    width: 100%; 
+    height: 100%; /* נמתח לגובה השורה */
+    display: flex; /* שיפור מבנה הכרטיס */
+    flex-direction: column;
+}
