@@ -13,6 +13,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3) !important;
 }
 
+
 /* Toast אדום – שגיאה */
 .toast-error {
   background: linear-gradient(135deg, #f44336, #d32f2f) !important;
@@ -29,4 +30,49 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   font-weight: 600 !important;
   border-radius: 12px !important;
   box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3) !important;
+}
+
+
+/* ==== DARK MODE הכי יפה שיש ==== */
+.dark-theme {
+  color-scheme: dark;
+  background-color: #0f0f0f;
+  color: #e0e0e0;
+}
+
+/* וגם את השורות האלה */
+.dark-theme .mat-mdc-card,
+.dark-theme .mat-mdc-dialog-container,
+.dark-theme .cdk-overlay-pane {
+  background: #1a1a1a !important;
+}
+
+.dark-theme .mat-body,
+.dark-theme .mat-caption,
+.dark-theme .mat-mdc-card-title,
+.dark-theme * {
+  color: #e0e0e0 !important;
+}
+
+/* חשוב מאוד – להכריח את כל הטקסט להיות בהיר */
+.dark-theme input,
+.dark-theme textarea,
+.dark-theme .mat-form-field-label {
+  color: #e0e0e0 !important;
+}
+.dark-theme {
+  background-color: #0f0f0f !important;
+}
+
+/* וחובה – שכל הטקסט יהיה בהיר */
+.dark-theme,
+.dark-theme * {
+  color: #e0e0e0 !important;
+}
+.dark-theme .card,
+.dark-theme mat-card,
+.dark-theme app-project-card {
+  background: #1a1a1a !important;
+  border: 1px solid #333 !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }

@@ -71,10 +71,11 @@ public interface ProjectMapper {
                 .collect(Collectors.toList());
     }
 
-    @Mapping(target = "id", ignore = true) // מוודא ששדה ה-ID של הישות לא יידרס
+    @Mapping(target = "id", ignore = true)
     @Mapping(source = "categoryId", target = "category.id")
-    @Mapping(source = "challengeId", target = "challenge.id")
+    @Mapping(target = "challenge", ignore = true) // 🔥 זה השינוי הנדרש
     Project updateProjectFromDto(ProjectCreateDTO p, @MappingTarget Project existingProject);
+
 
     @Mapping(target = "id", source = "project.id")
     // **החלף את שתי השורות הבאות (target ו-AfterMapping)**

@@ -24,26 +24,26 @@ import { ProjectService } from '../../../../services/project.service';
 export class MyProjectsTabComponent {
   private profileService = inject(ProfileService);
   private projectService = inject(ProjectService);
-  private route = inject(ActivatedRoute); 
-  private router = inject(Router);
-private snackBar = inject(MatSnackBar)
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private snackBar = inject(MatSnackBar)
   myProjects = signal<any[]>([]);
-  loading = signal(true); 
+  loading = signal(true);
 
-challengeIdToAssign = signal<number | null>(null);
+  challengeIdToAssign = signal<number | null>(null);
   ngOnInit(): void {
     // 🌟 בדוק אם challengeId הועבר כפרמטר ב-URL
     this.route.queryParams.subscribe(params => {
-        const id = params['challengeId'];
-        if (id) {
-            this.challengeIdToAssign.set(Number(id));
-        } else {
-            this.challengeIdToAssign.set(null);
-        }
+      const id = params['challengeId'];
+      if (id) {
+        this.challengeIdToAssign.set(Number(id));
+      } else {
+        this.challengeIdToAssign.set(null);
+      }
     });
 
-  this.loadMyProjects();
- }
+    this.loadMyProjects();
+  }
 
   loadMyProjects(): void {
     this.loading.set(true);
@@ -63,88 +63,97 @@ challengeIdToAssign = signal<number | null>(null);
   }
 
 
- deleteProject(projectId: number) {
-  if (!confirm('למחוק את הפרויקט לצמיתות? לא ניתן לשחזר!')) return;
+  deleteProject(projectId: number) {
+    if (!confirm('למחוק את הפרויקט לצמיתות? לא ניתן לשחזר!')) return;
 
-  // 🔥 שימוש ב-ProjectService
-  this.projectService.deleteProject(projectId).subscribe({
-   next: () => {
-    // עדכון לוקאלי של הרשימה (מחיקה מה-signal)
-    this.myProjects.update(projects => projects.filter(x => x.id !== projectId));
-    // עדכון מונה ב-Header
-    this.profileService.deleteMyProject(projectId);
-   },
-   error: () => alert('שגיאה במחיקה')
-  });
- }
-//  assignProject(projectId: number): void {
-//       const challengeId = this.challengeIdToAssign();
-//       if (!challengeId) return;
+    // 🔥 שימוש ב-ProjectService
+    this.projectService.deleteProject(projectId).subscribe({
+      next: () => {
+        // עדכון לוקאלי של הרשימה (מחיקה מה-signal)
+        this.myProjects.update(projects => projects.filter(x => x.id !== projectId));
+        // עדכון מונה ב-Header
+        this.profileService.deleteMyProject(projectId);
+      },
+      error: () => alert('שגיאה במחיקה')
+    });
+  }
+  //  assignProject(projectId: number): void {
+  //       const challengeId = this.challengeIdToAssign();
+  //       if (!challengeId) return;
 
-//       this.projectService.assignProjectToChallenge(projectId, challengeId).subscribe({
-//           next: () => {
-//               alert('הפרויקט שויך בהצלחה!');
-              
-//               // 1. הסר את הפרויקט המשויך מהרשימה הנוכחית (כי הוא כבר לא זמין לשיוך)
-//               this.myProjects.update(projects => projects.filter(p => p.id !== projectId));
-              
-//               // 2. ניווט חזרה לדף האתגר
-//               this.router.navigate(['/challenge', challengeId]);
-//           },
-//           error: () => {
-//               alert('שגיאה בשיוך הפרויקט.');
-//           }
-//       });
-//   }
+  //       this.projectService.assignProjectToChallenge(projectId, challengeId).subscribe({
+  //           next: () => {
+  //               alert('הפרויקט שויך בהצלחה!');
+
+  //               // 1. הסר את הפרויקט המשויך מהרשימה הנוכחית (כי הוא כבר לא זמין לשיוך)
+  //               this.myProjects.update(projects => projects.filter(p => p.id !== projectId));
+
+  //               // 2. ניווט חזרה לדף האתגר
+  //               this.router.navigate(['/challenge', challengeId]);
+  //           },
+  //           error: () => {
+  //               alert('שגיאה בשיוך הפרויקט.');
+  //           }
+  //       });
+  //   }
   // נעדכן את ה-computed כדי שישתמש ב-signal המקומי
   myProjectsComputed = computed(() => this.myProjects());
 
   assignProject(projectId: number): void {
-  const challengeId = this.challengeIdToAssign();
-  if (!challengeId) return;
+    const challengeId = this.challengeIdToAssign();
+    if (!challengeId) return;
 
-  this.projectService.assignProjectToChallenge(projectId, challengeId).subscribe({
-    next: () => {
-      // 🌟 שימוש ב-SnackBar במקום alert להצלחה
-      this.snackBar.open('הפרויקט שויך בהצלחה!', 'סגור', { duration: 3000 });
-      
-      // 1. הסר את הפרויקט המשויך מהרשימה הנוכחית
-      this.myProjects.update(projects => projects.filter(p => p.id !== projectId));
-      
-      // 2. ניווט חזרה לדף האתגר
-      this.router.navigate(['/challenge', challengeId]);
-    },
-    error: (err: HttpErrorResponse) => { // 🌟 הגדרת ה-error כ-HttpErrorResponse לגישה קלה
-      let errorMessage = 'שגיאה בשיוך הפרויקט לאתגר.';
+    this.projectService.assignProjectToChallenge(projectId, challengeId).subscribe({
+      next: () => {
+        this.snackBar.open('הפרויקט שויך בהצלחה!', 'סגור', {
+          duration: 4000,
+          panelClass: ['success-snackbar']
+        });
 
-      // 🌟🌟🌟 טיפול בשגיאת המגבלה 🌟🌟🌟
-      // כאשר ה-Backend זורק ResponseStatusException, גוף התגובה מכיל את השגיאה
-      if (err.status === 400 && err.error && err.error.reason) {
-          // err.error.reason מכיל את ההודעה: "User already submitted a project to this challenge."
-          const backendReason = err.error.reason;
-          
-          // אנו משווים את ההודעה הנשלחת מה-Backend ומציגים הודעה בעברית
-          if (backendReason.includes('User already submitted')) {
-             errorMessage = 'משתמש יכול לשייך **פרויקט אחד בלבד** לאתגר זה.';
+        this.myProjects.update(projects => projects.filter(p => p.id !== projectId));
+        this.router.navigate(['/challenge', challengeId]);
+      },
+
+      error: (err: HttpErrorResponse) => {
+        console.error('שגיאה בשיוך פרויקט:', err); // ← חשוב! תראה בקונסולה בדיוק מה חוזר
+
+        let message = 'שגיאה בשיוך הפרויקט.';
+
+        // לוקחים את כל מה שיש – לא משנה השם של השדה
+        const errorBody = err.error;
+        const rawMessage = typeof errorBody === 'string'
+          ? errorBody
+          : (errorBody?.reason || errorBody?.message || errorBody?.error || err.message || '');
+
+        const msg = rawMessage.toString().toLowerCase();
+
+        // === כל המקרים השכיחים ביותר ===
+        if (msg.includes('already') || msg.includes('כבר') || msg.includes('קיים')) {
+          if (msg.includes('user') || msg.includes('משתמש') || msg.includes('submit') || msg.includes('הגיש')) {
+            message = 'כבר שלחת פרויקט לאתגר זה!\nמשתמש יכול להגיש פרויקט אחד בלבד.';
           } else {
-             // אם זו שגיאת 400 אחרת, נציג את ההודעה של ה-Backend
-             errorMessage = backendReason; 
+            message = 'הפרויקט כבר משויך לאתגר אחר.';
           }
-          
-      } else if (err.status === 404) {
-          errorMessage = 'הפרויקט או האתגר לא נמצאו.';
-      } else {
-          // שגיאות שרת כלליות (500) או שגיאות לא צפויות
-          errorMessage = `שגיאת שרת: ${err.statusText || 'לא ידועה'}`;
-      }
-      
-      // 🛑 שימוש ב-SnackBar במקום alert לשגיאה
-      this.snackBar.open(errorMessage, 'סגור', { 
-          duration: 7000, 
-          panelClass: ['error-snackbar'] // ניתן להשתמש ב-CSS זה כדי לעצב את השגיאה
-      });
-    }
-  });
-}
-}
+        }
+        else if (err.status === 404) {
+          message = 'הפרויקט או האתגר לא נמצאו.';
+        }
+        else if (err.status === 403) {
+          message = 'אין לך הרשאה לשייך פרויקט זה.';
+        }
+        else if (err.status === 400) {
+          // אם זה 400 אבל לא תפסנו קודם – נראה את ההודעה כמו שהיא (אבל בעברית אם אפשר)
+          message = 'לא ניתן לשייך את הפרויקט.\nייתכן שכבר הגשת פרויקט לאתגר זה.';
+        }
+        else {
+          message = 'שגיאה בשרת. נסה שוב מאוחר יותר.';
+        }
 
+        this.snackBar.open(message, 'סגור', {
+          duration: 9000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+}

@@ -324,59 +324,6 @@ public class ProjectController {
         }
     }
 
-//    @PatchMapping("/{projectId}/assign-challenge/{challengeId}")
-//    public ResponseEntity<Void> assignToChallenge(
-//            @PathVariable Long projectId,
-//            @PathVariable Long challengeId,
-//            @AuthenticationPrincipal Users currentUser) {
-//
-//        if (currentUser == null) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User must be logged in.");
-//        }
-//
-//        if (projectRepository.existsByChallengeIdAndUsersId(challengeId, currentUser.getId())) {
-//            throw new ResponseStatusException(
-//                    HttpStatus.BAD_REQUEST,
-//                    "User already submitted a project to this challenge." // הודעת השגיאה שתישלח ל-Frontend
-//            );
-//        }
-//
-//        Project project = projectRepository.findById(projectId)
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found."));
-//
-//        Challenge challenge = challengeRepository.findById(challengeId)
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge not found."));
-//
-//        if (!project.getUsers().getId().equals(currentUser.getId())) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the owner of the project.");
-//        }
-//
-//        project.setChallenge(challenge);
-//        project.setDraft(false);
-//        projectRepository.save(project);
-//
-//        return ResponseEntity.ok().build();
-//    }
-//@PatchMapping("/{projectId}/assign-challenge/{challengeId}")
-//public ResponseEntity<Void> assignToChallenge(
-//        @PathVariable Long projectId,
-//        @PathVariable Long challengeId) { // 🛑 משתמש הוסר זמנית
-//
-//    // שימי כאן הדפסה כדי לוודא שהגעת לקוד
-//    System.out.println("--- SUCCESSFULLY REACHED THE CONTROLLER ---");
-//
-//    Project project = projectRepository.findById(projectId)
-//            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found."));
-//
-//    Challenge challenge = challengeRepository.findById(challengeId)
-//            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge not found."));
-//
-//    project.setChallenge(challenge);
-//    project.setDraft(false);
-//    projectRepository.save(project);
-//
-//    return ResponseEntity.ok().build();
-//}
 @PatchMapping("/{projectId}/assign-challenge/{challengeId}")
 public ResponseEntity<Void> assignToChallenge(
         @PathVariable Long projectId,
@@ -567,6 +514,59 @@ public ResponseEntity<Void> assignToChallenge(
 
 
 
+//    @PatchMapping("/{projectId}/assign-challenge/{challengeId}")
+//    public ResponseEntity<Void> assignToChallenge(
+//            @PathVariable Long projectId,
+//            @PathVariable Long challengeId,
+//            @AuthenticationPrincipal Users currentUser) {
+//
+//        if (currentUser == null) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User must be logged in.");
+//        }
+//
+//        if (projectRepository.existsByChallengeIdAndUsersId(challengeId, currentUser.getId())) {
+//            throw new ResponseStatusException(
+//                    HttpStatus.BAD_REQUEST,
+//                    "User already submitted a project to this challenge." // הודעת השגיאה שתישלח ל-Frontend
+//            );
+//        }
+//
+//        Project project = projectRepository.findById(projectId)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found."));
+//
+//        Challenge challenge = challengeRepository.findById(challengeId)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge not found."));
+//
+//        if (!project.getUsers().getId().equals(currentUser.getId())) {
+//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the owner of the project.");
+//        }
+//
+//        project.setChallenge(challenge);
+//        project.setDraft(false);
+//        projectRepository.save(project);
+//
+//        return ResponseEntity.ok().build();
+//    }
+//@PatchMapping("/{projectId}/assign-challenge/{challengeId}")
+//public ResponseEntity<Void> assignToChallenge(
+//        @PathVariable Long projectId,
+//        @PathVariable Long challengeId) { // 🛑 משתמש הוסר זמנית
+//
+//    // שימי כאן הדפסה כדי לוודא שהגעת לקוד
+//    System.out.println("--- SUCCESSFULLY REACHED THE CONTROLLER ---");
+//
+//    Project project = projectRepository.findById(projectId)
+//            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found."));
+//
+//    Challenge challenge = challengeRepository.findById(challengeId)
+//            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge not found."));
+//
+//    project.setChallenge(challenge);
+//    project.setDraft(false);
+//    projectRepository.save(project);
+//
+//    return ResponseEntity.ok().build();
+//}
 
     //    @GetMapping("/allProjects")
 //    public ResponseEntity<Page<ProjectListDTO>> getAllProjectsWithFilters(

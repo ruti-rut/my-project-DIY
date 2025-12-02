@@ -1,0 +1,61 @@
+<div class="challenges-page">
+  <!-- כותרת + כפתור יצירה -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1 class="page-title">Challenges DIY</h1>
+      <p class="page-subtitle">Join the challenge, create, and win prizes!</p>
+    </div>
+
+    <button mat-fab color="accent" class="create-fab" routerLink="/add-challenge" title="צור אתגר חדש">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (loading) {
+    <div class="loading">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading challenges...</p>
+    </div>
+  }
+
+  <!-- רשימת אתגרים -->
+  @if (!loading) {
+    <div class="challenges-grid">
+      @for (c of challenges; track c.id) {
+        <mat-card class="challenge-card">
+
+          <!-- תמונת אתגר – בדיוק כמו שהיה אצלך! -->
+          <img 
+            [src]="getImageUrl(c.picture)" 
+            [alt]="c.theme"
+            class="challenge-image">
+
+          <!-- תוכן -->
+          <mat-card-content class="card-content">
+            <h3 class="challenge-title">{{ c.theme }}</h3>
+            <p class="challenge-date">
+              <mat-icon>event</mat-icon>
+             Ending at: {{ formatDate(c.endDate) }}
+            </p>
+          </mat-card-content>
+
+          <!-- כפתור פרטים -->
+          <mat-card-actions>
+            <button mat-raised-button color="primary" routerLink="/challenge/{{c.id}}">
+              <mat-icon>arrow_forward</mat-icon>
+              Details
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      } @empty {
+        <!-- אין אתגרים -->
+        <div class="empty">
+          <mat-icon>flag</mat-icon>
+      <h3>No active challenges right now</h3>
+<p>Check back soon!</p>
+        </div>
+      }
+    </div>
+  }
+</div>

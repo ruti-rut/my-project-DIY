@@ -1,0 +1,63 @@
+/* שימוש בסגנונות זהים ל-LoginComponent */
+
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+    min-height: calc(100vh - 50px);
+}
+
+.auth-card {
+    max-width: 400px;
+    width: 100%;
+    padding: 24px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.auth-card mat-card-title {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.auth-card mat-card-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-card mat-card-content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-card mat-form-field {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.auth-card button[type="submit"] {
+    margin-top: 20px;
+    height: 48px;
+    font-size: 1.1rem;
+}
+
+.error-message {
+    color: var(--mat-warn-color);
+    font-size: 0.9rem;
+    margin: 5px 0 10px 0;
+}
+
+.auth-footer {
+    display: flex;
+    justify-content: center;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+.auth-footer a {
+    text-decoration: none;
+    color: var(--mat-primary-color);
+    font-weight: 500;
+}
