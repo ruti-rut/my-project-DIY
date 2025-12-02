@@ -83,6 +83,7 @@ public interface ProjectMapper {
     @Mapping(source = "project.users", target = "usersSimpleDTO")
     @Mapping(target = "picture", ignore = true)
     @Mapping(target = "favorited", expression = "java(currentUser != null && project.getFavoritedByUsers() != null && project.getFavoritedByUsers().contains(currentUser))")
+    @Mapping(target = "liked", expression = "java(currentUser != null && project.getLikedByUsers() != null && project.getLikedByUsers().contains(currentUser))")
     ProjectListDTO toProjectListDTO(Project project, Users currentUser);
 
 
