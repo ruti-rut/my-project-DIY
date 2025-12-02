@@ -1,0 +1,17 @@
+@if (isLoggedIn()) {
+ <button 
+  mat-icon-button 
+  (click)="$event.stopPropagation(); toggle()"
+  (click)="toggle()"
+  [class.filled]="likeState()" 
+  [disabled]="loading()">
+  
+  @if (loading()) {
+   <mat-spinner diameter="20"></mat-spinner>
+  } @else {
+   <mat-icon>
+        {{ likeState() ? 'thumb_up' : 'thumb_up_off_alt' }} 
+   </mat-icon>
+  }
+ </button>
+}

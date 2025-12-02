@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Challenge, ChallengeListDTO, ChallengeResponseDTO } from '../models/challenge.model';
+import { ProjectListDTO } from '../models/project.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,10 @@ export class ChallengeService {
   }
 
   getChallengeById(id: number): Observable<ChallengeResponseDTO> {
-    return this._httpClient.get<ChallengeResponseDTO>(`${this.apiUrl}/challenge/${id}`);
+    return this._httpClient.get<ChallengeResponseDTO>(`${this.apiUrl}/${id}`);
   }
+  getProjectsForChallenge(challengeId: number): Observable<ProjectListDTO[]> {
+    return this._httpClient.get<ProjectListDTO[]>(`${this.apiUrl}/${challengeId}/projects`);
+}
   
 }

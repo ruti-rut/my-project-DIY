@@ -11,7 +11,6 @@ public class ChallengeResponseDTO {
     LocalDate endDate;
     String picturePath;
     String picture;       // base64 – בדיוק כמו ב-ProjectListDTO
-    List<ProjectListDTO> projects;  // ← ישירות את מה שכבר יש לך!
     String status;           // "OPEN" | "UPCOMING" | "CLOSED"
 
     public Long getId() {
@@ -70,13 +69,6 @@ public class ChallengeResponseDTO {
         this.picture = picture;
     }
 
-    public List<ProjectListDTO> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(List<ProjectListDTO> projects) {
-        this.projects = projects;
-    }
 
     public String getStatus() {
         return status;

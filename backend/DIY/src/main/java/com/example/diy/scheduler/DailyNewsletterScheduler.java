@@ -29,7 +29,7 @@ public void sendDailyEmails() {
         for (Users user : users) {
             try {
                 newsletterService.createAndSendNewsletter(user);
-                Thread.sleep(500);
+//                Thread.sleep(500);
             } catch (Exception e) {
                 System.out.println("Error sending email to: " + user.getMail());
                 e.printStackTrace();

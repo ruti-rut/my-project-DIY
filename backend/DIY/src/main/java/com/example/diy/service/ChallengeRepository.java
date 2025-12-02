@@ -1,6 +1,7 @@
 package com.example.diy.service;
 
 import com.example.diy.model.Challenge;
+import com.example.diy.model.Project;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,6 +31,10 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
     @Query("SELECT c FROM Challenge c WHERE c.endDate BETWEEN CURRENT_DATE AND :weekFromNow ORDER BY c.endDate ASC")
     List<Challenge> findChallengesEndingSoon(LocalDate weekFromNow);
 
-    @Query("SELECT c FROM Challenge c LEFT JOIN FETCH c.projects p LEFT JOIN FETCH p.users u WHERE c.id = :id")
+    @Query("SELECT DISTINCT c FROM Challenge c " +
+            "LEFT JOIN FETCH c.projects p " +
+            "LEFT JOIN FETCH p.users " +  // ← זה החסר!
+            "WHERE c.id = :id")
     Optional<Challenge> findByIdWithProjectsAndUsers(@Param("id") Long id);
+
 }

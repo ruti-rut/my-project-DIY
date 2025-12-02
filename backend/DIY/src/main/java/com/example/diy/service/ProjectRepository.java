@@ -57,6 +57,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
 
     boolean existsByChallengeIdAndUsersId(Long challengeId, Long userId);
 
+    @Query("SELECT p FROM Project p LEFT JOIN FETCH p.users WHERE p.challenge.id = :challengeId")
+    List<Project> findProjectsByChallengeIdWithUsers(@Param("challengeId") Long challengeId);
+
 
     //    // חיפוש לפי כותרת או תגיות
 //    @Query("SELECT DISTINCT p FROM Project p " +
