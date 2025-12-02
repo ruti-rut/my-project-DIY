@@ -42,12 +42,12 @@ export class MyProjectsTabComponent {
       }
     });
 
-    this.loadMyProjects();
+    this.loadMyPublishedProjects();
   }
 
-  loadMyProjects(): void {
+  loadMyPublishedProjects(): void {
     this.loading.set(true);
-    this.projectService.getMyProjects().subscribe({
+    this.projectService.getMyPublishedProjects().subscribe({
       next: (projects) => {
         this.myProjects.set(projects);
         this.loading.set(false);

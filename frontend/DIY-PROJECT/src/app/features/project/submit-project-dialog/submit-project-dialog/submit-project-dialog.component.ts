@@ -36,7 +36,7 @@ export class SubmitProjectDialogComponent implements OnInit {
   loading = signal(true);
 
   ngOnInit(): void {
-    this.projectService.getMyProjects().subscribe({
+    this.projectService.getMyPublishedProjects().subscribe({
       next: (projects) => {
         this.myProjects.set(projects.filter(p => !p.challengeId));
         this.loading.set(false);

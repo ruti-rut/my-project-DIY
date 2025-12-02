@@ -6,6 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProfileService } from '../../../../services/profile.service';
 import { FavoritesTabComponent } from '../../../../shared/components/favorites-tab/favorites-tab/favorites-tab.component';
 import { MyProjectsTabComponent } from '../../../../shared/components/my-projects-tab/my-projects-tab/my-projects-tab.component';
+import { DraftsTabComponent } from "../../../../shared/components/drafts-tab/drafts-tab.component";
 @Component({
   selector: 'app-profile-page',
   imports: [CommonModule,
@@ -13,7 +14,7 @@ import { MyProjectsTabComponent } from '../../../../shared/components/my-project
     MatProgressSpinnerModule,
     ProfileHeaderComponent,
     MyProjectsTabComponent,
-    FavoritesTabComponent],
+    FavoritesTabComponent, DraftsTabComponent],
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.css'
 })

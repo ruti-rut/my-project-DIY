@@ -9,6 +9,10 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 
 public class ProjectSpecifications {
+
+    public static Specification<Project> isNotDraft() {
+        return (root, query, cb) -> cb.equal(root.get("isDraft"), false);
+    }
     public static Specification<Project> search(String searchTerm) {
         return (root, query, cb) -> {
             if (searchTerm == null || searchTerm.trim().isEmpty()) {

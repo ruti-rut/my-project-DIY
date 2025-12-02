@@ -31,22 +31,28 @@ public class StepController {
     }
 
     @PostMapping("/uploadStep")
-    public ResponseEntity<StepResponseDTO> uploadStepWithImage(@RequestPart("image") MultipartFile file
-            , @RequestPart("step") StepDTO s) {
+    public ResponseEntity<StepResponseDTO> uploadStepWithImage(
+            @RequestPart(value = "image", required = false) MultipartFile file,  // ✅ required = false
+            @RequestPart("step") StepDTO s) {
         try {
-            ImageUtils.uploadImage(file);
-
             Step step = stepMapper.stepDtoToStep(s);
 
             Project project = projectRepository.findById(s.getProjectId())
                     .orElseThrow(() -> new RuntimeException("Project not found"));
 
             step.setProject(project);
-            step.setPicturePath(file.getOriginalFilename());
+
+            // ✅ רק אם יש תמונה - שמור אותה
+            if (file != null && !file.isEmpty()) {
+                ImageUtils.uploadImage(file);
+                step.setPicturePath(file.getOriginalFilename());
+            }
+            // אם אין תמונה - פשוט לא נשים picturePath
 
             Step savedStep = stepRepository.save(step);
             StepResponseDTO responseDTO = stepMapper.stepEntityToResponseDTO(savedStep);
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+
         } catch (IOException e) {
             System.out.println("Error uploading image: " + e.getMessage());
             return ResponseEntity.internalServerError().build();

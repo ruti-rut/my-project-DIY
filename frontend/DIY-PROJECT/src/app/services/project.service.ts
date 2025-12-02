@@ -74,9 +74,17 @@ export class ProjectService {
 
     return this.http.get<Page<ProjectListDTO>>(`${this.apiUrl}/allProjects`, { params });
   }
-  getMyProjects(): Observable<ProjectListDTO[]> {
-    return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myProjects`);
-  }
+  // getMyProjects(): Observable<ProjectListDTO[]> {
+  //   return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myProjects`);
+  // }
+  getMyPublishedProjects(): Observable<ProjectListDTO[]> {
+    return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myProjects/published`);
+}
+
+// ✅ 2. טיוטות (מציג את "Drafts" בטאב)
+getMyDrafts(): Observable<ProjectListDTO[]> {
+    return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myProjects/drafts`);
+}
 
   getFavorites(): Observable<ProjectListDTO[]> {
     return this.http.get<ProjectListDTO[]>(`${this.apiUrl}/myFavorites`);
