@@ -59,7 +59,7 @@ export class ChallengesComponent implements OnInit {
   // עיצוב תאריך
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString('he-IL', {
+    return date.toLocaleDateString('en-US', {
       day: 'numeric',
       month: 'short',
       year: 'numeric'

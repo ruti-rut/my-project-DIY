@@ -30,7 +30,7 @@ export class DiyChatComponent {
   }
 
   startNewChat() {
-    if (confirm('להתחיל שיחה חדשה?')) {
+    if (confirm('Begin a new chat?')) {
       this.chatService.newConversation();
     }
   }

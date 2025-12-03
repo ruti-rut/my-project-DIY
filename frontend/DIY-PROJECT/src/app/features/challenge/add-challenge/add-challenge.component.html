@@ -1,11 +1,11 @@
 <div class="create-challenge-container">
-  <h2 class="mat-headline-5">יצירת אתגר חדש</h2>
+  <h2 class="mat-headline-5">Create new challenge</h2>
 
   <form [formGroup]="challengeForm" (ngSubmit)="onSubmit()" class="challenge-form">
 
     <!-- תאריך התחלה -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>תאריך התחלה</mat-label>
+      <mat-label>Starting date</mat-label>
       <input matInput [matDatepicker]="startPicker" formControlName="startDate">
       <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
       <mat-datepicker #startPicker></mat-datepicker>
@@ -16,7 +16,7 @@
 
     <!-- תאריך סיום -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>תאריך סיום</mat-label>
+      <mat-label>Ending date</mat-label>
       <input matInput [matDatepicker]="endPicker" formControlName="endDate">
       <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
       <mat-datepicker #endPicker></mat-datepicker>
@@ -27,10 +27,10 @@
 
     <!-- נושא -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>נושא האתגר</mat-label>
+      <mat-label>Challenge theme</mat-label>
       <input matInput formControlName="theme" placeholder="למשל: אתגר כושר 30 יום">
       @if (challengeForm.controls['theme'].hasError('required')) {
-        <mat-error>נושא נדרש</mat-error>
+        <mat-error>Theme required</mat-error>
       }
       @if (challengeForm.controls['theme'].hasError('minlength')) {
         <mat-error>At least 3 characters</mat-error>

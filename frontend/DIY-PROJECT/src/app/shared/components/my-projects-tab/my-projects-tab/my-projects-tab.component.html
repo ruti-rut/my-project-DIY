@@ -7,10 +7,10 @@
 
     <!-- תגית טיוטה -->
     @if (project.isDraft) {
-    <div class="draft-badge">טיוטה</div>
+    <div class="draft-badge">Draft</div>
     }
 @if (challengeIdToAssign() !== null && project.challengeId && project.challengeId !== challengeIdToAssign()) {
-  <div class="assigned-badge">משויך לאתגר אחר</div>
+  <div class="assigned-badge">Assign to a different challenge</div>
 }
   <!-- מצב שיוך לאתגר ספציפי -->
   @if (challengeIdToAssign() !== null) {

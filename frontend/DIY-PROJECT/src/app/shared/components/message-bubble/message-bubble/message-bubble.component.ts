@@ -20,8 +20,6 @@ export class MessageBubbleComponent {
   message = input.required<ChatMessage>();
   showCopied = false;
   
-  // הוסר hasMarkdown = computed(...) - אין צורך יותר!
-
   constructor(private clipboard: Clipboard) {}
 
   copy() {

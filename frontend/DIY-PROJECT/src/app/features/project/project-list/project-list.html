@@ -18,8 +18,8 @@
   @if (!loading() && projects().length === 0) {
     <div class="empty-state">
       <mat-icon class="empty-icon">search_off</mat-icon>
-      <h2>לא נמצאו פרויקטים</h2>
-      <p>נסו לשנות את החיפוש או לבחור קטגוריות אחרות</p>
+      <h2>Projects were not found</h2>
+      <p>Try changing the search term or choose another category</p>
     </div>
   }
 
@@ -29,18 +29,17 @@
       <button mat-stroked-button class="load-more-btn" (click)="loadMore()" [disabled]="loading()">
         @if (loading()) {
           <mat-spinner diameter="20"></mat-spinner>
-          <span>טוען פרויקטים...</span>
+          <span>Loading projects...</span>
         } @else {
           <mat-icon>refresh</mat-icon>
-          טען עוד
-        }
+Load more        }
       </button>
     </div>
   }
 
   @if (!hasMore() && projects().length > 0) {
     <div class="end-of-list">
-      <p>🎉 זהו! ראית את כל הפרויקטים הזמינים</p>
+      <p>🎉 That's it! I saw all the available projects.</p>
     </div>
   }
 </div>

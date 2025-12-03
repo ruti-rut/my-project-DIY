@@ -7,7 +7,7 @@
   <form [formGroup]="form()" (ngSubmit)="submit(form().value.isDraft)" class="form">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Project Title</mat-label>
-      <input matInput formControlName="title" placeholder="לדוגמה: איך לבנות רובוט מפחיות">
+      <input matInput formControlName="title" placeholder="e.g.: How to build a robot from cans">
       @if (form().get('title')?.errors && (form().get('title')?.dirty || form().get('title')?.touched)) {
       <mat-error>
         @if (form().get('title')?.hasError('required')) {
@@ -76,7 +76,7 @@
 
     <div class="row">
       <mat-form-field appearance="outline">
-        <mat-label>"Age range"</mat-label>
+        <mat-label>Age range</mat-label>
         <input matInput formControlName="ages" placeholder="6-12">
         @if (form().get('ages')?.errors && (form().get('ages')?.dirty || form().get('ages')?.touched)) {
         <mat-error>
@@ -91,7 +91,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Preparation Time</mat-label>
-        <input matInput formControlName="timePrep" placeholder="30 דקות">
+        <input matInput formControlName="timePrep" placeholder="30 minutes">
         @if (form().get('timePrep')?.errors && (form().get('timePrep')?.dirty || form().get('timePrep')?.touched)) {
         <mat-error>
           @if (form().get('timePrep')?.hasError('required')) {
@@ -114,7 +114,7 @@
         </mat-chip>
         }
         @if (tags().length
-        < 5) { <input placeholder="הוסף תגית..." [matChipInputFor]="chipGrid" (matChipInputTokenEnd)="addTag($event)" />
+        < 5) { <input placeholder="Add tag..." [matChipInputFor]="chipGrid" (matChipInputTokenEnd)="addTag($event)" />
         }
       </mat-chip-grid>
       <mat-hint>{{ tags().length }}/5</mat-hint>

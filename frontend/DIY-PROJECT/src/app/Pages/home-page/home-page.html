@@ -4,7 +4,7 @@
   @if (isLoading) {
     <div class="loader">
       <mat-spinner diameter="60"></mat-spinner>
-      <p>טוען את דף הבית...</p>
+      <p>Loading home page...</p>
     </div>
   } @else {
 
@@ -21,14 +21,14 @@
               <h3 class="challenge-title">{{ c.theme }}</h3>
               <p class="challenge-date">
                 <mat-icon>event</mat-icon>
-                מסתיים: {{ formatDate(c.endDate) }}
+                Ending: {{ formatDate(c.endDate) }}
               </p>
             </mat-card-content>
 
             <mat-card-actions class="challenge-actions">
               <button mat-raised-button color="primary" class="full-btn">
                 <mat-icon>arrow_forward</mat-icon>
-                פרטים והשתתפות
+                Details and participating
               </button>
             </mat-card-actions>
           </mat-card>

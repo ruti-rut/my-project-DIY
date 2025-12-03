@@ -94,7 +94,7 @@ export class EditProfileComponent {
     this.profileService.updateProfile(city, aboutMe, file).subscribe({
       next: data => {
         this.profileService.profile.set(data);
-        this.toast.success('הפרופיל עודכן בהצלחה!');
+        this.toast.success('The profile was updated successfully!');
         this.router.navigate(['/profile']);
 
       },
