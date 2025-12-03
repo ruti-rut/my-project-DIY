@@ -9,6 +9,7 @@ import com.example.diy.model.Users;
 import com.example.diy.service.CommentRepository;
 import com.example.diy.service.ProjectRepository;
 import com.example.diy.service.UsersRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +39,7 @@ public class CommentController {
 
     @PostMapping("/addComment")
     public ResponseEntity<CommentDTO> addComment(
-            @RequestBody CommentCreateDTO dto,
+            @RequestBody @Valid CommentCreateDTO  dto,
             Principal principal) {
         try {
             // 1. בדיקה: האם המשתמש מחובר?

@@ -5,19 +5,36 @@
   <mat-spinner diameter="50"></mat-spinner>
   } @else {
   <form [formGroup]="form()" (ngSubmit)="submit(form().value.isDraft)" class="form">
-    <!-- כותרת -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Project Title</mat-label>
       <input matInput formControlName="title" placeholder="לדוגמה: איך לבנות רובוט מפחיות">
+      @if (form().get('title')?.errors && (form().get('title')?.dirty || form().get('title')?.touched)) {
+      <mat-error>
+        @if (form().get('title')?.hasError('required')) {
+        Title is **mandatory**.
+        } @else if (form().get('title')?.hasError('minlength')) {
+        Title must contain at least **3 characters**.
+        } @else if (form().get('title')?.hasError('maxlength')) {
+        Title cannot exceed **100 characters**.
+        }
+      </mat-error>
+      }
     </mat-form-field>
 
-    <!-- תיאור -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Description / Introduction</mat-label>
       <textarea matInput rows="4" formControlName="description"></textarea>
+      @if (form().get('description')?.errors && (form().get('description')?.dirty || form().get('description')?.touched)) {
+      <mat-error>
+        @if (form().get('description')?.hasError('required')) {
+        Description is **mandatory**.
+        } @else if (form().get('description')?.hasError('maxlength')) {
+        Description cannot exceed **1000 characters**.
+        }
+      </mat-error>
+      }
     </mat-form-field>
 
-    <!-- תמונת שער -->
     <div class="image-upload">
       <input type="file" (change)="onCoverChange($event)" accept="image/*" id="cover" hidden />
       <label for="cover" class="upload-btn">
@@ -29,13 +46,20 @@
       }
     </div>
 
-    <!-- חומרים -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Required Materials</mat-label>
       <textarea matInput rows="3" formControlName="materials"></textarea>
+      @if (form().get('materials')?.errors && (form().get('materials')?.dirty || form().get('materials')?.touched)) {
+      <mat-error>
+        @if (form().get('materials')?.hasError('required')) {
+        Materials list is **mandatory**.
+        } @else if (form().get('materials')?.hasError('maxlength')) {
+        Materials list cannot exceed **500 characters**.
+        }
+      </mat-error>
+      }
     </mat-form-field>
 
-    <!-- קטגוריה -->
     <mat-form-field appearance="outline">
       <mat-label>Categories</mat-label>
       <mat-select formControlName="categoryId">
@@ -43,22 +67,43 @@
         <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
         }
       </mat-select>
+      @if (form().get('categoryId')?.errors && (form().get('categoryId')?.dirty || form().get('categoryId')?.touched)) {
+      <mat-error>
+        Category selection is **mandatory**.
+      </mat-error>
+      }
     </mat-form-field>
 
-    <!-- גילאים + זמן -->
     <div class="row">
       <mat-form-field appearance="outline">
         <mat-label>"Age range"</mat-label>
         <input matInput formControlName="ages" placeholder="6-12">
+        @if (form().get('ages')?.errors && (form().get('ages')?.dirty || form().get('ages')?.touched)) {
+        <mat-error>
+          @if (form().get('ages')?.hasError('required')) {
+          Age range is **mandatory**.
+          } @else if (form().get('ages')?.hasError('maxlength')) {
+          Age range cannot exceed **50 characters**.
+          }
+        </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Preparation Time</mat-label>
         <input matInput formControlName="timePrep" placeholder="30 דקות">
+        @if (form().get('timePrep')?.errors && (form().get('timePrep')?.dirty || form().get('timePrep')?.touched)) {
+        <mat-error>
+          @if (form().get('timePrep')?.hasError('required')) {
+          Preparation time is **mandatory**.
+          } @else if (form().get('timePrep')?.hasError('maxlength')) {
+          Preparation time cannot exceed **50 characters**.
+          }
+        </mat-error>
+        }
       </mat-form-field>
     </div>
 
-    <!-- תגיות -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Tags (up to 5)</mat-label>
       <mat-chip-grid #chipGrid>
@@ -75,7 +120,6 @@
       <mat-hint>{{ tags().length }}/5</mat-hint>
     </mat-form-field>
 
-    <!-- שלבים -->
     <div formArrayName="steps" class="steps">
       @for (step of steps().controls; track $index; let i = $index) {
       <div [formGroupName]="i" class="step-card">
@@ -89,11 +133,33 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Step Title</mat-label>
           <input matInput formControlName="title">
+          @if (step.get('title')?.errors && (step.get('title')?.dirty || step.get('title')?.touched)) {
+          <mat-error>
+            @if (step.get('title')?.hasError('required')) {
+            Step title is **mandatory**.
+            } @else if (step.get('title')?.hasError('minlength')) {
+            Step title must contain at least **3 characters**.
+            } @else if (step.get('title')?.hasError('maxlength')) {
+            Step title cannot exceed **150 characters**.
+            }
+          </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Detailed description</mat-label>
           <textarea matInput rows="4" formControlName="content"></textarea>
+          @if (step.get('content')?.errors && (step.get('content')?.dirty || step.get('content')?.touched)) {
+          <mat-error>
+            @if (step.get('content')?.hasError('required')) {
+            Content is **mandatory**.
+            } @else if (step.get('content')?.hasError('minlength')) {
+            Content must contain at least **10 characters**.
+            } @else if (step.get('content')?.hasError('maxlength')) {
+            Content cannot exceed **2000 characters**.
+            }
+          </mat-error>
+          }
         </mat-form-field>
 
         <div class="image-upload">
@@ -113,7 +179,6 @@
       <mat-icon>add</mat-icon> Add step
     </button>
 
-    <!-- כפתורים -->
     <div class="actions">
       <button mat-button (click)="submit(true)" [disabled]="form().invalid || loading()">
         Save as a draft

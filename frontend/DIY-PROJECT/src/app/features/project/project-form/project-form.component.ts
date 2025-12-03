@@ -62,19 +62,24 @@ export class ProjectFormComponent implements OnInit {
   }
 
   private createEmptyForm(): FormGroup {
-    return this.fb.group({
-      title: ['', Validators.required],
-      description: ['', Validators.required],
-      materials: [''],
-      categoryId: [null, Validators.required],
-      ages: [''],
-      timePrep: [''],
-      tagNames: [[]],
-      picture: [null as File | null],
-      isDraft: [true],
-      steps: this.fb.array([], Validators.minLength(1))
-    });
-  }
+  return this.fb.group({
+    // התאמה ל-ProjectCreateDTO: Title (min 3, max 100)
+    title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+    // התאמה ל-ProjectCreateDTO: Description (max 1000)
+    description: ['', [Validators.required, Validators.maxLength(1000)]],
+    // התאמה ל-ProjectCreateDTO: Materials (max 500)
+    materials: ['', [Validators.required, Validators.maxLength(500)]],
+    categoryId: [null, Validators.required],
+    // התאמה ל-ProjectCreateDTO: Ages (max 50)
+    ages: ['', [Validators.required, Validators.maxLength(50)]],
+    // התאמה ל-ProjectCreateDTO: TimePrep (max 50)
+    timePrep: ['', [Validators.required, Validators.maxLength(50)]],
+    tagNames: [[]],
+    picture: [null as File | null],
+    isDraft: [true],
+    steps: this.fb.array([], Validators.minLength(1))
+  });
+}
 
   private loadCategories() {
     this.categoryService.getAllCategories().subscribe(cats => this.categories.set(cats));
@@ -190,14 +195,16 @@ private loadProjectForEdit() {
 
 addStep(existing?: any) {
   const step = this.fb.group({
-    title: [existing?.title || '', Validators.required],
-    content: [existing?.content || '', Validators.required],
+    // התאמה ל-StepDTO: Title (min 3, max 150)
+    title: [existing?.title || '', [Validators.required, Validators.minLength(3), Validators.maxLength(150)]],
+    // 🎯 הפתרון לשגיאה שקיבלת! התאמה ל-StepDTO: Content (min 10, max 2000)
+    content: [existing?.content || '', [Validators.required, Validators.minLength(10), Validators.maxLength(2000)]],
     picture: [null as File | null],
-    // ✅ existingPicturePath יכיל את הנתיב שהגיע מהשרת (שהוכנס ב-'picturePath' ב-loadProjectForEdit)
-    existingPicturePath: [existing?.picturePath || null]  
+    existingPicturePath: [existing?.picturePath || null] 
   });
   this.steps().push(step);
 }
+
 submit(isDraft: boolean) {
   if (this.form().invalid) {
     this.form().markAllAsTouched();

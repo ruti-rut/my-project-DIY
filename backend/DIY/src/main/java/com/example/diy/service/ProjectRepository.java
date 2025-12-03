@@ -54,7 +54,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
     List<Project> findByDescriptionContainingIgnoreCase(String description);
 
     List<Project> findByTags_NameContainingIgnoreCase(String keyword);
-
+    List<Project> findTop6ByCategoryIdAndIsDraftFalseOrderByCreatedAtDesc(Long categoryId);
     boolean existsByChallengeIdAndUsersId(Long challengeId, Long userId);
 
     @Query("SELECT p FROM Project p LEFT JOIN FETCH p.users WHERE p.challenge.id = :challengeId")

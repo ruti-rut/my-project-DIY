@@ -48,7 +48,7 @@ public class HomeService {
 
         for (Category cat : categories) {
             List<Project> latestProjects = projectRepository
-                    .findTop6ByCategoryIdOrderByCreatedAtDesc(cat.getId());
+                    .findTop6ByCategoryIdAndIsDraftFalseOrderByCreatedAtDesc(cat.getId());
 
             List<ProjectListDTO> dtoList = projectMapper.toProjectListDTOList(latestProjects, currentUser);
             projectsMap.put(cat.getId(), dtoList);

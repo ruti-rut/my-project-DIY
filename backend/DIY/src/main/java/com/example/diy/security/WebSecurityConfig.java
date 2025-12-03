@@ -87,16 +87,17 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/category/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/project/**").permitAll()
 
-                                // 2. פרויקטים (POST, PATCH, PUT, DELETE) - דורשים אימות
-                                // 🌟 זו הדרך הנכונה לתקן את שגיאת ה-401 שלך:
+                                .requestMatchers(HttpMethod.POST, "/api/comment/**").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/api/project/**").authenticated()
                                 .requestMatchers(HttpMethod.PATCH, "/api/project/**").authenticated()
                                 .requestMatchers(HttpMethod.PUT, "/api/project/**").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/api/project/**").authenticated()                                .requestMatchers("/api/comment/**").permitAll()
                                 .requestMatchers("/api/users/**").permitAll()
-                                .requestMatchers("/api/AIAssistant/**").permitAll() // <--- הוספת שורה זו
-                                .requestMatchers("/images/**").permitAll() // <--- הוספת השורה הזו
+                                .requestMatchers("/api/AIAssistant/**").permitAll()
+                                .requestMatchers("/images/**").permitAll()
                                 .requestMatchers("/api/challenge/**").permitAll()
+                                .requestMatchers("/api/home/**").permitAll()
+
 
 
                                 .anyRequest().authenticated()
