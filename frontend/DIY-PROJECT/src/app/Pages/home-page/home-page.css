@@ -1,101 +1,146 @@
-/* src/app/components/challenges/challenges.component.css */
-.challenges-page {
-  padding: 40px 20px;
-  max-width: 1200px;
+/* ============= עיצוב כללי – נקי, מרווח, מקצועי ============= */
+.home-master-container {
+  max-width: 1520px;
   margin: 0 auto;
+  padding: 40px 40px 100px 40px;      /* ← מרווח יפה מהצדדים – בדיוק מה שביקשת */
+  background: #fafafa;
 }
 
-.page-title {
+.section {
+  margin-bottom: 90px;
+}
+
+.section-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #1a1a1a;
   text-align: center;
-  color: #1976d2;
-  font-size: 2.5rem;
-  margin: 0 0 16px 0;
+  margin-bottom: 50px;
+  position: relative;
 }
 
-.page-subtitle {
-  text-align: center;
-  color: #666;
-  font-size: 1.2rem;
-  margin-bottom: 40px;
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 5px;
+  background: linear-gradient(90deg, #1976d2, #42a5f5);
+  border-radius: 3px;
 }
 
-.loading {
-  text-align: center;
-  padding: 60px;
-  color: #666;
+.category-title {
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 70px 0 30px 0;
+  padding-bottom: 8px;
+  border-bottom: 3px solid #42a5f5;
+  display: inline-block;
 }
 
-.challenges-grid {
+/* גריד אחיד ויפה */
+.cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 32px;
 }
 
+/* ============= כרטיס אתגר – יפה, לא חתוך, גובה אחיד ============= */
 .challenge-card {
-  border-radius: 16px;
+  height: 480px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: transform 0.3s;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  background: white;
 }
 
 .challenge-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-12px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.18);
 }
 
-.challenge-image {
-  width: 100%;
-  height: 180px;
+.challenge-img {
+  height: 220px;
   object-fit: cover;
-  background: #f0f0f0;
+  transition: transform 0.6s ease;
 }
 
-.card-content {
-  padding: 20px;
+.challenge-card:hover .challenge-img {
+  transform: scale(1.08);
+}
+
+.challenge-content {
+  padding: 24px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .challenge-title {
-  margin: 0 0 12px 0;
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 600;
-  color: #333;
-}
-.create-fab {
-  position: sticky;
-  top: 20px;
-  z-index: 100;
-  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
-
-  &:hover {
-    box-shadow: 0 6px 16px rgba(255, 105, 180, 0.4);
-    transform: scale(1.05);
-  }
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .challenge-date {
+  margin-top: auto;
+  color: #e91e63;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #e91e63;
-  font-weight: 500;
-  margin: 0;
 }
 
-mat-card-actions {
-  padding: 0 20px 20px 20px;
-  justify-content: center;
+.challenge-actions {
+  padding: 0 24px 24px;
 }
 
-.empty {
+.full-btn {
+  width: 100%;
+  height: 52px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: 12px !important;
+}
+
+/* ============= כרטיסי פרויקטים – בדיוק 430px כמו ברשימה ============= */
+.cards-grid app-project-card {
+  height: 430px !important;
+  display: block;
+}
+
+/* לודר */
+.loader {
   text-align: center;
-  padding: 60px 20px;
+  padding: 120px 20px;
   color: #666;
-  grid-column: 1 / -1;
 }
 
-.empty mat-icon {
-  font-size: 4rem;
-  width: 4rem;
-  height: 4rem;
-  color: #ccc;
-  margin-bottom: 16px;
+/* רספונסיביות מושלמת */
+@media (max-width: 1200px) {
+  .home-master-container { padding: 40px 30px 80px; }
+  .cards-grid { gap: 28px; }
+}
+
+@media (max-width: 900px) {
+  .cards-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .home-master-container { padding: 30px 16px 70px; }
+  .section-title { font-size: 2rem; }
+  .cards-grid { grid-template-columns: 1fr; gap: 24px; }
+  .challenge-card { height: 500px; }
 }

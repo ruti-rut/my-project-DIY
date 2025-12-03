@@ -1,56 +1,55 @@
-@if (isLoading) {
-<div class="loading-spinner">
-  <mat-spinner diameter="50"></mat-spinner>
-  <p>Loading home data...</p>
-</div>
-} @else if (homeData) {
+<div class="home-master-container">
 
-<section class="challenges-section">
-  <h2>Open Challenges 🏆</h2>
+  <!-- לודר -->
+  @if (isLoading) {
+    <div class="loader">
+      <mat-spinner diameter="60"></mat-spinner>
+      <p>טוען את דף הבית...</p>
+    </div>
+  } @else {
 
-  <mat-grid-list [cols]="4" rowHeight="380px" gutterSize="16px">
-    @for (c of challengeMap; track c.id) {
-    <mat-grid-tile>
-      <mat-card class="challenge-card">
-        <img [src]="getImageUrl(c.picture)" [alt]="c.theme" class="challenge-image">
+    <!-- אתגרים פתוחים -->
+    <section class="section">
+      <h2 class="section-title">Open Challenges 🏆</h2>
 
-        <mat-card-content class="card-content">
-          <h3 class="challenge-title">{{ c.theme }}</h3>
-          <p class="challenge-date">
-            <mat-icon>event</mat-icon>
-            Ending at: {{ formatDate(c.endDate) }}
-          </p>
-        </mat-card-content>
+      <div class="cards-grid">
+        @for (c of challengeMap; track c.id) {
+          <mat-card class="challenge-card" [routerLink]="'/challenge/' + c.id">
+            <img mat-card-image [src]="getImageUrl(c.picture)" [alt]="c.theme" class="challenge-img">
 
-        <mat-card-actions>
-          <button mat-raised-button color="primary" [routerLink]="'/challenge/' + c.id">
-            <mat-icon>arrow_forward</mat-icon>
-            Details
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    </mat-grid-tile>
-    }
-  </mat-grid-list>
-</section>
+            <mat-card-content class="challenge-content">
+              <h3 class="challenge-title">{{ c.theme }}</h3>
+              <p class="challenge-date">
+                <mat-icon>event</mat-icon>
+                מסתיים: {{ formatDate(c.endDate) }}
+              </p>
+            </mat-card-content>
 
+            <mat-card-actions class="challenge-actions">
+              <button mat-raised-button color="primary" class="full-btn">
+                <mat-icon>arrow_forward</mat-icon>
+                פרטים והשתתפות
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    </section>
 
-<section class="projects-section">
-  <h2>Latest Projects 🛠️</h2>
+    <!-- פרויקטים אחרונים -->
+    <section class="section">
+      <h2 class="section-title">Latest Projects 🛠️</h2>
 
-  @for (categoryGroup of projectsMap; track categoryGroup.key) {
+      @for (categoryGroup of projectsMap; track categoryGroup.key) {
+        <h3 class="category-title">{{ getCategoryName(categoryGroup.key) }}</h3>
 
-  <h3>{{ getCategoryName(categoryGroup.key) }}</h3>
+        <div class="cards-grid">
+          @for (project of categoryGroup.value; track project.id) {
+            <app-project-card [project]="project"></app-project-card>
+          }
+        </div>
+      }
+    </section>
 
-  <mat-grid-list [cols]="4" rowHeight="460px" gutterSize="16px">
-    @for (project of categoryGroup.value; track trackById($index, project)) {
-    <mat-grid-tile>
-      <app-project-card [project]="project"></app-project-card>
-    </mat-grid-tile>
-    }
-
-  </mat-grid-list>
-  <br>
   }
-</section>
-}
+</div>
