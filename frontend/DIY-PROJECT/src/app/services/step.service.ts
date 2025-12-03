@@ -9,10 +9,10 @@ import { StepResponse } from '../models/step.model';
 })
 export class StepService {
   private apiUrl = 'http://localhost:8080/api/step';
- private http = inject(HttpClient);
+  private http = inject(HttpClient);
 
 
-uploadStep(formData: FormData): Observable<StepResponse> {
+  uploadStep(formData: FormData): Observable<StepResponse> {
     return this.http.post<StepResponse>(`${this.apiUrl}/uploadStep`, formData);
   }
 
@@ -25,7 +25,9 @@ uploadStep(formData: FormData): Observable<StepResponse> {
     // שימוש ב-DELETE עם ה-ID בנתיב
     return this.http.delete<void>(`${this.apiUrl}/deleteStep/${stepId}`);
   }
-
+  deleteAllByProject(projectId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/deleteAllByProject/${projectId}`);
+  }
 
 
 }

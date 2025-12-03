@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ProjectFormComponent } from '../../features/project/project-form/project-form.component';
+import { ProjectFormComponent } from '../project-form/project-form.component';
 @Component({
   selector: 'app-project-create',
   standalone: true,

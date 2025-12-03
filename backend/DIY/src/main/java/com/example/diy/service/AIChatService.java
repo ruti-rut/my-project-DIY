@@ -50,20 +50,16 @@ public class AIChatService {
     }
 
     public Flux<String> getResponse(String prompt, String conversationId) {
-        // --- שלב 1: הדפסת דיבוג ---
         System.out.println("🔍 בודק פרויקטים עבור השאלה: " + prompt);
 
-        // 1. הכנת ההודעות
         List<Message> messageList = new ArrayList<>();
         messageList.add(new SystemMessage(SYSTEM_INSTRUCTION));
         messageList.addAll(chatMemory.get(conversationId));
         UserMessage userMessage = new UserMessage(prompt);
         messageList.add(userMessage);
 
-        // 2. חיפוש פרויקטים
         List<Project> relevantProjects = searchRelevantProjects(prompt);
 
-        // --- דיבוג תוצאות החיפוש ---
         System.out.println("📊 נמצאו " + relevantProjects.size() + " פרויקטים רלוונטיים.");
 
         StringBuilder linksBuilder = new StringBuilder();
@@ -90,7 +86,6 @@ public class AIChatService {
                 .doOnNext(fullResponseAccumulator::append)
                 .concatWith(Flux.just(linksSuffix)
                         .doOnNext(s -> {
-                            // מוודאים שהתוספת באמת נכתבת
                             if (!s.isEmpty()) System.out.println("🔗 מוסיף את הקישורים לתשובה הסופית...");
                             fullResponseAccumulator.append(s);
                         })
@@ -175,35 +170,6 @@ public class AIChatService {
                 .content();
     }
 
-    /**
-     * יצירת טיפ קצר לניוזלטר (גרסה פשוטה - אם רוצים משהו יותר קצר)
-     */
-    public String generateNewsletterContent(String userName, List<String> projectTitles) {
-        String prompt = String.format("""
-                        כתוב פתיח קצר (עד 50 מילים) וטיפ יומי לניוזלטר בנושא DIY.
-                        שם המשתמשת: %s
-                        הפרויקטים שיוצגו במייל: %s
-                        
-                        הנחיות:
-                        1. התחל בברכה חמה ואישית.
-                        2. כתוב טיפ קצר ופרקטי שקשור לאחד הפרויקטים או לעונת השנה הנוכחית.
-                        3. סיים במשפט שמזמין לגלול למטה ולראות את הפרויקטים.
-                        4. סגנון: ידידותי, מעורר השראה, מקצועי.
-                        5. אל תכתוב כותרות, רק את גוף הטקסט.
-                        """,
-                userName,
-                String.join(", ", projectTitles)
-        );
-
-        return chatClient.prompt()
-                .user(prompt)
-                .call()
-                .content();
-    }
-
-    /**
-     * קביעת העונה הנוכחית
-     */
     private String getCurrentSeason() {
         int month = LocalDateTime.now().getMonthValue();
         if (month >= 3 && month <= 5) return "אביב";
@@ -257,15 +223,6 @@ public class AIChatService {
         return word;
     }
 
-
-    //    public String getResponse(String prompt){
-//        SystemMessage systemMessage=new SystemMessage(SYSTEM_INSTRUCTION);
-//        UserMessage userMessage=new UserMessage(prompt);
-//
-//        List<Message> messageList= List.of(systemMessage,userMessage);
-//
-//        return chatClient.prompt().messages(messageList).call().content();
-//    }
 
 
 }

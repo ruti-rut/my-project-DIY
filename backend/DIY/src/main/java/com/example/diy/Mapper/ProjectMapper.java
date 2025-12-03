@@ -78,7 +78,6 @@ public interface ProjectMapper {
 
 
     @Mapping(target = "id", source = "project.id")
-    // **החלף את שתי השורות הבאות (target ו-AfterMapping)**
     @Mapping(target = "challengeId", expression = "java(project.getChallenge() != null ? project.getChallenge().getId() : null)")
     @Mapping(source = "project.users", target = "usersSimpleDTO")
     @Mapping(target = "picture", ignore = true)
@@ -105,34 +104,4 @@ public interface ProjectMapper {
 
     ProjectCreateDTO projectCreateToDTO(Project project);
 
-//    @AfterMapping
-//    default void handleProfilePicture(@MappingTarget ProjectCreateDTO dto, Project project) {
-//        if (project.getPicturePath() != null) {
-//            try {
-//                // כאן מטפלים ב־IOException במקום לזרוק אותו
-//                String imageBase64 = ImageUtils.getImage(project.getPicturePath());
-//                dto.setPicture(imageBase64);
-//            } catch (IOException e) {
-//                e.printStackTrace(); // או טיפול מותאם אחר
-//                dto.setPicture(null); // במקרה של שגיאה
-//            }
-//        }
-//    }
-
-
-//    default ProjectCreateDTO ProjectCreateToDTO(Project project, CategoryMapper cm) {
-//        ProjectCreateDTO projectCreateDTO = new ProjectCreateDTO();
-//        projectCreateDTO.setCategory(cm.categoryToDTO(project.getCategory()));
-//        projectCreateDTO.setChallenge(project.getChallenge());
-//        projectCreateDTO.setSteps(project.getSteps());
-//        projectCreateDTO.setTags(project.getTags());
-//        projectCreateDTO.setMaterials(project.getMaterials());
-//        projectCreateDTO.setTitle(project.getTitle());
-//        projectCreateDTO.setAges(project.getAges());
-//        projectCreateDTO.setTimePrep(project.getTimePrep());
-//        projectCreateDTO.setPicture(project.getPicturePath());
-//        projectCreateDTO.setDescription(project.getDescription());
-//        projectCreateDTO.setDraft(project.isDraft());
-//        return projectCreateDTO;
-//    }
 }

@@ -16,6 +16,8 @@ import java.util.List;
 public interface StepMapper {
     Step stepDtoToStep(StepDTO stepDTO);
 
+    @Mapping(source = "picturePath", target = "picturePath")
+    @Mapping(target = "picture", ignore = true)
     StepResponseDTO stepEntityToResponseDTO(Step step);
 
     @AfterMapping
@@ -30,7 +32,6 @@ public interface StepMapper {
         }
     }
 
-
     @Mapping(target = "id", ignore = true) // לא לשנות את ה-ID
     @Mapping(target = "project", ignore = true) // לא לשנות את הפרויקט
     void updateStepFromDto(StepDTO stepDTO, @MappingTarget Step step);
@@ -39,18 +40,5 @@ public interface StepMapper {
 
     List<StepResponseDTO> toDtoList(List<Step> steps);
 
-//    @AfterMapping
-//    default void handleProfilePicture(@MappingTarget StepDTO dto, Step step) {
-//        if (step.getPicturePath() != null) {
-//            try {
-//                // כאן מטפלים ב־IOException במקום לזרוק אותו
-//                String imageBase64 = ImageUtils.getImage(step.getPicturePath());
-//                dto.setPicture(imageBase64);
-//            } catch (IOException e) {
-//                e.printStackTrace(); // או טיפול מותאם אחר
-//                dto.setPicture(null); // במקרה של שגיאה
-//            }
-//        }
-//    }
 
 }

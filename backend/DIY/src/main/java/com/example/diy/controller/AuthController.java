@@ -107,19 +107,6 @@ public class AuthController {
         }
     }
 
-    // --- אין שינוי ב-login (Redirect) מכיוון שזו לא מחזירה ResponseEntity ---
-    @GetMapping("/login")
-    public void login(@RequestParam(value = "error", required = false) String error,
-                      HttpServletResponse response) throws IOException {
-
-        if (error != null) {
-            String redirectUrl = "http://localhost:4200/login?error=true";
-            response.sendRedirect(redirectUrl);
-            return;
-        }
-
-        response.sendRedirect("/oauth2/authorization/google");
-    }
 
     @GetMapping("/verify")
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {
@@ -190,4 +177,33 @@ public class AuthController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //    @GetMapping("/login")
+//    public void login(@RequestParam(value = "error", required = false) String error,
+//                      HttpServletResponse response) throws IOException {
+//
+//        if (error != null) {
+//            String redirectUrl = "http://localhost:4200/login?error=true";
+//            response.sendRedirect(redirectUrl);
+//            return;
+//        }
+//
+//        response.sendRedirect("/oauth2/authorization/google");
+//    }
+
 }

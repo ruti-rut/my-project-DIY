@@ -13,6 +13,7 @@ public class ProjectSpecifications {
     public static Specification<Project> isNotDraft() {
         return (root, query, cb) -> cb.equal(root.get("isDraft"), false);
     }
+
     public static Specification<Project> search(String searchTerm) {
         return (root, query, cb) -> {
             if (searchTerm == null || searchTerm.trim().isEmpty()) {
@@ -29,13 +30,11 @@ public class ProjectSpecifications {
         };
     }
 
-    // 2. פילטר קטגוריות
     public static Specification<Project> categoryIn(List<Long> categoryIds) {
         return (root, query, cb) -> {
             if (categoryIds == null || categoryIds.isEmpty()) {
-                return null; // אין סינון אם הרשימה ריקה
+                return null;
             }
-            // התנאי: ה-ID של הקטגוריה נמצא בתוך הרשימה שקיבלנו
             return root.get("category").get("id").in(categoryIds);
         };
     }

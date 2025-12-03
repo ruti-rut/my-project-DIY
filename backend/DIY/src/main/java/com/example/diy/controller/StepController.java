@@ -32,7 +32,7 @@ public class StepController {
 
     @PostMapping("/uploadStep")
     public ResponseEntity<StepResponseDTO> uploadStepWithImage(
-            @RequestPart(value = "image", required = false) MultipartFile file,  // ✅ required = false
+            @RequestPart(value = "image", required = false) MultipartFile file,
             @RequestPart("step") StepDTO s) {
         try {
             Step step = stepMapper.stepDtoToStep(s);
@@ -42,12 +42,16 @@ public class StepController {
 
             step.setProject(project);
 
-            // ✅ רק אם יש תמונה - שמור אותה
+            // ✅ אם יש תמונה חדשה - שמור אותה
             if (file != null && !file.isEmpty()) {
                 ImageUtils.uploadImage(file);
                 step.setPicturePath(file.getOriginalFilename());
             }
-            // אם אין תמונה - פשוט לא נשים picturePath
+            // ✅ אם אין תמונה חדשה - בדוק אם יש picturePath בDTO
+            else if (s.getPicturePath() != null && !s.getPicturePath().trim().isEmpty()) {
+                step.setPicturePath(s.getPicturePath());
+            }
+            // אחרת - picturePath יהיה null
 
             Step savedStep = stepRepository.save(step);
             StepResponseDTO responseDTO = stepMapper.stepEntityToResponseDTO(savedStep);
@@ -66,7 +70,6 @@ public class StepController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
     @DeleteMapping("/deleteStep/{stepId}")
     public ResponseEntity<Void> deleteStep(@PathVariable Long stepId) {
         try {
@@ -119,4 +122,15 @@ public class StepController {
             return ResponseEntity.internalServerError().build();
         }
     }
+    @DeleteMapping("/deleteAllByProject/{projectId}")
+    public ResponseEntity<Void> deleteAllStepsByProject(@PathVariable Long projectId) {
+        try {
+            stepRepository.deleteByProjectId(projectId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            System.out.println("Error deleting steps: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 }

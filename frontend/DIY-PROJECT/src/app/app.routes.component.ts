@@ -27,7 +27,7 @@ export const routes: Routes = [
   },
   {
     path: 'create-project',
-    loadComponent: () => import('./guards/project-create/project-create.component').then(m => m.ProjectCreateComponent),
+    loadComponent: () => import('./features/project/project-create/project-create.component').then(m => m.ProjectCreateComponent),
     canActivate: [authGuard]
   },
   {

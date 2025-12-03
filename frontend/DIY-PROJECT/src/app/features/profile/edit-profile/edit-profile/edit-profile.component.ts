@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { AvatarHelperService } from '../../../../services/avatar-helper.service';
 import { ProfileService } from '../../../../services/profile.service';
@@ -25,10 +25,11 @@ import { ToastService } from '../../../../services/toast.service';
   styleUrl: './edit-profile.component.css'
 })
 export class EditProfileComponent {
-private fb = inject(FormBuilder);
+  private fb = inject(FormBuilder);
   private profileService = inject(ProfileService);
   private avatarHelper = inject(AvatarHelperService);
   private toast = inject(ToastService);
+  private router = inject(Router);
 
   loading = signal(false);
   previewUrl = signal<string>('');
@@ -94,10 +95,14 @@ private fb = inject(FormBuilder);
       next: data => {
         this.profileService.profile.set(data);
         this.toast.success('הפרופיל עודכן בהצלחה!');
+        this.router.navigate(['/profile']);
+
       },
       error: err => {
         console.error(err);
         this.toast.error('שגיאה בעדכון הפרופיל');
+        this.router.navigate(['/profile']);
+
       },
       complete: () => this.profileService.loading.set(false)
     });
@@ -108,6 +113,5 @@ private fb = inject(FormBuilder);
   }
 }
 
-      
 
-      
+

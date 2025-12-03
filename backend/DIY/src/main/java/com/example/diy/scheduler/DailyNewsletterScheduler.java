@@ -23,7 +23,6 @@ public class DailyNewsletterScheduler {
 //@Scheduled(cron = "0 * * * * ?")
 
 public void sendDailyEmails() {
-        // שולפים רק משתמשים שאישרו מייל וגם נרשמו לניוזלטר
         List<Users> users = usersRepository.findAllByIsSubscribedToDailyTrueAndEmailVerifiedTrue();
 
         for (Users user : users) {

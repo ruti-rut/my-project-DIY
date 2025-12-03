@@ -25,7 +25,7 @@ export class AuthService {
     console.log('AuthService: updateCurrentUser', user); // לוג לבדיקה
     this.currentUserSignal.set(user);
   }
-  
+
   loadCurrentUser(): Observable<UserResponseDTO> {
     return this.http.get<UserResponseDTO>(`${this.baseUrl}/me`, {
       withCredentials: true
@@ -77,10 +77,14 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true }).pipe(
       tap(() => {
         this.updateCurrentUser(null);
+        localStorage.removeItem('jwt_token');
+
         this.router.navigate(['/']);
       }),
       catchError(err => {
         this.updateCurrentUser(null);
+        localStorage.removeItem('jwt_token');
+
         this.router.navigate(['/']);
         return of(err);
       })

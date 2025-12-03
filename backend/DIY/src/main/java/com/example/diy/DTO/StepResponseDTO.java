@@ -1,12 +1,21 @@
 package com.example.diy.DTO;
+
 //not stepToShow?
-public class StepResponseDTO
-{
+public class StepResponseDTO {
     private Long id; // נחוץ כדי לערוך שלב קיים בעתיד
     private int stepNumber;
     private String title;
     private String content;
     private String picture;
+    private String picturePath; // ✅ הוסף שדה זה - הנתיב המקורי בשרת
+
+    public String getPicturePath() {
+        return picturePath;
+    }
+
+    public void setPicturePath(String picturePath) {
+        this.picturePath = picturePath;
+    }
 
     public Long getId() {
         return id;

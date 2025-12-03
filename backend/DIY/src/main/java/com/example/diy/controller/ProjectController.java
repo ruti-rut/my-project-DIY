@@ -88,36 +88,31 @@ public class ProjectController {
             ImageUtils.uploadImage(file);
             Project project = projectMapper.projectCreateDTOToEntity(p);
 
-            // 1. מציאת משתמש וקישור
             Users currentUser = getCurrentUser(principal);
             project.setUsers(currentUser);
             project.setPicturePath(file.getOriginalFilename());
 
-            // 🌟 2. טיפול בתגיות באמצעות ה-TagRepository 🌟
             Set<Tag> tags = new HashSet<>();
-            List<String> tagNames = p.getTagNames(); // רשימת שמות התגיות מה-DTO
+            List<String> tagNames = p.getTagNames();
 
             if (tagNames != null && !tagNames.isEmpty()) {
-                // א. מציאת תגיות קיימות
                 List<Tag> existingTags = tagRepository.findByNameIn(tagNames);
                 Set<String> existingNames = existingTags.stream().map(Tag::getName).collect(Collectors.toSet());
                 tags.addAll(existingTags);
 
-                // ב. יצירת ושמירת תגיות חדשות
                 tagNames.stream().filter(name -> !existingNames.contains(name)).forEach(name -> {
                     Tag newTag = new Tag();
                     newTag.setName(name);
-                    tags.add(tagRepository.save(newTag)); // שמירה ישירה
+                    tags.add(tagRepository.save(newTag));
                 });
             }
-            project.setTags(tags); // קישור ה-Set<Tag> לפרויקט
+            project.setTags(tags);
             if (p.getChallengeId() != null) {
                 Challenge challenge = challengeRepository.findById(p.getChallengeId())
                         .orElseThrow(() -> new RuntimeException("Challenge not found"));
                 project.setChallenge(challenge);
             }
             Project savedProject = projectRepository.save(project);
-            // 3. מיפוי לתגובה
             ProjectResponseDTO responseDTO = projectMapper.projectEntityToResponseDTO(savedProject);
             return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
 
@@ -140,6 +135,7 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+
     @PutMapping("/editProject/{id}")
     @Transactional
     public ResponseEntity<ProjectResponseDTO> updateProjectWithImage(
@@ -156,19 +152,14 @@ public class ProjectController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
-            // מחיקת שלבים ישנים
-            stepRepository.deleteByProjectId(id);
 
-            // עדכון שדות בסיסיים
             projectMapper.updateProjectFromDto(p, existingProject);
 
-            // טיפול בתמונה
             if (file != null && !file.isEmpty()) {
                 ImageUtils.uploadImage(file);
                 existingProject.setPicturePath(file.getOriginalFilename());
             }
 
-            // טיפול בתגיות
             if (p.getTagNames() != null) {
                 Set<Tag> tags = new HashSet<>();
                 List<Tag> existingTags = tagRepository.findByNameIn(p.getTagNames());
@@ -188,7 +179,6 @@ public class ProjectController {
                 existingProject.setTags(tags);
             }
 
-            // טיפול ב-Challenge
             if (p.getChallengeId() != null) {
                 Challenge challenge = challengeRepository.findById(p.getChallengeId())
                         .orElseThrow(() -> new RuntimeException("Challenge not found"));
@@ -237,7 +227,6 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
-    // פונקציית עזר
     private Users getCurrentUser(Principal principal) {
         String username = principal.getName(); // מהטוקן
         return usersRepository.findByUserName(username);
@@ -320,7 +309,7 @@ public class ProjectController {
         }
     }
 
-    @GetMapping("/myProjects/drafts") // ✅ נתיב חדש לטיוטות (isDraft = true)
+    @GetMapping("/myProjects/drafts")
     public ResponseEntity<List<ProjectListDTO>> getMyDraftProjects(Principal principal) {
         try {
             Users currentUser = getCurrentUser(principal);
@@ -355,13 +344,11 @@ public class ProjectController {
     public ResponseEntity<Void> assignToChallenge(
             @PathVariable Long projectId,
             @PathVariable Long challengeId,
-            @AuthenticationPrincipal CustomUserDetails userDetails) { // ✅ שינוי הסוג ל-CustomUserDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        // חילוץ המשתמש:
         Users currentUser = userDetails.getUser();
-        Long currentUserId = userDetails.getId(); // 🌟 אפשר להשתמש גם בקיצור דרך זה
+        Long currentUserId = userDetails.getId();
 
-        // 1. בדיקת המגבלה (קוד 400)
         if (projectRepository.existsByChallengeIdAndUsersId(challengeId, currentUserId)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -369,7 +356,6 @@ public class ProjectController {
             );
         }
 
-        // 2. מציאת הפרויקט ואימות הבעלות (קוד 403)
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found."));
 
@@ -377,17 +363,17 @@ public class ProjectController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the owner of the project.");
         }
 
-        // 3. מציאת האתגר
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge not found."));
 
-        // 4. שיוך ושמירה
         project.setChallenge(challenge);
         project.setDraft(false);
         projectRepository.save(project);
 
         return ResponseEntity.ok().build();
     }
+
+
 
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generateProjectPdf(@PathVariable Long id) throws Exception {
@@ -527,132 +513,6 @@ public class ProjectController {
 
         return ResponseEntity.ok().build();
     }
-
-
-//    @PatchMapping("/{projectId}/assign-challenge/{challengeId}")
-//    public ResponseEntity<Void> assignToChallenge(
-//            @PathVariable Long projectId,
-//            @PathVariable Long challengeId,
-//            @AuthenticationPrincipal Users currentUser) {
-//
-//        if (currentUser == null) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User must be logged in.");
-//        }
-//
-//        if (projectRepository.existsByChallengeIdAndUsersId(challengeId, currentUser.getId())) {
-//            throw new ResponseStatusException(
-//                    HttpStatus.BAD_REQUEST,
-//                    "User already submitted a project to this challenge." // הודעת השגיאה שתישלח ל-Frontend
-//            );
-//        }
-//
-//        Project project = projectRepository.findById(projectId)
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found."));
-//
-//        Challenge challenge = challengeRepository.findById(challengeId)
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge not found."));
-//
-//        if (!project.getUsers().getId().equals(currentUser.getId())) {
-//            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the owner of the project.");
-//        }
-//
-//        project.setChallenge(challenge);
-//        project.setDraft(false);
-//        projectRepository.save(project);
-//
-//        return ResponseEntity.ok().build();
-//    }
-//@PatchMapping("/{projectId}/assign-challenge/{challengeId}")
-//public ResponseEntity<Void> assignToChallenge(
-//        @PathVariable Long projectId,
-//        @PathVariable Long challengeId) { // 🛑 משתמש הוסר זמנית
-//
-//    // שימי כאן הדפסה כדי לוודא שהגעת לקוד
-//    System.out.println("--- SUCCESSFULLY REACHED THE CONTROLLER ---");
-//
-//    Project project = projectRepository.findById(projectId)
-//            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found."));
-//
-//    Challenge challenge = challengeRepository.findById(challengeId)
-//            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge not found."));
-//
-//    project.setChallenge(challenge);
-//    project.setDraft(false);
-//    projectRepository.save(project);
-//
-//    return ResponseEntity.ok().build();
-//}
-
-    //    @GetMapping("/allProjects")
-//    public ResponseEntity<Page<ProjectListDTO>> getAllProjectsWithFilters(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "30") int size,
-//            @RequestParam(required = false) String search,
-//            @RequestParam(required = false) List<Long> categoryIds,  // 🔥 מערך!
-//            @RequestParam(defaultValue = "newest") String sort,
-//            Principal principal
-//    ) {
-//        try {
-//            Users currentUser = principal != null ? getCurrentUser(principal) : null;
-//            Pageable pageable;
-//
-//            // טיפול במיון
-//            switch (sort) {
-//                case "oldest":
-//                    pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-//                    break;
-//                case "popular":
-//                    pageable = PageRequest.of(page, size);
-//                    break;
-//                default: // newest
-//                    pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-//            }
-//
-//            Page<Project> projects;
-//
-//            // לוגיקת החיפוש
-//            if (search != null && !search.trim().isEmpty()) {
-//                // יש חיפוש
-//                if (categoryIds != null) {
-//                    // חיפוש + קטגוריה
-//                    projects = projectRepository.searchByTitleOrTagsAndCategories(search, categoryIds, pageable);
-//                } else {
-//                    // חיפוש בלי קטגוריה
-//                    if ("popular".equals(sort)) {
-//                        projects = projectRepository.searchByTitleOrTagsOrderByLikes(search, pageable);
-//                    } else {
-//                        projects = projectRepository.searchByTitleOrTags(search, pageable);
-//                    }
-//                }
-//            } else if (categoryIds != null) {
-//                // רק קטגוריה בלי חיפוש
-//                if ("popular".equals(sort)) {
-//                    projects = projectRepository.findByCategoryIdsOrderByLikes(categoryIds, pageable);
-//                } else {
-//                    projects = projectRepository.findByCategoryIds(categoryIds, pageable);
-//                }
-//            } else {
-//                // בלי חיפוש ובלי קטגוריה - הכל
-//                if ("popular".equals(sort)) {
-//                    projects = projectRepository.findAllOrderByLikesCountDesc(pageable);
-//                } else {
-//                    projects = sort.equals("oldest")
-//                            ? projectRepository.findAllByOrderByCreatedAtAsc(pageable)
-//                            : projectRepository.findAllByOrderByCreatedAtDesc(pageable);
-//                }
-//            }
-//
-//            Page<ProjectListDTO> dtoPage = projectMapper.toProjectListDTOList(projects, currentUser);
-//            return ResponseEntity.ok(dtoPage);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace(); // זה יראה לך את השגיאה המלאה בקונסול!
-//
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//
-//    }
-
 
 }
 

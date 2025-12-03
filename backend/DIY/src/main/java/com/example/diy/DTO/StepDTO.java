@@ -4,9 +4,22 @@ public class StepDTO {
     private int stepNumber;
     private String title;
     private String content;
-    private long ProjectId;
+    private Long ProjectId;
+    private String picturePath;
 
-    public long getProjectId() {
+    public void setProjectId(Long projectId) {
+        ProjectId = projectId;
+    }
+
+    public String getPicturePath() {
+        return picturePath;
+    }
+
+    public void setPicturePath(String picturePath) {
+        this.picturePath = picturePath;
+    }
+
+    public Long getProjectId() {
         return ProjectId;
     }
 

@@ -3,6 +3,7 @@ export interface StepDTO {
   content: string;
   stepNumber: number;
   projectId: number;
+  picturePath: string;
 }
 export interface StepResponse {
   id: number;
@@ -10,4 +11,5 @@ export interface StepResponse {
   content: string;
   picture?: string;
   stepNumber: number;
+  picturePath?: string;
 }

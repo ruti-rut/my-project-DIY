@@ -209,7 +209,7 @@ public class NewsletterService {
     }
 
     private String buildChallengeCard(Challenge c) {
-        String link = BASE_URL_FRONTEND + "/challenges/" + c.getId();
+        String link = BASE_URL_FRONTEND + "/challenge/" + c.getId();
         String imgUrl = getImageUrl(c.getPicturePath());
 
         return """

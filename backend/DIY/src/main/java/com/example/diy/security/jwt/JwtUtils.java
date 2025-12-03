@@ -87,7 +87,7 @@ public class JwtUtils {
                 .httpOnly(true)
                 .secure(false)
                 .sameSite("Lax")
-                .domain("localhost") // 🔥 הוסף את זה!
+                .domain("localhost")
                 .build();
     }
 }
