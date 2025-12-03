@@ -4,7 +4,7 @@
     <mat-form-field appearance="outline" class="search-input" subscriptSizing="dynamic">
       <mat-icon matPrefix class="search-icon">search</mat-icon>
       <mat-label>Look for amazing projects...</mat-label>
-      <input matInput [formControl]="searchControl" placeholder="למשל: עיצוב לוגו, רהיטים מעץ..." autocomplete="off">
+      <input matInput [formControl]="searchControl" placeholder="e.g.: logo design, wooden furniture..." autocomplete="off">
       @if (searchControl.value) {
         <button mat-icon-button matSuffix (click)="clearSearch()" class="clear-search">
           <mat-icon>close</mat-icon>
