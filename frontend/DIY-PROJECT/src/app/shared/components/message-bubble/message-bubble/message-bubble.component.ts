@@ -1,5 +1,5 @@
-// src/app/components/message-bubble/message-bubble.component.ts
-import { Component, input } from '@angular/core';
+// src/app/shared/components/message-bubble/message-bubble.component.ts
+import { Component, input } from '@angular/core'; // הוסר computed
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MarkdownPipe } from '../../../../markdown.pipe';
 
@@ -19,6 +19,8 @@ export interface ChatMessage {
 export class MessageBubbleComponent {
   message = input.required<ChatMessage>();
   showCopied = false;
+  
+  // הוסר hasMarkdown = computed(...) - אין צורך יותר!
 
   constructor(private clipboard: Clipboard) {}
 

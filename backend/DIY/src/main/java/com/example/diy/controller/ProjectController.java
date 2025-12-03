@@ -21,6 +21,7 @@ import com.itextpdf.layout.properties.BaseDirection;
 import com.itextpdf.layout.properties.Property;
 import com.itextpdf.layout.properties.TextAlignment;
 import jakarta.persistence.EntityManager;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -46,7 +47,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
+/**
+ * REST Controller for managing DIY projects.
+ * Handles CRUD operations, image uploads, favorites, likes, and PDF generation.
+ * Ensures proper validation, authorization checks, and error handling for all endpoints.
+ * All operations require authentication unless otherwise specified.
+ */
 @RestController
 @RequestMapping("/api/project")
 public class ProjectController {
@@ -73,53 +79,34 @@ public class ProjectController {
         this.projectRepository = projectRepository;
     }
 
+    // -----------------------------------------------------------
+    // ------------------- Helper Methods -----------------------
+    // -----------------------------------------------------------
+
+    /**
+     * Retrieves the current user from the Principal.
+     */
+    private Users getCurrentUser(Principal principal) {
+        String username = principal.getName(); // מהטוקן
+        return usersRepository.findByUserName(username);
+    }
+
+
+    // ----------------------------------------------------------------------------------
+    // ---------------------------- GET OPERATIONS --------------------------------------
+    // ----------------------------------------------------------------------------------
+
+    /**
+     * Retrieves a single project by its unique ID.
+     *
+     * @param id The unique ID of the project.
+     * @return A ResponseEntity containing the full ProjectResponseDTO, or 404 NOT FOUND.
+     */
     @GetMapping("/getProject/{id}")
     public ResponseEntity<ProjectResponseDTO> get(@PathVariable Long id) {
         return projectRepository.findById(id)
                 .map(project -> ResponseEntity.ok(projectMapper.projectEntityToResponseDTO(project)))
                 .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/uploadProject")
-    public ResponseEntity<ProjectResponseDTO> uploadProjectWithImage(@RequestPart("image") MultipartFile file,
-                                                                     @RequestPart("project") ProjectCreateDTO p,
-                                                                     Principal principal) {
-        try {
-            ImageUtils.uploadImage(file);
-            Project project = projectMapper.projectCreateDTOToEntity(p);
-
-            Users currentUser = getCurrentUser(principal);
-            project.setUsers(currentUser);
-            project.setPicturePath(file.getOriginalFilename());
-
-            Set<Tag> tags = new HashSet<>();
-            List<String> tagNames = p.getTagNames();
-
-            if (tagNames != null && !tagNames.isEmpty()) {
-                List<Tag> existingTags = tagRepository.findByNameIn(tagNames);
-                Set<String> existingNames = existingTags.stream().map(Tag::getName).collect(Collectors.toSet());
-                tags.addAll(existingTags);
-
-                tagNames.stream().filter(name -> !existingNames.contains(name)).forEach(name -> {
-                    Tag newTag = new Tag();
-                    newTag.setName(name);
-                    tags.add(tagRepository.save(newTag));
-                });
-            }
-            project.setTags(tags);
-            if (p.getChallengeId() != null) {
-                Challenge challenge = challengeRepository.findById(p.getChallengeId())
-                        .orElseThrow(() -> new RuntimeException("Challenge not found"));
-                project.setChallenge(challenge);
-            }
-            Project savedProject = projectRepository.save(project);
-            ProjectResponseDTO responseDTO = projectMapper.projectEntityToResponseDTO(savedProject);
-            return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
-
-        } catch (IOException e) {
-            System.out.println(e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @GetMapping("/category/{categoryId}")
@@ -135,103 +122,53 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-
-    @PutMapping("/editProject/{id}")
-    @Transactional
-    public ResponseEntity<ProjectResponseDTO> updateProjectWithImage(
-            @PathVariable Long id,
-            @RequestPart(value = "image", required = false) MultipartFile file,
-            @RequestPart("project") ProjectCreateDTO p,
-            Principal principal) {
+    @GetMapping("/myProjects/published") // ✅ נתיב חדש לפרויקטים שפורסמו (isDraft = false)
+    public ResponseEntity<List<ProjectListDTO>> getMyPublishedProjects(Principal principal) {
         try {
-            Project existingProject = projectRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Project not found"));
-
             Users currentUser = getCurrentUser(principal);
-            if (!existingProject.getUsers().getId().equals(currentUser.getId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
+            if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
+            // קבל רק פרויקטים שפורסמו
+            List<Project> publishedProjects = projectRepository.findByUsersAndIsDraft(currentUser, false);
 
-            projectMapper.updateProjectFromDto(p, existingProject);
+            List<ProjectListDTO> dtos = projectMapper.toProjectListDTOList(publishedProjects, currentUser);
+            return ResponseEntity.ok(dtos);
 
-            if (file != null && !file.isEmpty()) {
-                ImageUtils.uploadImage(file);
-                existingProject.setPicturePath(file.getOriginalFilename());
-            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-            if (p.getTagNames() != null) {
-                Set<Tag> tags = new HashSet<>();
-                List<Tag> existingTags = tagRepository.findByNameIn(p.getTagNames());
-                Set<String> existingNames = existingTags.stream()
-                        .map(Tag::getName)
-                        .collect(Collectors.toSet());
-                tags.addAll(existingTags);
+    @GetMapping("/myProjects/drafts")
+    public ResponseEntity<List<ProjectListDTO>> getMyDraftProjects(Principal principal) {
+        try {
+            Users currentUser = getCurrentUser(principal);
+            if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-                p.getTagNames().stream()
-                        .filter(name -> !existingNames.contains(name))
-                        .forEach(name -> {
-                            Tag newTag = new Tag();
-                            newTag.setName(name);
-                            tags.add(tagRepository.save(newTag));
-                        });
+            // קבל רק טיוטות
+            List<Project> draftProjects = projectRepository.findByUsersAndIsDraft(currentUser, true);
 
-                existingProject.setTags(tags);
-            }
+            List<ProjectListDTO> dtos = projectMapper.toProjectListDTOList(draftProjects, currentUser);
+            return ResponseEntity.ok(dtos);
 
-            if (p.getChallengeId() != null) {
-                Challenge challenge = challengeRepository.findById(p.getChallengeId())
-                        .orElseThrow(() -> new RuntimeException("Challenge not found"));
-                existingProject.setChallenge(challenge);
-            } else {
-                existingProject.setChallenge(null);
-            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-            Project savedProject = projectRepository.save(existingProject);
-            ProjectResponseDTO responseDTO = projectMapper.projectEntityToResponseDTO(savedProject);
-
-            return ResponseEntity.ok(responseDTO);
-
+    @GetMapping("/myFavorites")
+    public ResponseEntity<List<ProjectListDTO>> getMyFavorites(Principal principal) {
+        try {
+            Users currentUser = getCurrentUser(principal);
+            if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            List<Project> favoritesList = new ArrayList<>(currentUser.getFavoriteProjects());
+            List<ProjectListDTO> dtos = projectMapper.toProjectListDTOList(favoritesList, currentUser);
+            return ResponseEntity.ok(dtos);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    @PostMapping("/{projectId}/favorite")
-    @Transactional
-    public ResponseEntity<Void> addToFavorites(@PathVariable Long projectId,
-                                               Principal principal) {
-        Users currentUser = getCurrentUser(principal);
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
-
-        if (!currentUser.getFavoriteProjects().contains(project)) {
-            currentUser.getFavoriteProjects().add(project);
-            usersRepository.save(currentUser);
-        }
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{projectId}/favorite")
-    @Transactional
-    public ResponseEntity<Void> removeFromFavorites(@PathVariable Long projectId, Principal principal) {
-        Users currentUser = getCurrentUser(principal);
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
-
-        currentUser.getFavoriteProjects().remove(project);
-
-        usersRepository.save(currentUser);
-
-        return ResponseEntity.ok().build();
-    }
-
-    private Users getCurrentUser(Principal principal) {
-        String username = principal.getName(); // מהטוקן
-        return usersRepository.findByUserName(username);
-    }
-
 
     @GetMapping("/allProjects")
     public ResponseEntity<Page<ProjectListDTO>> getAllProjectsWithFilters(
@@ -292,50 +229,200 @@ public class ProjectController {
     }
 
 
-    @GetMapping("/myProjects/published") // ✅ נתיב חדש לפרויקטים שפורסמו (isDraft = false)
-    public ResponseEntity<List<ProjectListDTO>> getMyPublishedProjects(Principal principal) {
+
+    // -----------------------------------------------------------
+    // ------------------- POST Endpoints -----------------------
+    // -----------------------------------------------------------
+
+    /**
+     * Uploads a new DIY project with its associated cover image.
+     * This method validates the project data using ProjectCreateDTO,
+     * uploads the image, associates the project with the current user,
+     * and handles the creation/linking of tags and challenges.
+     *
+     * @param file      The project's cover image file.
+     * @param p         The DTO containing the project details (validated using @Valid).
+     * @param principal The security principal of the currently logged-in user.
+     * @return A ResponseEntity containing the ProjectResponseDTO of the created project with HttpStatus.CREATED.
+     * @throws ResponseStatusException if the Challenge ID provided is not found (404).
+     */
+    @PostMapping("/uploadProject")
+    public ResponseEntity<ProjectResponseDTO> uploadProjectWithImage(@RequestPart("image") MultipartFile file,
+                                                                     @RequestPart("project") @Valid ProjectCreateDTO p,
+                                                                     Principal principal) {
+        // 1. וולידציה על קובץ: בודק שהתמונה לא ריקה או חסרה
+        if (file == null || file.isEmpty() || file.getOriginalFilename() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         try {
+            ImageUtils.uploadImage(file);
+            Project project = projectMapper.projectCreateDTOToEntity(p);
+
             Users currentUser = getCurrentUser(principal);
-            if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            project.setUsers(currentUser);
+            project.setPicturePath(file.getOriginalFilename());
+            // 2. לוגיקה של תגיות: מציאת תגיות קיימות ויצירת תגיות חדשות
+            Set<Tag> tags = new HashSet<>();
+            List<String> tagNames = p.getTagNames();
 
-            // קבל רק פרויקטים שפורסמו
-            List<Project> publishedProjects = projectRepository.findByUsersAndIsDraft(currentUser, false);
+            if (tagNames != null && !tagNames.isEmpty()) {
+                List<Tag> existingTags = tagRepository.findByNameIn(tagNames);
+                Set<String> existingNames = existingTags.stream().map(Tag::getName).collect(Collectors.toSet());
+                tags.addAll(existingTags);
 
-            List<ProjectListDTO> dtos = projectMapper.toProjectListDTOList(publishedProjects, currentUser);
-            return ResponseEntity.ok(dtos);
+                tagNames.stream().filter(name -> !existingNames.contains(name)).forEach(name -> {
+                    Tag newTag = new Tag();
+                    newTag.setName(name);
+                    tags.add(tagRepository.save(newTag));
+                });
+            }
+            project.setTags(tags);
+            // 3. אימות אתגר: מוודא ש-Challenge ID קיים
+            if (p.getChallengeId() != null) {
+                Challenge challenge = challengeRepository.findById(p.getChallengeId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge not found."));
+                project.setChallenge(challenge);
+            }
+            Project savedProject = projectRepository.save(project);
+            ProjectResponseDTO responseDTO = projectMapper.projectEntityToResponseDTO(savedProject);
+            return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
 
+        } catch (IOException e) {
+            logger.error("Error during project image upload: {}", e.getMessage(), e);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (ResponseStatusException e) {
+            throw e;// מאפשר ל-Spring לטפל בשגיאות סטטוס
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            logger.error("An unexpected error occurred during project creation: {}", e.getMessage(), e);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/myProjects/drafts")
-    public ResponseEntity<List<ProjectListDTO>> getMyDraftProjects(Principal principal) {
-        try {
-            Users currentUser = getCurrentUser(principal);
-            if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    /**
+     * Adds a project to the current user's favorite list.
+     *
+     * @param projectId The ID of the project to favorite.
+     * @param principal The security principal of the currently logged-in user.
+     * @return A ResponseEntity with HttpStatus.OK.
+     * @throws ResponseStatusException with status 404 if the project is not found.
+     */
+    @PostMapping("/{projectId}/favorite")
+    @Transactional
+    public ResponseEntity<Void> addToFavorites(@PathVariable Long projectId,
+                                               Principal principal) {
+        Users currentUser = getCurrentUser(principal);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
 
-            // קבל רק טיוטות
-            List<Project> draftProjects = projectRepository.findByUsersAndIsDraft(currentUser, true);
-
-            List<ProjectListDTO> dtos = projectMapper.toProjectListDTOList(draftProjects, currentUser);
-            return ResponseEntity.ok(dtos);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        if (!currentUser.getFavoriteProjects().contains(project)) {
+            currentUser.getFavoriteProjects().add(project);
+            usersRepository.save(currentUser);
         }
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/myFavorites")
-    public ResponseEntity<List<ProjectListDTO>> getMyFavorites(Principal principal) {
+    /**
+     * Adds a project to the current user's liked list.
+     *
+     * @param projectId The ID of the project to like.
+     * @param principal The security principal of the currently logged-in user.
+     * @return A ResponseEntity with HttpStatus.OK.
+     * @throws ResponseStatusException with status 404 if the project is not found.
+     */
+    @PostMapping("/{projectId}/like")
+    @Transactional
+    public ResponseEntity<Void> likeProject(@PathVariable Long projectId, Principal principal) {
+        Users currentUser = getCurrentUser(principal);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        project.getLikedByUsers().add(currentUser);
+        projectRepository.save(project);
+
+        return ResponseEntity.ok().build();
+    }
+
+    // -----------------------------------------------------------
+    // ------------------- PUT / PATCH Endpoints ----------------
+    // -----------------------------------------------------------
+
+
+    /**
+     * Updates an existing project and its optional cover image.
+     * Ensures only the project owner can perform the update (Authorization check).
+     *
+     * @param id        The ID of the project to update.
+     * @param file      The new project cover image file (optional).
+     * @param p         The DTO containing the updated project details (validated using @Valid).
+     * @param principal The security principal of the currently logged-in user.
+     * @return A ResponseEntity containing the updated ProjectResponseDTO.
+     * @throws ResponseStatusException with status 404 if the project or challenge is not found.
+     * @throws ResponseStatusException with status 403 if the user is not the project owner.
+     */
+    @PutMapping("/editProject/{id}")
+    @Transactional
+    public ResponseEntity<ProjectResponseDTO> updateProjectWithImage(
+            @PathVariable Long id,
+            @RequestPart(value = "image", required = false) MultipartFile file,
+            @RequestPart("project") @Valid ProjectCreateDTO p,
+            Principal principal) {
         try {
+            Project existingProject = projectRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found."));
+
             Users currentUser = getCurrentUser(principal);
-            if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            List<Project> favoritesList = new ArrayList<>(currentUser.getFavoriteProjects());
-            List<ProjectListDTO> dtos = projectMapper.toProjectListDTOList(favoritesList, currentUser);
-            return ResponseEntity.ok(dtos);
+
+            if (currentUser == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated.");
+            }
+            // 1. בדיקת הרשאה: מוודא שהמשתמש הנוכחי הוא הבעלים
+            if (!existingProject.getUsers().getId().equals(currentUser.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the owner of the project.");
+            }
+
+            projectMapper.updateProjectFromDto(p, existingProject);
+            // 2. עדכון תמונה: אם הועלה קובץ חדש, מעדכן את הנתיב
+            if (file != null && !file.isEmpty()) {
+                ImageUtils.uploadImage(file);
+                existingProject.setPicturePath(file.getOriginalFilename());
+            }
+
+            if (p.getTagNames() != null) {
+                Set<Tag> tags = new HashSet<>();
+                List<Tag> existingTags = tagRepository.findByNameIn(p.getTagNames());
+                Set<String> existingNames = existingTags.stream()
+                        .map(Tag::getName)
+                        .collect(Collectors.toSet());
+                tags.addAll(existingTags);
+
+                p.getTagNames().stream()
+                        .filter(name -> !existingNames.contains(name))
+                        .forEach(name -> {
+                            Tag newTag = new Tag();
+                            newTag.setName(name);
+                            tags.add(tagRepository.save(newTag));
+                        });
+
+                existingProject.setTags(tags);
+            }
+
+            if (p.getChallengeId() != null) {
+                Challenge challenge = challengeRepository.findById(p.getChallengeId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Challenge not found."));
+                existingProject.setChallenge(challenge);
+            } else {
+                existingProject.setChallenge(null);
+            }
+
+            Project savedProject = projectRepository.save(existingProject);
+            ProjectResponseDTO responseDTO = projectMapper.projectEntityToResponseDTO(savedProject);
+
+            return ResponseEntity.ok(responseDTO);
+
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An unexpected error occurred during project update (ID: {}): {}", id, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -374,6 +461,97 @@ public class ProjectController {
     }
 
 
+    // -----------------------------------------------------------
+    // ------------------- DELETE Endpoints ---------------------
+    // -----------------------------------------------------------
+
+    /**
+     * Removes a project from the current user's favorite list.
+     *
+     * @param projectId The ID of the project to unfavorite.
+     * @param principal The security principal of the currently logged-in user.
+     * @return A ResponseEntity with HttpStatus.OK.
+     * @throws ResponseStatusException with status 404 if the project is not found.
+     */
+    @DeleteMapping("/{projectId}/favorite")
+    @Transactional
+    public ResponseEntity<Void> removeFromFavorites(@PathVariable Long projectId, Principal principal) {
+        Users currentUser = getCurrentUser(principal);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        currentUser.getFavoriteProjects().remove(project);
+
+        usersRepository.save(currentUser);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Removes a project from the current user's liked list.
+     *
+     * @param projectId The ID of the project to unlike.
+     * @param principal The security principal of the currently logged-in user.
+     * @return A ResponseEntity with HttpStatus.OK.
+     * @throws ResponseStatusException with status 404 if the project is not found.
+     */
+    @DeleteMapping("/{projectId}/like")
+    @Transactional
+    public ResponseEntity<Void> unlikeProject(@PathVariable Long projectId, Principal principal) {
+        Users currentUser = getCurrentUser(principal);
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        project.getLikedByUsers().remove(currentUser);
+        projectRepository.save(project);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    /**
+     * Deletes a project by its ID, ensuring the current user is the owner.
+     * Cleans up references in the Favorite and Liked projects join tables before deletion.
+     *
+     * @param id        The ID of the project to delete.
+     * @param principal The security principal of the currently logged-in user.
+     * @return A ResponseEntity with HttpStatus.OK upon successful deletion.
+     * @throws ResponseStatusException with status 404 if the project is not found.
+     * @throws ResponseStatusException with status 403 if the user is not the project owner.
+     */
+
+    @DeleteMapping("/deleteProject/{id}")
+    @Transactional // 🔥 חובה! כדי שפעולות הניקוי והמחיקה יפעלו יחד
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id, Principal principal) {
+        try {
+            Project project = projectRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found."));
+
+            Users currentUser = getCurrentUser(principal);
+            if (currentUser == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated.");
+            }
+
+            if (!project.getUsers().getId().equals(currentUser.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not the owner of the project."); // 403 Forbidden
+            }
+            projectRepository.clearFavoriteProjectsJoinTable(id);
+            projectRepository.clearLikedProjectsJoinTable(project.getId());
+            projectRepository.delete(project);
+
+
+            return ResponseEntity.ok().build();
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred during project deletion (ID: {}): {}", id, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // -----------------------------------------------------------
+    // ------------------- Special Endpoints -------------------
+    // -----------------------------------------------------------
 
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generateProjectPdf(@PathVariable Long id) throws Exception {
@@ -463,56 +641,6 @@ public class ProjectController {
                 .body(baos.toByteArray());
     }
 
-
-    @DeleteMapping("/deleteProject/{id}")
-    @Transactional // 🔥 חובה! כדי שפעולות הניקוי והמחיקה יפעלו יחד
-    public ResponseEntity<Void> deleteProject(@PathVariable Long id, Principal principal) {
-        try {
-            Project project = projectRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Project not found"));
-
-            Users currentUser = getCurrentUser(principal);
-            if (!project.getUsers().getId().equals(currentUser.getId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-
-            projectRepository.clearFavoriteProjectsJoinTable(id);
-            projectRepository.clearLikedProjectsJoinTable(project.getId());
-
-            projectRepository.delete(project);
-
-
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @PostMapping("/{projectId}/like")
-    @Transactional
-    public ResponseEntity<Void> likeProject(@PathVariable Long projectId, Principal principal) {
-        Users currentUser = getCurrentUser(principal);
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
-
-        project.getLikedByUsers().add(currentUser);
-        projectRepository.save(project);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{projectId}/like")
-    @Transactional
-    public ResponseEntity<Void> unlikeProject(@PathVariable Long projectId, Principal principal) {
-        Users currentUser = getCurrentUser(principal);
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
-
-        project.getLikedByUsers().remove(currentUser);
-        projectRepository.save(project);
-
-        return ResponseEntity.ok().build();
-    }
 
 }
 

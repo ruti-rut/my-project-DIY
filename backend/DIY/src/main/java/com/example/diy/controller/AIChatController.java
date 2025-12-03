@@ -22,12 +22,14 @@ public class AIChatController {
             @RequestParam String message,
             @RequestParam String conversationId) {
         try {
-            // קריאה לשירות עם הפרמטרים החדשים
-            // כמובן, תצטרכי לשנות את חתימת המתודה ב-AIChatService בהתאם
-            return aiChatService.getResponse(message, conversationId);
+            System.out.println("📨 Controller received: " + message);
+            return aiChatService.getResponse(message, conversationId)
+                    .doOnNext(chunk -> System.out.println("📤 Sending chunk: " +
+                            (chunk.length() > 50 ? chunk.substring(0, 50) + "..." : chunk)))
+                    .doOnComplete(() -> System.out.println("✅ Stream completed"))
+                    .doOnError(e -> System.err.println("❌ Stream error: " + e.getMessage()));
         } catch (Exception e) {
-            // ב-Flux קצת יותר מורכב לטפל בשגיאות HTTP, לרוב מחזירים שגיאה בתוך ה-Stream
-            // אבל לצורך הדוגמה, נחזיר Flux ריק ונשתמש בהדפסת השגיאה
+            System.err.println("❌ Controller error: " + e.getMessage());
             e.printStackTrace();
             return Flux.error(e);
         }
