@@ -19,14 +19,14 @@ public class Project {
     @ManyToOne
     private Category category;
     @ManyToOne(optional = true)
-    private Challenge challenge;//לבדוק איך לעשות שיוכלו לעשות קשר של Null
+    private Challenge challenge;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // 🔥 חובה: CascadeType.ALL    @OrderBy("stepNumber ASC")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Step> steps;
 
 
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // 🔥 חובה: CascadeType.ALL
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @OrderBy("createdAt DESC")
 
     private List<Comment> comments = new ArrayList<>();
