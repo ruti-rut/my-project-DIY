@@ -15,6 +15,7 @@ import com.example.diy.service.ImageUtils;
 import com.example.diy.service.ProjectRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -96,7 +97,7 @@ public class ChallengeController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/uploadChallenge")
     public ResponseEntity<Challenge> uploadChallengeWithImage(@RequestPart("image") MultipartFile file
             , @RequestPart("challenge") ChallengeCreateDTO challengeDto) {

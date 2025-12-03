@@ -92,10 +92,10 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.PATCH, "/api/project/**").authenticated()
                                 .requestMatchers(HttpMethod.PUT, "/api/project/**").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/api/project/**").authenticated()                                .requestMatchers("/api/comment/**").permitAll()
-                                .requestMatchers("/api/users/**").permitAll()
+                                .requestMatchers("/api/users/**").authenticated()
                                 .requestMatchers("/api/AIAssistant/**").permitAll()
                                 .requestMatchers("/images/**").permitAll()
-                                .requestMatchers("/api/challenge/**").permitAll()
+                                .requestMatchers("/api/challenge/**").hasRole("ADMIN")
                                 .requestMatchers("/api/home/**").permitAll()
 
 
