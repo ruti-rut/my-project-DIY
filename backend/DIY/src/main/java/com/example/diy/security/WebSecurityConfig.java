@@ -95,7 +95,9 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/users/**").authenticated()
                                 .requestMatchers("/api/AIAssistant/**").permitAll()
                                 .requestMatchers("/images/**").permitAll()
-                                .requestMatchers("/api/challenge/**").hasRole("ADMIN")
+                                .requestMatchers("/api/challenge/addChallenge").hasRole("ADMIN")
+                                .requestMatchers("/api/challenge/**").authenticated()
+
                                 .requestMatchers("/api/home/**").permitAll()
 
 
