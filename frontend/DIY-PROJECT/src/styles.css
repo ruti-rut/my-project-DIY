@@ -76,3 +76,76 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   border: 1px solid #333 !important;
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
+/* --- 1. Define Variables (Light Mode Default) --- */
+:root {
+  /* Backgrounds */
+  --bg-body: #f4f8fa;
+  --bg-card: #ffffff;
+  --bg-hover: #f5f5f5;
+  
+  /* Text */
+  --text-main: #333333;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  
+  /* Borders */
+  --border-color: #e0e0e0;
+  
+  /* Shadows */
+  --shadow-card: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* --- 2. Define Dark Mode Overrides --- */
+body.dark-theme {
+  /* Dark Backgrounds (Deep Navy/Black) */
+  --bg-body: #121212; 
+  --bg-card: #1e1e1e;
+  --bg-hover: #2c2c2c;
+
+  /* Light Text */
+  --text-main: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-muted: #777777;
+
+  /* Dark Borders */
+  --border-color: #333333;
+  
+  /* Dark Shadows */
+  --shadow-card: 0 10px 30px rgba(0,0,0,0.5);
+  
+  /* Adjust Material Components globally */
+  .mat-mdc-card {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+  }
+  
+  /* Fix inputs in dark mode */
+  input, textarea {
+    background-color: #2d2d2d !important;
+    color: white !important;
+    border-color: #444 !important;
+  }
+}
+
+/* --- 3. Apply Variables to your Elements --- */
+body {
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth fade */
+}
+
+/* Example: Apply to your cards */
+.challenge-card, .project-card, .auth-card {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-card);
+}
+
+h1, h2, h3, h4, strong {
+  color: var(--text-main);
+}
+
+p, span, li {
+  color: var(--text-secondary);
+}
