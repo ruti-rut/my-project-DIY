@@ -1,4 +1,6 @@
-<mat-card class="project-card" routerLink="/projects/{{ project.id }}">
+<div class="card-container" routerLink="/projects/{{ project.id }}">
+  
+  <!-- Image Area -->
   <div class="image-wrapper">
     <img 
       [src]="getImageUrl()" 
@@ -6,31 +8,43 @@
       (error)="onImageError($event)"
       class="project-image"
       loading="lazy">
+    
+    <!-- Gradient Overlay for text readability if needed -->
+    <div class="hover-overlay"></div>
   </div>
 
-  <mat-card-content class="content">
-    <h3 class="title">{{ project.title }}</h3>
-  </mat-card-content>
+  <!-- Content -->
+  <div class="card-body">
+    <h3 class="card-title" [title]="project.title">{{ project.title }}</h3>
+  </div>
 
-  <mat-card-footer class="footer">
+  <!-- Footer -->
+  <div class="card-footer">
+    <!-- User Info -->
     <div class="user-info">
       @if (avatar().url) {
-        <img [src]="avatar().url" class="avatar" alt="avatar">
+        <img [src]="avatar().url" class="mini-avatar" alt="avatar">
       } @else {
-        <div class="avatar-placeholder" [style.background-color]="avatar().color">
+        <div class="mini-avatar placeholder" [style.background-color]="avatar().color">
           {{ avatar().initial }}
         </div>
       }
-      <span class="username">{{ project.usersSimpleDTO.userName || 'משתמש אנונימי' }}</span>
+      <span class="username">{{ project.usersSimpleDTO.userName || 'Anonymous' }}</span>
     </div>
-<app-like-button [projectId]="project.id"
-      [isLiked]="project.liked || false"
-      (toggled)="toggleLiked($event)">
-</app-like-button>
-    <app-favorite-button 
-      [projectId]="project.id"
-      [isFavorited]="project.favorited || false"
-      (toggled)="toggleFavorite($event)">
-    </app-favorite-button>
-  </mat-card-footer>
-</mat-card>
+
+    <!-- Action Buttons -->
+    <div class="social-actions" (click)="$event.stopPropagation()">
+      <app-like-button 
+        [projectId]="project.id"
+        [isLiked]="project.liked || false"
+        (toggled)="toggleLiked($event)">
+      </app-like-button>
+
+      <app-favorite-button 
+        [projectId]="project.id"
+        [isFavorited]="project.favorited || false"
+        (toggled)="toggleFavorite($event)">
+      </app-favorite-button>
+    </div>
+  </div>
+</div>

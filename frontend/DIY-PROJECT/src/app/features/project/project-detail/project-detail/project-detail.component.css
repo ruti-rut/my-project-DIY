@@ -1,85 +1,78 @@
-.container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+.page-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: 'Poppins', sans-serif;
 }
 
-.loading {
-  display: flex;
-  justify-content: center;
-  padding: 3rem;
+.content-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr; /* Sidebar + Content */
+  gap: 40px;
+  align-items: start;
 }
 
-.placeholder {
-  height: 100px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  margin: 1rem 0;
+/* Materials Card */
+.materials-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.03);
+  position: sticky;
+  top: 20px;
+}
+
+.card-header {
+  background: linear-gradient(135deg, #02add7 0%, #00b38b 100%);
+  color: white;
+  padding: 16px 20px;
+  font-weight: 700;
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #999;
-}
-.materials-section {
-  margin-bottom: 6rem;
-  text-align: center;
-}
-
-/* בדיוק כמו step-number – רק עם צבע שמתאים ל"חומרים" */
-.materials-number {
+  gap: 10px;
   font-size: 1.1rem;
-  font-weight: 600;
-  color: #8b5cf6;                    /* סגול יפה כמו של השלבים */
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 1.5rem;
-  display: inline-block;
-  padding: 0.4rem 0;
-  position: relative;
 }
 
-.materials-number::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 2px;
-  background: #e0d6ff;               /* אותו צבע בהיר של הקו בשלבים */
-  border-radius: 1px;
+.card-body {
+  padding: 24px;
 }
 
-.materials-list {
-  max-width: 680px;
-  margin: 3.5rem auto 0;
-  padding: 0;
+.checklist {
   list-style: none;
-  font-size: 1.22rem;
-  line-height: 2.1;
-  color: #2d2d2d;
+  padding: 0;
+  margin: 0;
 }
 
-.materials-list li {
-  position: relative;
-  padding-left: 2.2rem;
-  margin-bottom: 0.9rem;
+.checklist li {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #444;
+  line-height: 1.4;
 }
 
-.materials-list li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  color: #8b5cf6;
-  font-weight: bold;
-  font-size: 1.4rem;
-  top: -2px;
+.check-dot {
+  width: 8px;
+  height: 8px;
+  background: #00b38b;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
 }
 
-.no-materials {
-  text-align: center;
-  font-size: 1.3rem;
-  color: #999;
-  font-style: italic;
-  margin-top: 2rem;
+.loading-state { text-align: center; padding: 60px; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .content-grid { grid-template-columns: 1fr; } /* Stack vertically */
+  .materials-card { position: static; margin-bottom: 40px; }
+}
+
+@media print {
+  .content-grid { display: block; }
+  .materials-card { border: 1px solid #ccc; box-shadow: none; margin-bottom: 30px; }
+  .card-header { background: #eee; color: black; }
 }

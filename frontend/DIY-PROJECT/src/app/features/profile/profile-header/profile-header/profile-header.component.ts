@@ -4,10 +4,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { AvatarHelperService } from '../../../../services/avatar-helper.service';
 import { ProfileService } from '../../../../services/profile.service';
+import { MatIcon } from "@angular/material/icon";
+import { MatTab, MatTabGroup } from "@angular/material/tabs";
+import { DraftsTabComponent } from "../../../../shared/components/drafts-tab/drafts-tab.component";
+import { MyProjectsTabComponent } from "../../../../shared/components/my-projects-tab/my-projects-tab/my-projects-tab.component";
+import { FavoritesTabComponent } from "../../../../shared/components/favorites-tab/favorites-tab/favorites-tab.component";
 
 @Component({
   selector: 'app-profile-header',
-  imports: [CommonModule, RouterModule, MatButtonModule],
+  imports: [CommonModule, RouterModule, MatButtonModule, MatIcon, MatTab, DraftsTabComponent, MyProjectsTabComponent, FavoritesTabComponent, MatTabGroup],
   templateUrl: './profile-header.component.html',
   styleUrl: './profile-header.component.css'
 })

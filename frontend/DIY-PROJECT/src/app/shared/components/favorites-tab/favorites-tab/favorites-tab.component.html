@@ -1,15 +1,33 @@
-<div class="favorites-grid">
+<div class="favorites-container">
+  
   @if (loading()) {
-  <div class="loading-state">
-    <mat-spinner></mat-spinner>
-    <p>Loading Favorites ...</p>
-  </div>
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading favorites...</p>
+    </div>
   } @else {
-  @for (project of favorites(); track project.id) {
-  <app-project-card 
-  [project]="project" 
-  (favoriteRemoved)="onFavoriteRemoved(project.id)" />
-  } @empty {
-  }
+    
+    <div class="projects-grid">
+      @for (project of favorites(); track project.id) {
+        <div class="project-wrapper">
+          <app-project-card 
+            [project]="project" 
+            (favoriteRemoved)="onFavoriteRemoved(project.id)">
+          </app-project-card>
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <div class="icon-circle">
+            <mat-icon>favorite_border</mat-icon>
+          </div>
+          <h3>No favorites yet</h3>
+          <p>Projects you love will appear here.</p>
+          <button mat-stroked-button color="primary" routerLink="/projects-list">
+            Explore Projects
+          </button>
+        </div>
+      }
+    </div>
+
   }
 </div>

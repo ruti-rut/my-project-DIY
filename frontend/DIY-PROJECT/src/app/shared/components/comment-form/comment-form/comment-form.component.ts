@@ -8,10 +8,11 @@ import { CommentCreateDTO } from '../../../../models/comment.model';
 import { AuthService } from '../../../../services/auth.service';
 import { AvatarHelperService } from '../../../../services/avatar-helper.service';
 import { CommentService } from '../../../../services/comment.service';
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: 'app-comment-form',
-  imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIcon],
   templateUrl: './comment-form.component.html',
   styleUrl: './comment-form.component.css'
 })

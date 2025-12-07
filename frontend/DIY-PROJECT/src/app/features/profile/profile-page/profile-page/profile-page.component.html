@@ -1,21 +1,31 @@
-<!-- src/app/profile/profile-page/profile-page.component.html -->
-<div class="profile-page">
+<div class="profile-container">
 
-  <!-- ה-header היפה עם האווטאר הגדול -->
+  <!-- The Header Component we just designed -->
   <app-profile-header></app-profile-header>
 
-  <!-- הלשוניות מתחת להדר  -->
-  <mat-tab-group class="profile-tabs" mat-stretch-tabs="false" animationDuration="300ms">
+  <!-- The Tabs Section -->
+  <div class="content-tabs-card">
+    <mat-tab-group class="creata-tabs" mat-stretch-tabs="false" animationDuration="300ms">
+      
+      <mat-tab label="My Projects">
+        <div class="tab-body">
+          <app-my-projects-tab></app-my-projects-tab>
+        </div>
+      </mat-tab>
 
-    <mat-tab label="My projects">
-      <app-my-projects-tab></app-my-projects-tab>
-    </mat-tab>
+      <mat-tab label="Favorites">
+        <div class="tab-body">
+          <app-favorites-tab></app-favorites-tab>
+        </div>
+      </mat-tab>
 
-    <mat-tab label="Favorites">
-      <app-favorites-tab></app-favorites-tab>
-    </mat-tab>
-    <mat-tab label="Drafts">
-      <app-drafts-tab></app-drafts-tab>
-    </mat-tab>
-  </mat-tab-group>
+      <mat-tab label="Drafts">
+        <div class="tab-body">
+          <app-drafts-tab></app-drafts-tab>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+  
 </div>

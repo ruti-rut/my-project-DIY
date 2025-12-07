@@ -1,77 +1,120 @@
-/* src/app/profile/edit-profile/edit-profile.component.css */
-.edit-profile-page {
-  max-width: 700px;
-  margin: 3rem auto;
-  padding: 0 1rem;
+/* Container */
+.edit-page-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: #f8fcfd;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
 }
 
-.card {
+/* Card */
+.edit-card {
   background: white;
-  border-radius: 20px;
-  padding: 3rem;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+  width: 100%;
+  max-width: 600px;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+}
+
+.header-section {
   text-align: center;
+  margin-bottom: 32px;
 }
 
-.title {
-  font-size: 2.5rem;
-  margin: 0 0 2.5rem 0;
-  color: #2c3e50;
-  font-weight: 600;
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: #333;
 }
 
-.avatar-section {
-  text-align: center;
-  margin-bottom: 3rem;
+.subtitle {
+  color: #888;
+  margin-top: 8px;
 }
 
-.avatar-preview {
-  width: 160px;
-  height: 160px;
+/* Avatar Upload */
+.avatar-upload-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.avatar-circle {
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 6px solid #f0f0f0;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-
-.change-photo-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 1rem;
-  padding: 0.7rem 1.5rem;
-  background: #3498db;
-  color: white;
-  border-radius: 30px;
+  position: relative;
+  overflow: hidden;
+  border: 4px solid white;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
   cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 500;
 }
 
-.change-photo-btn:hover {
-  background: #2980b9;
-  transform: translateY(-2px);
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.profile-form {
+.overlay-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
   display: flex;
   flex-direction: column;
-  gap: 1.8rem;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
+.avatar-circle:hover .overlay-label {
+  opacity: 1;
+}
+
+.overlay-label span {
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+/* Form Styling */
 .full-width {
   width: 100%;
+  margin-bottom: 16px;
 }
 
-.actions {
+.icon-suffix {
+  color: #02add7;
+}
+
+.readonly-input {
+  color: #666;
+}
+
+/* Buttons */
+.form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 16px;
+  margin-top: 24px;
 }
 
-.actions button {
-  min-width: 120px;
-  padding: 0.7rem 1.5rem;
-  font-size: 1.1rem;
+.btn-cancel {
+  color: #666;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #02add7 0%, #00b38b 100%);
+  color: white;
+  padding: 0 32px;
+  border-radius: 50px; /* Pill shape */
+  font-weight: 600;
 }

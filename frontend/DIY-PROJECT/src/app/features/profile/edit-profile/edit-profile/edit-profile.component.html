@@ -1,58 +1,53 @@
-<!-- src/app/profile/edit-profile/edit-profile.component.html -->
-<div class="edit-profile-page">
-  <div class="card">
-    <h1 class="title">Edit profile </h1>
-
-    <div class="avatar-section">
-      <img [src]="previewUrl()" alt="Profile picture " class="avatar-preview">
-      <label for="avatar-input" class="change-photo-btn">
-        <mat-icon>photo_camera</mat-icon>
-       Change picture
-      </label>
-      <input
-        type="file"
-        id="avatar-input"
-        accept="image/*"
-        (change)="onFileSelected($event)"
-        hidden>
+<div class="edit-page-container">
+  <div class="edit-card">
+    
+    <div class="header-section">
+      <h1 class="page-title">Edit Profile</h1>
+      <p class="subtitle">Update your personal details and how others see you.</p>
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="save()" class="profile-form">
+    <!-- Avatar Upload Section -->
+    <div class="avatar-upload-wrapper">
+      <div class="avatar-circle">
+        <img [src]="previewUrl()" alt="Profile" class="avatar-img">
+        <label for="avatar-input" class="overlay-label">
+          <mat-icon>photo_camera</mat-icon>
+          <span>Change</span>
+        </label>
+      </div>
+      <input type="file" id="avatar-input" accept="image/*" (change)="onFileSelected($event)" hidden>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="creata-form">
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>שם משתמש</mat-label>
-        <input matInput [value]="profile()?.userName" readonly>
-        <mat-icon matSuffix>person</mat-icon>
+        <mat-label>Username</mat-label>
+        <input matInput [value]="profile()?.userName" readonly class="readonly-input">
+        <mat-icon matSuffix class="icon-suffix">person_outline</mat-icon>
+        <mat-hint>Username cannot be changed</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>City / Region</mat-label>
-        <input matInput formControlName="city" placeholder="e.g.: New York">
-        <mat-icon matSuffix>location_on</mat-icon>
+        <input matInput formControlName="city" placeholder="e.g. New York, USA">
+        <mat-icon matSuffix class="icon-suffix">location_on</mat-icon>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>About me </mat-label>
-        <textarea
-          matInput
-          formControlName="aboutMe"
-          rows="6"
-          placeholder="Introduce yourselves to the community, and let us know what you like to build..."></textarea>
+        <mat-label>About Me</mat-label>
+        <textarea matInput formControlName="aboutMe" rows="5" 
+                  placeholder="Tell the community what you love to build..."></textarea>
       </mat-form-field>
 
-      <div class="actions">
-        <button type="button" mat-stroked-button (click)="cancel()" [disabled]="loading()">
+      <div class="form-actions">
+        <button type="button" mat-button class="btn-cancel" (click)="cancel()" [disabled]="loading()">
           Cancel
         </button>
-        <button
-          type="submit"
-          mat-raised-button
-          color="primary"
-          [disabled]="form.invalid || loading()">
+        <button type="submit" mat-raised-button class="btn-save" [disabled]="form.invalid || loading()">
           @if (loading()) {
-            <mat-spinner diameter="20"></mat-spinner>
+            <mat-spinner diameter="20" color="accent"></mat-spinner>
           } @else {
-           Save Changes
+            Save Changes
           }
         </button>
       </div>

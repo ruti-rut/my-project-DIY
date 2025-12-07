@@ -1,101 +1,256 @@
-/* src/app/components/challenges/challenges.component.css */
-.challenges-page {
-  padding: 40px 20px;
+/* --- Page Layout --- */
+.page-container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 40px 24px;
+  font-family: 'Poppins', sans-serif;
 }
 
-.page-title {
-  text-align: center;
-  color: #1976d2;
-  font-size: 2.5rem;
-  margin: 0 0 16px 0;
+/* --- Header Section --- */
+.arena-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.page-subtitle {
-  text-align: center;
+.arena-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #02add7 0%, #00b38b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -1px;
+}
+
+.arena-subtitle {
+  font-size: 1.1rem;
   color: #666;
-  font-size: 1.2rem;
-  margin-bottom: 40px;
+  margin: 8px 0 0 0;
 }
 
-.loading {
-  text-align: center;
-  padding: 60px;
-  color: #666;
-}
-
-.challenges-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
-}
-
-.challenge-card {
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transition: transform 0.3s;
-}
-
-.challenge-card:hover {
-  transform: translateY(-8px);
-}
-
-.challenge-image {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  background: #f0f0f0;
-}
-
-.card-content {
-  padding: 20px;
-}
-
-.challenge-title {
-  margin: 0 0 12px 0;
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #333;
-}
-.create-fab {
-  position: sticky;
-  top: 20px;
-  z-index: 100;
-  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
-
-  &:hover {
-    box-shadow: 0 6px 16px rgba(255, 105, 180, 0.4);
-    transform: scale(1.05);
-  }
-}
-
-.challenge-date {
+/* Host Button */
+.btn-host-challenge {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #e91e63;
-  font-weight: 500;
-  margin: 0;
+  background: white;
+  color: #333;
+  padding: 12px 24px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
 }
 
-mat-card-actions {
-  padding: 0 20px 20px 20px;
+.btn-host-challenge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  color: #00b38b;
+}
+
+/* --- Loading State --- */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  height: 300px;
+  color: #02add7;
 }
 
-.empty {
-  text-align: center;
-  padding: 60px 20px;
+.loading-state p {
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+/* --- Grid Layout --- */
+.challenges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 30px;
+}
+
+/* --- The Arena Card --- */
+.arena-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+}
+
+.arena-card:hover {
+  transform: translateY(-8px); /* Lift effect */
+  box-shadow: 0 20px 40px rgba(0, 179, 139, 0.15); /* Greenish glow shadow */
+}
+
+/* Image Banner */
+.card-banner {
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.arena-card:hover .bg-image {
+  transform: scale(1.05); /* Slight zoom on hover */
+}
+
+/* "Live" Badge */
+.status-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #00b38b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #00b38b;
+  border-radius: 50%;
+  box-shadow: 0 0 0 rgba(0, 179, 139, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 179, 139, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(0, 179, 139, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 179, 139, 0); }
+}
+
+/* Content Body */
+.card-body {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  margin: 0 0 16px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+  line-height: 1.3;
+}
+
+/* Meta Data (Date) */
+.meta-row {
+  margin-bottom: 24px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: #666;
-  grid-column: 1 / -1;
+  font-size: 0.9rem;
 }
 
-.empty mat-icon {
-  font-size: 4rem;
-  width: 4rem;
-  height: 4rem;
-  color: #ccc;
-  margin-bottom: 16px;
+.icon-clock {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #02add7; /* Blue icon */
+}
+
+.label {
+  font-weight: 500;
+}
+
+.value {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Action Button */
+.card-actions {
+  margin-top: auto;
+}
+
+.btn-enter {
+  width: 100%;
+  background: linear-gradient(100deg, #02add7 0%, #00b38b 100%);
+  color: white;
+  padding: 22px 0; /* Taller button */
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.btn-enter:hover {
+  opacity: 0.9;
+}
+
+/* --- Empty State --- */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 0;
+  background: #f9f9f9;
+  border-radius: 20px;
+}
+
+.empty-icon-bg {
+  width: 80px;
+  height: 80px;
+  background: #e0f2f1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.empty-icon-bg mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: #00b38b;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin: 0 0 8px;
+  color: #333;
+}
+
+.empty-state p {
+  color: #777;
+  margin-bottom: 24px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .arena-title { font-size: 2.2rem; }
+  .arena-header { flex-direction: column; align-items: flex-start; }
+  .btn-host-challenge { width: 100%; justify-content: center; }
 }

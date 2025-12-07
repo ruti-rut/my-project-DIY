@@ -1,117 +1,61 @@
-.comments-section {
-  max-width: 820px;
-  margin: 6rem auto 4rem auto;
-  padding: 0 1.5rem;
+.comments-wrapper {
+  margin-top: 60px;
+  padding-top: 40px;
+  border-top: 1px solid #eee;
 }
 
-.comments-section > h2 {
-  text-align: center;
-  font-size: 2.6rem;
+.comments-title {
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #111;
-  margin-bottom: 4rem;
-  letter-spacing: -0.5px;
+  margin-bottom: 24px;
 }
 
-/* הסרנו את כל הרקעים, הצללים והקופסאות – נשאר רק פס דק */
-.comment {
-  padding: 2.2rem 0;
-  border-bottom: 1px solid #f0f0f0;     /* פס דק, עדין ונקי בדיוק כמו בתמונה */
-  background: transparent;
-  box-shadow: none;
-  border-radius: 0;
-  margin-bottom: 0;
-}
+.count { color: #888; font-weight: 400; }
 
-/* התגובה האחרונה – בלי פס מתחתיה */
-.comment:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
+.form-container { margin-bottom: 40px; }
 
-/* שורת המשתמש – נשארת אותו דבר אבל עם מרווחים עדינים יותר */
-.user {
+/* List */
+.comment-item {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 0.4rem;
-  font-size: 1rem;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-.user strong {
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-/* האווטאר – קצת יותר גדול ויפה */
-.avatar,
-.avatar-placeholder {
-  width: 42px;
-  height: 42px;
+.c-avatar, .placeholder {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  flex-shrink: 0;
   object-fit: cover;
 }
 
-.avatar-placeholder {
+.placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: bold;
-  font-size: 1rem;
 }
 
-/* תוכן התגובה – מרווח יפה מהאווטאר */
-.comment > p {
-  margin: 0 0 0.5rem 54px;     /* בדיוק כמו באתרים מקצועיים */
-  font-size: 1.15rem;
-  line-height: 1.75;
-  color: #2d2d2d;
+.comment-content {
+  background: #f9f9f9;
+  padding: 16px 20px;
+  border-radius: 0 16px 16px 16px;
+  flex: 1;
 }
 
-/* תאריך */
-.comment small {
-  margin-left: 54px;
-  color: #888;
-  font-size: 0.88rem;
+.c-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
-/* אין תגובות */
-.no-comments {
+.c-name { color: #333; }
+.c-date { font-size: 0.8rem; color: #999; }
+.c-text { margin: 0; color: #555; line-height: 1.5; }
+
+.empty-state {
   text-align: center;
-  padding: 5rem 0;
-  color: #aaa;
-  font-size: 1.25rem;
+  color: #888;
+  padding: 20px;
   font-style: italic;
-  background: transparent;
-  border: none;
-}
-
-/* רספונסיבי – נשאר מושלם גם בנייד */
-@media (max-width: 768px) {
-  .comments-section {
-    margin: 4rem auto 2rem;
-    padding: 0 1rem;
-  }
-  
-  .comments-section > h2 {
-    font-size: 2.2rem;
-    margin-bottom: 3rem;
-  }
-  
-  .comment {
-    padding: 1.8rem 0;
-  }
-  
-  .comment > p,
-  .comment small {
-    margin-left: 50px;
-  }
-  
-  .avatar,
-  .avatar-placeholder {
-    width: 38px;
-    height: 38px;
-  }
 }

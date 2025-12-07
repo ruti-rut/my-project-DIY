@@ -1,54 +1,95 @@
-<!-- src/app/components/diy-chat/diy-chat.component.html -->
-<div class="chat-container">
+<div class="spark-interface">
+  
+  <!-- Top Bar: Clean & Minimal -->
+  <header class="spark-header">
+    <div class="model-info">
+      <div class="spark-logo-icon">
+        <mat-icon>auto_awesome</mat-icon>
+      </div>
+      <div class="text-info">
+        <span class="name">Spark AI</span>
+        <span class="status">Creative Assistant</span>
+      </div>
+    </div>
 
-  <!-- Header -->
-  <header class="header">
-    <h1>Smart DIY Assistant</h1>
-    <div class="header-buttons">
-      <button class="btn-new" (click)="startNewChat()">New Chat</button>
-      <button class="btn-logout" (click)="logout()">Log out</button>
+    <div class="header-actions">
+      <button mat-icon-button (click)="startNewChat()" matTooltip="New Conversation">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button mat-icon-button (click)="logout()" matTooltip="Close Session">
+        <mat-icon>logout</mat-icon>
+      </button>
     </div>
   </header>
 
-  <!-- Messages Area -->
-  <div class="messages-area" #scrollContainer>
+  <!-- Chat Viewport -->
+  <div class="chat-viewport" #scrollContainer>
     
+    <!-- Empty State / Welcome Screen -->
     @if (messages().length === 0) {
-      <div class="welcome">
-        <p>Hello! Ask me any question about DIY projects, repairs, crafts, and handiwork.</p>
-      </div>
-    }
-
-    @for (msg of messages(); track msg.timestamp) {
-      <app-message-bubble [message]="msg"></app-message-bubble>
-    }
-
-    @if (isLoading()) {
-      <div class="message assistant typing">
-        <div class="bubble">
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
+      <div class="welcome-screen">
+        <div class="hero-icon">
+          <mat-icon>handyman</mat-icon>
+        </div>
+        <h2>What are we building today?</h2>
+        <p>I can help you design furniture, fix appliances, or brainstorm creative gifts.</p>
+        
+        <!-- Quick Starter Chips -->
+        <div class="suggestion-grid">
+          <button class="chip" (click)="newMessage = 'How do I build a simple wooden shelf?'; send()">
+            🔨 Build a shelf
+          </button>
+          <button class="chip" (click)="newMessage = 'Fix a leaking faucet step-by-step'; send()">
+            💧 Fix a leak
+          </button>
+          <button class="chip" (click)="newMessage = 'Creative DIY gift ideas for mom'; send()">
+            🎁 Gift ideas
+          </button>
+          <button class="chip" (click)="newMessage = 'List of tools for a beginner carpenter'; send()">
+            🧰 Beginner Tools
+          </button>
         </div>
       </div>
     }
+
+    <!-- Message Stream -->
+    <div class="message-stream">
+      @for (msg of messages(); track msg.timestamp) {
+        <app-message-bubble [message]="msg"></app-message-bubble>
+      }
+
+      <!-- Typing Indicator -->
+      @if (isLoading()) {
+        <div class="typing-indicator">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      }
+    </div>
   </div>
 
-  <!-- Input Area -->
-  <div class="input-area">
-    <form (ngSubmit)="send()" class="input-form">
+  <!-- Floating Input Area -->
+  <div class="input-dock">
+    <div class="input-capsule">
       <input 
         [(ngModel)]="newMessage"
         (keydown.enter)="handleEnter($event)"
-        placeholder="How to build a shelf? How to fix a water leak?..."
+        placeholder="Ask Spark anything..."
         [disabled]="isLoading()"
-        name="msg"
         autocomplete="off"
       />
-      <button type="submit" [disabled]="!newMessage.trim() || isLoading()">
-        Send
+      <button 
+        class="btn-send" 
+        (click)="send()" 
+        [disabled]="!newMessage.trim() || isLoading()"
+        [class.active]="newMessage.trim().length > 0">
+        <mat-icon>arrow_upward</mat-icon>
       </button>
-    </form>
-    <small class="hint">Shift + Enter for a new line</small>
+    </div>
+    <div class="footer-note">
+      Spark can make mistakes. Always check safety instructions before using tools.
+    </div>
   </div>
+
 </div>

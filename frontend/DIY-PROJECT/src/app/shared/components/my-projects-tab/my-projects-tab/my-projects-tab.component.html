@@ -1,72 +1,68 @@
-<!-- my-projects-tab.component.html -->
 <div class="projects-grid">
+  
   @for (project of myProjects(); track project.id) {
-  <div class="project-item">
-    <!-- הכרטיס עצמו -->
-    <app-project-card [project]="project" />
-
-    <!-- תגית טיוטה -->
-    @if (project.isDraft) {
-    <div class="draft-badge">Draft</div>
-    }
-@if (challengeIdToAssign() !== null && project.challengeId && project.challengeId !== challengeIdToAssign()) {
-  <div class="assigned-badge">Assign to a different challenge</div>
-}
-  <!-- מצב שיוך לאתגר ספציפי -->
-  @if (challengeIdToAssign() !== null) {
-    <div class="actions-overlay assign-mode"
-         [class.disabled]="project.challengeId">
+    <div class="project-wrapper" [class.assign-mode-active]="challengeIdToAssign() !== null">
       
-      <!-- כפתור שיוך – רק אם לא משויך בכלל -->
-      @if (!project.challengeId) {
-        <button mat-icon-button 
-                color="accent" 
-                (click)="assignProject(project.id)" 
-                title="שייך לאתגר זה">
-          <mat-icon>link</mat-icon>
-        </button>
+      <!-- The Card Component -->
+      <app-project-card [project]="project"></app-project-card>
+
+      <!-- Badge: Draft -->
+      @if (project.isDraft) {
+        <div class="status-badge draft">Draft</div>
       }
-      
-      <!-- אם כבר משויך (כולל לאתגר אחר) – רק אייקון נעול -->
-      @if (project.challengeId) {
-        <button mat-icon-button disabled title="הפרויקט כבר משויך">
-          <mat-icon>lock</mat-icon>
-        </button>
+
+      <!-- Badge: Already Assigned (When in Assign Mode) -->
+      @if (challengeIdToAssign() !== null && project.challengeId && project.challengeId !== challengeIdToAssign()) {
+        <div class="status-badge busy">Assigned elsewhere</div>
       }
-    </div>
-  }
 
-  <!-- מצב רגיל – עריכה ומחיקה -->
-  @if (challengeIdToAssign() === null) {
-    <div class="actions-overlay">
-      <button mat-icon-button color="primary" [routerLink]="['/project/edit', project.id]" title="עריכה">
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button mat-icon-button color="warn" (click)="deleteProject(project.id)" title="מחיקה">
-        <mat-icon>delete_forever</mat-icon>
-      </button>
-    </div>
-  }
+      <!-- OVERLAY: Challenge Assignment Mode -->
+      @if (challengeIdToAssign() !== null) {
+        <div class="actions-overlay assign-overlay">
+          
+          <!-- Case: Can Assign -->
+          @if (!project.challengeId) {
+            <button mat-fab class="fab-action link" (click)="assignProject(project.id)" matTooltip="Link to Challenge">
+              <mat-icon>link</mat-icon>
+            </button>
+            <span class="overlay-label">Select Project</span>
+          }
+          
+          <!-- Case: Locked/Already Assigned -->
+          @if (project.challengeId) {
+            <div class="locked-state">
+              <mat-icon>lock</mat-icon>
+              <span>Unavailable</span>
+            </div>
+          }
+        </div>
+      }
 
+      <!-- OVERLAY: Standard Mode (Edit/Delete) -->
+      @if (challengeIdToAssign() === null) {
+        <div class="actions-overlay standard-overlay">
+          <button mat-fab class="fab-action edit" [routerLink]="['/project/edit', project.id]" matTooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          
+          <button mat-fab class="fab-action delete" (click)="deleteProject(project.id)" matTooltip="Delete">
+            <mat-icon>delete_forever</mat-icon>
+          </button>
+        </div>
+      }
 
-    <!-- כפתורי פעולה -->
-    <div class="actions-overlay">
-      <button mat-icon-button color="primary" [routerLink]="['/project/edit', project.id]" title="עריכה">
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button mat-icon-button color="warn" (click)="deleteProject(project.id)" title="מחיקה">
-        <mat-icon>delete_forever</mat-icon>
-      </button>
     </div>
-  </div>
   } @empty {
-  <div class="empty-state">
-    <mat-icon class="big">build_circle</mat-icon>
-    <h3>No projects yet</h3>
-    <p>Once you have some, they will appear here</p>
-    <button mat-raised-button color="primary" routerLink="/create-project">
-      Create First Project
-    </button>
-  </div>
+    <!-- Empty State -->
+    <div class="empty-state">
+      <div class="icon-circle">
+        <mat-icon>build_circle</mat-icon>
+      </div>
+      <h3>No projects yet</h3>
+      <p>Share your creativity with the world.</p>
+      <button mat-raised-button class="btn-create" routerLink="/create-project">
+        Create First Project
+      </button>
+    </div>
   }
 </div>

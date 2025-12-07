@@ -1,33 +1,57 @@
-<!-- src/app/profile/profile-header/profile-header.component.html -->
-<div class="profile-header">
+<div class="header-card">
+  
+  <!-- 1. Gradient Cover Banner -->
+  <div class="cover-banner"></div>
 
-  <div class="avatar-section">
-  @if (avatar().url) {
-    <img [src]="avatar().url" alt="תמונת פרופיל" class="big-avatar">
-  } @else {
-    <div class="big-avatar placeholder" [style.background-color]="avatar().color">
-      {{ avatar().initial }}
-    </div>
-  }
-</div>
-
-  <div class="user-info">
-    <h1>{{ profile()?.userName || 'Loading...' }}</h1>
-    <p class="joined">Join {{ profile()?.joinDate ? formatDate(profile()!.joinDate) : '' }}</p>
+  <!-- 2. Content Section -->
+  <div class="header-content">
     
-    <div class="stats">
-      <div class="stat">
-        <strong>{{ profile()?.projectsCount || 0 }}</strong>
-        <span>Projects</span>
+    <!-- Top Row: Avatar & Actions -->
+    <div class="top-row">
+      <!-- Avatar (Overlaps the banner) -->
+      <div class="avatar-wrapper">
+        @if (avatar().url) {
+          <img [src]="avatar().url" alt="Profile" class="profile-img">
+        } @else {
+          <div class="profile-img placeholder" [style.background-color]="avatar().color">
+            {{ avatar().initial }}
+          </div>
+        }
+        
+        <!-- Small Edit Button on the Avatar -->
+        <button class="edit-avatar-btn" routerLink="/profile/edit">
+          <mat-icon>edit</mat-icon>
+        </button>
       </div>
-      <div class="stat">
-        <strong>{{ profile()?.favoritesCount || 0 }}</strong>
-        <span>Favorites</span>
+
+      <!-- Action Buttons (Right side) -->
+      <div class="actions">
+        <button mat-stroked-button routerLink="/profile/edit">Edit Profile</button>
       </div>
     </div>
 
-    <button mat-stroked-button routerLink="/profile/edit" class="edit-btn">
-      Edit profile
-    </button>
+    <!-- User Info & Stats -->
+    <div class="user-details">
+      <h1 class="username">{{ profile()?.userName || 'Loading...' }}</h1>
+      
+      <p class="join-date">
+        <mat-icon>calendar_today</mat-icon> 
+        Member since {{ profile()?.joinDate ? formatDate(profile()!.joinDate) : '' }}
+      </p>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="value">{{ profile()?.projectsCount || 0 }}</span>
+          <span class="label">Projects</span>
+        </div>
+        <div class="divider"></div>
+        <div class="stat-box">
+          <span class="value">{{ profile()?.favoritesCount || 0 }}</span>
+          <span class="label">Favorites</span>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>

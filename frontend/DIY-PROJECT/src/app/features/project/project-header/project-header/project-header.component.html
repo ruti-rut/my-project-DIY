@@ -1,61 +1,72 @@
+<!-- We use 'project()' because your TS stores the data in a signal -->
 @if (project(); as proj) {
-<div class="project-header">
-  <div class="header-image">
-    <img [src]="getImageUrl()" [alt]="proj.title">
-  </div>
+  <div class="header-hero">
+    
+    <!-- 1. Left Side: The Content -->
+    <div class="hero-content">
+      <span class="category-badge">DIY Project</span>
+      
+      <h1 class="main-title">{{ proj.title }}</h1>
+      <p class="description">{{ proj.description }}</p>
 
-  <div class="header-content">
-    <h1 class="title">{{ proj.title }}</h1>
-    <p class="description">{{ proj.description }}</p>
-
-    <div class="meta-bar">
-      <div class="author">
-        @if (avatar().url) {
-        <img [src]="avatar().url" class="avatar" alt="avatar">
-        } @else {
-        <div class="avatar placeholder" [style.background-color]="avatar().color">
-          {{ avatar().initial }}
+      <!-- Meta Data Row -->
+      <div class="meta-row">
+        <!-- Author (Uses your avatar computed signal) -->
+        <div class="author-pill">
+          @if (avatar().url) {
+            <img [src]="avatar().url" class="author-img" alt="Author">
+          } @else {
+            <div class="author-placeholder" [style.background-color]="avatar().color">
+              {{ avatar().initial }}
+            </div>
+          }
+          <div class="author-info">
+            <span class="label">Created by</span>
+            <span class="name">{{ proj.users?.userName || 'Anonymous' }}</span>
+          </div>
         </div>
-        }
-        <span class="author-name">{{ proj.users?.userName || 'Anonymous' }}</span>
+
+        <div class="divider"></div>
+
+        <!-- Stats -->
+        <div class="stats-group">
+          <div class="stat-item" title="Likes">
+            <mat-icon>thumb_up</mat-icon> <span>{{ proj.likesCount ?? 0 }}</span>
+          </div>
+          <div class="stat-item" title="Prep Time">
+            <mat-icon>schedule</mat-icon> <span>{{ proj.timePrep || '--' }}</span>
+          </div>
+          <div class="stat-item" title="Ages">
+            <mat-icon>group</mat-icon> <span>{{ proj.ages || 'All' }}</span>
+          </div>
+        </div>
       </div>
 
-      <div class="stats">
-        <span class="stat">
-          <mat-icon>thumb_up</mat-icon>
-          {{ proj.likesCount ?? 0 }}
-        </span>
-        <span class="stat">
-          <mat-icon>access_time</mat-icon>
-          {{ proj.timePrep || 'Not specified' }}
-        </span>
-        <span class="stat">
-          <mat-icon>person_outline</mat-icon>
-          {{ proj.ages || 'All ages' }}
-        </span>
+      <!-- Action Buttons (Hidden when printing) -->
+      <div class="actions-bar no-print">
+        <button mat-flat-button class="btn-gradient" (click)="downloadPdf(proj.id)">
+          <mat-icon>download</mat-icon> PDF
+        </button>
+        <button mat-stroked-button (click)="print()">
+          <mat-icon>print</mat-icon> Print
+        </button>
+        <button mat-stroked-button (click)="share()">
+          <mat-icon>share</mat-icon> Share
+        </button>
       </div>
     </div>
 
-    <div class="actions">
-      <button mat-stroked-button (click)="downloadPdf(proj.id)">
-        <mat-icon>download</mat-icon>
-        Download PDF
-      </button>
-
-      <button mat-stroked-button (click)="print()">
-        <mat-icon>print</mat-icon>
-        Print
-      </button>
-
-      <button mat-stroked-button (click)="share()">
-        <mat-icon>share</mat-icon>
-        Share
+    <!-- 2. Right Side: The Image -->
+    <div class="hero-image-wrapper">
+      <!-- Uses getImageUrl() from your TS -->
+      <img [src]="getImageUrl()" [alt]="proj.title" class="hero-img">
+      
+      <!-- WhatsApp Floating Button -->
+      <button mat-fab class="whatsapp-fab no-print" (click)="shareWhatsApp()">
+         <!-- If you don't have a whatsapp icon, 'share' or 'chat' works -->
+         <mat-icon>share</mat-icon> 
       </button>
     </div>
+
   </div>
-
-  <button mat-fab class="whatsapp-btn" (click)="shareWhatsApp()">
-    <mat-icon>whatsapp</mat-icon>
-  </button>
-</div>
 }

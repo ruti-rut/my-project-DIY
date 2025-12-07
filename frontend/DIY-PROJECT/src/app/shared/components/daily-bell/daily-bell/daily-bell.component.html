@@ -1,22 +1,25 @@
 <button mat-icon-button
         class="bell-button"
         (click)="toggleSubscription()"
-        [matTooltip]="isSubscribed() ? 'Cancel Daily Notifications' : 'Get Daily Notifications'"
+        [matTooltip]="isSubscribed() ? 'Turn off daily inspiration' : 'Get daily inspiration'"
         matTooltipPosition="below">
 
-  <mat-icon class="bell-icon"
-            [class.subscribed]="isSubscribed()"
-            [class.ringing]="justToggled">
-    {{ isSubscribed() ? 'notifications_active' : 'notifications' }}
-  </mat-icon>
+  <div class="icon-wrapper">
+    <mat-icon class="bell-icon"
+              [class.subscribed]="isSubscribed()"
+              [class.ringing]="justToggled">
+      {{ isSubscribed() ? 'notifications_active' : 'notifications_none' }}
+    </mat-icon>
+    
+    <!-- Active Glow Dot -->
+    @if (isSubscribed()) {
+      <span class="pulse-ring"></span>
+      <span class="active-dot"></span>
+    }
+  </div>
 
-  <!-- גל הרינג שיוצא החוצה -->
+  <!-- Ripple Wave Animation on Click -->
   @if (justToggled) {
-    <span class="ring-wave"></span>
-  }
-
-  <!-- נקודה אדומה שמהבהבת -->
-  @if (isSubscribed()) {
-    <span class="active-dot"></span>
+    <span class="shockwave"></span>
   }
 </button>

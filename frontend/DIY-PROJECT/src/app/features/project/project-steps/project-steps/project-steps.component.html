@@ -1,32 +1,33 @@
 <section class="steps-section">
-  <h2 class="section-title">Step-by-Step Instructions</h2>
+  <h2 class="section-title">Instructions</h2>
 
   @for (step of steps; track $index) {
-    <div class="step-block">
+    <div class="step-card">
+      
+      <!-- Header -->
+      <div class="step-header">
+        <div class="step-badge">Step {{ $index + 1 }}</div>
+        @if (step.title) {
+          <h3 class="step-title">{{ step.title }}</h3>
+        }
+      </div>
 
-      <!-- Step number – clean & elegant -->
-      <div class="step-number">Step {{ $index + 1 }}</div>
+      <!-- Content -->
+      <div class="step-body">
+        
+        <!-- Image (if exists) -->
+        @if (step.picture) {
+          <div class="step-image-box">
+            <img [src]="'data:image/jpeg;base64,' + step.picture" 
+                 [alt]="'Step ' + ($index + 1)">
+          </div>
+        }
 
-      <!-- Step title -->
-      @if (step.title) {
-        <h3 class="step-title">{{ step.title }}</h3>
-      }
-
-      <!-- Step image – clean corners -->
-      @if (step.picture) {
-        <div class="image-container">
-          <img [src]="'data:image/jpeg;base64,' + step.picture"
-               [alt]="'Step ' + ($index + 1)"
-               class="step-image">
-        </div>
-      }
-
-      <!-- Step description -->
-      <div class="step-text" [innerHTML]="step.content"></div>
+        <!-- Text Description -->
+        <div class="step-text" [innerHTML]="step.content"></div>
+      </div>
     </div>
-  }
-
-  @empty {
-    <p class="empty">No steps available yet.</p>
+  } @empty {
+    <p class="empty-msg">No instructions available.</p>
   }
 </section>

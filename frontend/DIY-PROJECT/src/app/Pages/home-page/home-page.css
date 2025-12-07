@@ -1,146 +1,226 @@
-/* ============= עיצוב כללי – נקי, מרווח, מקצועי ============= */
+/* --- Global Container --- */
 .home-master-container {
-  max-width: 1520px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 40px 100px 40px;      /* ← מרווח יפה מהצדדים – בדיוק מה שביקשת */
-  background: #fafafa;
+  padding: 40px 24px;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  min-height: 100vh;
 }
 
-.section {
-  margin-bottom: 90px;
+/* --- Loader --- */
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: #02add7;
+}
+
+.loader-container p {
+  margin-top: 20px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* --- Hero Banner --- */
+.home-hero {
+  text-align: center;
+  margin-bottom: 60px;
+  padding: 40px 0;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin: 0;
+  color: #2c3e50;
+  line-height: 1.1;
+}
+
+.brand-text {
+  background: linear-gradient(135deg, #02add7 0%, #00b38b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin-top: 12px;
+}
+
+/* --- Sections --- */
+.content-section {
+  margin-bottom: 80px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
 }
 
 .section-title {
-  font-size: 2.4rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #1a1a1a;
-  text-align: center;
-  margin-bottom: 50px;
-  position: relative;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #333;
 }
 
-.section-title::after {
-  content: '';
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 5px;
-  background: linear-gradient(90deg, #1976d2, #42a5f5);
-  border-radius: 3px;
-}
+.icon-trophy { color: #ffd700; } /* Gold */
+.icon-hammer { color: #02add7; } /* Blue */
 
-.category-title {
-  font-size: 1.9rem;
+.view-all-link {
+  color: #00b38b;
+  text-decoration: none;
   font-weight: 600;
-  color: #2c3e50;
-  margin: 70px 0 30px 0;
-  padding-bottom: 8px;
-  border-bottom: 3px solid #42a5f5;
-  display: inline-block;
+  font-size: 0.9rem;
+  transition: color 0.2s;
 }
 
-/* גריד אחיד ויפה */
+.view-all-link:hover {
+  color: #02add7;
+  text-decoration: underline;
+}
+
+/* --- Grid Layout --- */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
 }
 
-/* ============= כרטיס אתגר – יפה, לא חתוך, גובה אחיד ============= */
+/* --- Challenge Card Design --- */
 .challenge-card {
-  height: 480px;
+  background: white;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-  transition: all 0.4s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s;
+  border: 1px solid rgba(0,0,0,0.02);
+  cursor: pointer;
   display: flex;
   flex-direction: column;
-  background: white;
 }
 
 .challenge-card:hover {
-  transform: translateY(-12px);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(2, 173, 215, 0.15);
 }
 
-.challenge-img {
-  height: 220px;
+.card-image-wrapper {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease;
+  transition: transform 0.5s ease;
 }
 
-.challenge-card:hover .challenge-img {
-  transform: scale(1.08);
+.challenge-card:hover .card-img {
+  transform: scale(1.05);
 }
 
-.challenge-content {
+.live-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(255,255,255,0.95);
+  color: #00b38b;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: #00b38b;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 179, 139, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(0, 179, 139, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 179, 139, 0); }
+}
+
+.card-content {
   padding: 24px;
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.challenge-title {
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 16px 0;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.card-title {
+  margin: 0 0 12px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #333;
 }
 
-.challenge-date {
-  margin-top: auto;
-  color: #e91e63;
-  font-weight: 500;
+.meta-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  color: #777;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
 }
 
-.challenge-actions {
-  padding: 0 24px 24px;
+.meta-info mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #02add7;
 }
 
-.full-btn {
+.btn-challenge-action {
+  margin-top: auto;
   width: 100%;
-  height: 52px;
-  font-size: 1.05rem;
+  background: linear-gradient(135deg, #02add7 0%, #00b38b 100%);
+  color: white;
+  border-radius: 50px;
+  height: 44px;
+  font-size: 0.95rem;
   font-weight: 600;
-  border-radius: 12px !important;
 }
 
-/* ============= כרטיסי פרויקטים – בדיוק 430px כמו ברשימה ============= */
-.cards-grid app-project-card {
-  height: 430px !important;
-  display: block;
+/* --- Projects Category Groups --- */
+.category-group {
+  margin-bottom: 50px;
 }
 
-/* לודר */
-.loader {
-  text-align: center;
-  padding: 120px 20px;
-  color: #666;
+.category-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #999;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-/* רספונסיביות מושלמת */
-@media (max-width: 1200px) {
-  .home-master-container { padding: 40px 30px 80px; }
-  .cards-grid { gap: 28px; }
-}
-
-@media (max-width: 900px) {
-  .cards-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
-}
-
-@media (max-width: 600px) {
-  .home-master-container { padding: 30px 16px 70px; }
-  .section-title { font-size: 2rem; }
-  .cards-grid { grid-template-columns: 1fr; gap: 24px; }
-  .challenge-card { height: 500px; }
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-title { font-size: 2.5rem; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .home-master-container { padding: 20px 16px; }
 }

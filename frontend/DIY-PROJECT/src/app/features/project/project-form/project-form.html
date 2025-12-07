@@ -1,191 +1,165 @@
-<div class="container">
-  <h1 class="title">{{ isEditMode() ? 'Edit Project ' : 'Create new project' }}</h1>
+<div class="page-container">
+  
+  <div class="header-section">
+    <h1 class="page-title">{{ isEditMode() ? 'Edit Project' : 'Craft a New Project' }}</h1>
+    <p class="subtitle">Share your creativity with the world.</p>
+  </div>
 
   @if (loading()) {
-  <mat-spinner diameter="50"></mat-spinner>
+    <div class="spinner-container">
+      <mat-spinner diameter="50" color="primary"></mat-spinner>
+    </div>
   } @else {
-  <form [formGroup]="form()" (ngSubmit)="submit(form().value.isDraft)" class="form">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Project Title</mat-label>
-      <input matInput formControlName="title" placeholder="e.g.: How to build a robot from cans">
-      @if (form().get('title')?.errors && (form().get('title')?.dirty || form().get('title')?.touched)) {
-      <mat-error>
-        @if (form().get('title')?.hasError('required')) {
-        Title is **mandatory**.
-        } @else if (form().get('title')?.hasError('minlength')) {
-        Title must contain at least **3 characters**.
-        } @else if (form().get('title')?.hasError('maxlength')) {
-        Title cannot exceed **100 characters**.
-        }
-      </mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Description / Introduction</mat-label>
-      <textarea matInput rows="4" formControlName="description"></textarea>
-      @if (form().get('description')?.errors && (form().get('description')?.dirty || form().get('description')?.touched)) {
-      <mat-error>
-        @if (form().get('description')?.hasError('required')) {
-        Description is **mandatory**.
-        } @else if (form().get('description')?.hasError('maxlength')) {
-        Description cannot exceed **1000 characters**.
-        }
-      </mat-error>
-      }
-    </mat-form-field>
-
-    <div class="image-upload">
-      <input type="file" (change)="onCoverChange($event)" accept="image/*" id="cover" hidden />
-      <label for="cover" class="upload-btn">
-        <mat-icon>add_photo_alternate</mat-icon>
-        <span>Upload Cover Image</span>
-      </label>
-      @if (coverPreview()) {
-      <img [src]="coverPreview()" class="preview" />
-      }
-    </div>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Required Materials</mat-label>
-      <textarea matInput rows="3" formControlName="materials"></textarea>
-      @if (form().get('materials')?.errors && (form().get('materials')?.dirty || form().get('materials')?.touched)) {
-      <mat-error>
-        @if (form().get('materials')?.hasError('required')) {
-        Materials list is **mandatory**.
-        } @else if (form().get('materials')?.hasError('maxlength')) {
-        Materials list cannot exceed **500 characters**.
-        }
-      </mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Categories</mat-label>
-      <mat-select formControlName="categoryId">
-        @for (cat of categories(); track cat.id) {
-        <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
-        }
-      </mat-select>
-      @if (form().get('categoryId')?.errors && (form().get('categoryId')?.dirty || form().get('categoryId')?.touched)) {
-      <mat-error>
-        Category selection is **mandatory**.
-      </mat-error>
-      }
-    </mat-form-field>
-
-    <div class="row">
-      <mat-form-field appearance="outline">
-        <mat-label>Age range</mat-label>
-        <input matInput formControlName="ages" placeholder="6-12">
-        @if (form().get('ages')?.errors && (form().get('ages')?.dirty || form().get('ages')?.touched)) {
-        <mat-error>
-          @if (form().get('ages')?.hasError('required')) {
-          Age range is **mandatory**.
-          } @else if (form().get('ages')?.hasError('maxlength')) {
-          Age range cannot exceed **50 characters**.
+    <form [formGroup]="form()" class="creata-form">
+      
+      <!-- SECTION 1: The Basics -->
+      <div class="form-card main-card">
+        
+        <!-- Image Upload - Big & Beautiful -->
+        <div class="upload-zone cover-upload">
+          <input type="file" (change)="onCoverChange($event)" accept="image/*" id="cover" hidden />
+          @if (coverPreview()) {
+            <div class="preview-container">
+              <img [src]="coverPreview()" class="cover-preview" />
+              <label for="cover" class="edit-overlay">
+                <mat-icon>edit</mat-icon> Change Cover
+              </label>
+            </div>
+          } @else {
+            <label for="cover" class="upload-placeholder">
+              <div class="icon-circle">
+                <mat-icon>add_photo_alternate</mat-icon>
+              </div>
+              <span class="upload-text">Upload Cover Image</span>
+              <span class="upload-hint">1200x600 recommended</span>
+            </label>
           }
-        </mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Preparation Time</mat-label>
-        <input matInput formControlName="timePrep" placeholder="30 minutes">
-        @if (form().get('timePrep')?.errors && (form().get('timePrep')?.dirty || form().get('timePrep')?.touched)) {
-        <mat-error>
-          @if (form().get('timePrep')?.hasError('required')) {
-          Preparation time is **mandatory**.
-          } @else if (form().get('timePrep')?.hasError('maxlength')) {
-          Preparation time cannot exceed **50 characters**.
-          }
-        </mat-error>
-        }
-      </mat-form-field>
-    </div>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Tags (up to 5)</mat-label>
-      <mat-chip-grid #chipGrid>
-        @for (tag of tags(); track tag) {
-        <mat-chip (removed)="removeTag(tag)">
-          {{ tag }}
-          <button matChipRemove><mat-icon>cancel</mat-icon></button>
-        </mat-chip>
-        }
-        @if (tags().length
-        < 5) { <input placeholder="Add tag..." [matChipInputFor]="chipGrid" (matChipInputTokenEnd)="addTag($event)" />
-        }
-      </mat-chip-grid>
-      <mat-hint>{{ tags().length }}/5</mat-hint>
-    </mat-form-field>
-
-    <div formArrayName="steps" class="steps">
-      @for (step of steps().controls; track $index; let i = $index) {
-      <div [formGroupName]="i" class="step-card">
-        <div class="step-header">
-          <h3>Step {{ i + 1 }}</h3>
-          <button mat-icon-button (click)="removeStep(i)" [disabled]="steps().length === 1">
-            <mat-icon>delete</mat-icon>
-          </button>
         </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Step Title</mat-label>
-          <input matInput formControlName="title">
-          @if (step.get('title')?.errors && (step.get('title')?.dirty || step.get('title')?.touched)) {
-          <mat-error>
-            @if (step.get('title')?.hasError('required')) {
-            Step title is **mandatory**.
-            } @else if (step.get('title')?.hasError('minlength')) {
-            Step title must contain at least **3 characters**.
-            } @else if (step.get('title')?.hasError('maxlength')) {
-            Step title cannot exceed **150 characters**.
+        <div class="form-content">
+          <mat-form-field appearance="outline" class="full-width no-bottom-padding">
+            <mat-label>Project Title</mat-label>
+            <input matInput formControlName="title" placeholder="e.g.: How to build a robot from cans">
+            @if (form().get('title')?.errors && (form().get('title')?.dirty || form().get('title')?.touched)) {
+              <mat-error>Title is required (3-100 chars)</mat-error>
             }
-          </mat-error>
-          }
-        </mat-form-field>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Detailed description</mat-label>
-          <textarea matInput rows="4" formControlName="content"></textarea>
-          @if (step.get('content')?.errors && (step.get('content')?.dirty || step.get('content')?.touched)) {
-          <mat-error>
-            @if (step.get('content')?.hasError('required')) {
-            Content is **mandatory**.
-            } @else if (step.get('content')?.hasError('minlength')) {
-            Content must contain at least **10 characters**.
-            } @else if (step.get('content')?.hasError('maxlength')) {
-            Content cannot exceed **2000 characters**.
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description / Introduction</mat-label>
+            <textarea matInput rows="3" formControlName="description" placeholder="What will we be making today?"></textarea>
+            @if (form().get('description')?.hasError('required')) {
+              <mat-error>Description is mandatory</mat-error>
             }
-          </mat-error>
-          }
-        </mat-form-field>
+          </mat-form-field>
 
-        <div class="image-upload">
-          <input type="file" (change)="onStepImageChange($event, i)" accept="image/*" [id]="'step'+i" hidden />
-          <label [for]="'step'+i" class="upload-btn small">
-            <mat-icon>add_photo_alternate</mat-icon>
-            <span>Add image</span>
-          </label>
-          @if (stepPreviews()[i]) {
-          <img [src]="stepPreviews()[i]" class="preview" /> }
+          <!-- 3-Column Grid for Quick Info -->
+          <div class="grid-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="categoryId">
+                @for (cat of categories(); track cat.id) {
+                  <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Age Range</mat-label>
+              <input matInput formControlName="ages" placeholder="e.g. 6-12">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Prep Time</mat-label>
+              <input matInput formControlName="timePrep" placeholder="e.g. 30m">
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Required Materials</mat-label>
+            <textarea matInput rows="2" formControlName="materials" placeholder="List materials separated by commas..."></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Tags</mat-label>
+            <mat-chip-grid #chipGrid aria-label="Enter tags">
+              @for (tag of tags(); track tag) {
+                <mat-chip-row (removed)="removeTag(tag)" class="custom-chip">
+                  {{ tag }}
+                  <button matChipRemove><mat-icon>cancel</mat-icon></button>
+                </mat-chip-row>
+              }
+              <input placeholder="Add tag..."
+                     [matChipInputFor]="chipGrid"
+                     (matChipInputTokenEnd)="addTag($event)" />
+            </mat-chip-grid>
+            <mat-hint align="end">{{ tags().length }}/5</mat-hint>
+          </mat-form-field>
         </div>
       </div>
-      }
-    </div>
 
-    <button mat-stroked-button color="primary" (click)="addStep()" class="add-step">
-      <mat-icon>add</mat-icon> Add step
-    </button>
+      <!-- SECTION 2: The Instructions (Steps) -->
+      <div class="steps-container" formArrayName="steps">
+        <div class="section-title">
+          <h2>Instructions</h2>
+          <span class="divider-line"></span>
+        </div>
 
-    <div class="actions">
-      <button mat-button (click)="submit(true)" [disabled]="form().invalid || loading()">
-        Save as a draft
-      </button>
-      <button mat-raised-button color="primary" (click)="submit(false)" [disabled]="form().invalid || loading()">
-        Publish now </button>
-    </div>
-  </form>
+        @for (step of steps().controls; track $index; let i = $index) {
+          <div [formGroupName]="i" class="step-card">
+            
+            <div class="step-sidebar">
+              <div class="step-number">{{ i + 1 }}</div>
+              
+               <!-- Small Image Upload for Step -->
+               <div class="upload-zone step-upload">
+                <input type="file" (change)="onStepImageChange($event, i)" accept="image/*" [id]="'step'+i" hidden />
+                @if (stepPreviews()[i]) {
+                  <img [src]="stepPreviews()[i]" class="step-preview-img" />
+                  <label [for]="'step'+i" class="mini-edit-btn"><mat-icon>edit</mat-icon></label>
+                } @else {
+                  <label [for]="'step'+i" class="step-upload-btn">
+                    <mat-icon>add_a_photo</mat-icon>
+                  </label>
+                }
+              </div>
+            </div>
+
+            <div class="step-content">
+              <div class="step-header">
+                <mat-form-field appearance="outline" class="step-title-input">
+                  <mat-label>Step Title</mat-label>
+                  <input matInput formControlName="title">
+                </mat-form-field>
+                
+                <button mat-icon-button color="warn" (click)="removeStep(i)" [disabled]="steps().length === 1" matTooltip="Remove Step">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Step Description</mat-label>
+                <textarea matInput rows="3" formControlName="content"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        }
+
+        <button mat-button class="btn-add-step" (click)="addStep()">
+          <mat-icon>add_circle_outline</mat-icon> Add Next Step
+        </button>
+      </div>
+
+      <!-- SECTION 3: Footer Actions -->
+      <div class="actions-footer">
+        <button mat-button class="btn-draft" (click)="submit(true)">
+          Save Draft
+        </button>
+        <button mat-raised-button class="btn-publish" (click)="submit(false)">
+          Publish Project <mat-icon>rocket_launch</mat-icon>
+        </button>
+      </div>
+
+    </form>
   }
 </div>

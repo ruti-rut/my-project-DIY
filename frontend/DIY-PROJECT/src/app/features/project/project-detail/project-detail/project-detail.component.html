@@ -1,41 +1,55 @@
-<div class="container">
-    @if (loading()) {
-    <div class="loading">
-        <mat-spinner></mat-spinner>
+<div class="page-layout">
+
+  @if (loading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="50"></mat-spinner>
     </div>
-    } @else {
+  } @else {
     @let proj = project();
     @if (proj) {
-    <app-project-header [projectInput]="proj"></app-project-header>
-<div class="materials-section">
+      
+      <!-- HEADER -->
+      <app-project-header [projectInput]="proj"></app-project-header>
 
-  <div class="materials-number">
-    <span>Supplies</span>
-  </div>
+      <div class="content-grid">
+        
+        <!-- SIDEBAR: Materials -->
+        <aside class="materials-card">
+          <div class="card-header">
+            <mat-icon>inventory_2</mat-icon> Supplies List
+          </div>
+          
+          <div class="card-body">
+            @if (getMaterialsLines().length > 0) {
+              <ul class="checklist">
+                @for (line of getMaterialsLines(); track line) {
+                  <li>
+                    <span class="check-dot"></span> {{ line }}
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="empty-msg">No supplies specified.</p>
+            }
+          </div>
+        </aside>
 
-  @if (getMaterialsLines().length > 0) {
-    <ul class="materials-list">
-      @for (line of getMaterialsLines(); track line) {
-        <li>{{ line }}</li>
-      }
-      </ul>
-  } @else {
-    <p class="no-materials">לא צוינו חומרים לפרויקט זה</p>
-  }
-</div>
-   @defer (on viewport) {
-    <app-project-steps [steps]="proj.steps || []"></app-project-steps>
-    } @placeholder {
-    <div class="placeholder">Loading Steps...</div>
-    }
+        <!-- MAIN: Steps & Comments -->
+        <main class="main-column">
+          
+          <!-- Steps -->
+          <app-project-steps [steps]="proj.steps || []"></app-project-steps>
 
-    @defer (on viewport) {
-    <app-project-comments [projectId]="proj.id"></app-project-comments>
-    } @placeholder {
-    <div class="placeholder">Loading comments...</div>
-    }
+          <!-- Comments (Hidden on print) -->
+          <div class="no-print">
+            <app-project-comments [projectId]="proj.id"></app-project-comments>
+          </div>
+          
+        </main>
+      </div>
+
     } @else {
-    <p>Project not found</p>
+      <div class="error-msg">Project not found</div>
     }
-    }
+  }
 </div>

@@ -1,76 +1,161 @@
-.profile-header {
+/* Container Card */
+.header-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 24px;
+}
+
+/* 1. Cover Banner */
+.cover-banner {
+  height: 160px;
+  /* The Creata Brand Gradient */
+  background: linear-gradient(135deg, #02add7 0%, #00b38b 100%);
+  width: 100%;
+}
+
+/* 2. Content Styling */
+.header-content {
+  padding: 0 40px 30px 40px;
+  position: relative;
+}
+
+/* Top Row (Avatar overlapping) */
+.top-row {
   display: flex;
-  align-items: center;
-  gap: 2rem;
-  padding: 3rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 0 0 20px 20px;
-  margin-bottom: 2rem;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: -60px; /* Pulls content up to overlap banner */
+  margin-bottom: 16px;
 }
 
-.avatar-section {
-  flex-shrink: 0;
+/* Avatar Circle */
+.avatar-wrapper {
+  position: relative;
 }
 
-.big-avatar {
-  width: 150px;
-  height: 150px;
+.profile-img, .placeholder {
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
+  border: 5px solid white; /* Thick white border */
   object-fit: cover;
-  border: 6px solid rgba(255,255,255,0.3);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
-.placeholder {
+  background-color: #ddd;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 4rem;
-  font-weight: bold;
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Edit Icon on Avatar */
+.edit-avatar-btn {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.edit-avatar-btn:hover {
+  background: #02add7;
   color: white;
 }
 
-.user-info h1 {
-  font-size: 2.8rem;
-  margin: 0 0 0.5rem 0;
-  font-weight: 700;
+/* User Text Info */
+.user-details {
+  margin-top: 10px;
 }
 
-.joined {
-  opacity: 0.9;
-  margin-bottom: 1.5rem;
-  font-size: 1.1rem;
-}
-
-.stats {
-  display: flex;
-  gap: 3rem;
-  margin: 1.5rem 0;
-}
-
-.stat strong {
-  display: block;
+.username {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 800;
+  color: #333;
+  margin: 0;
+  line-height: 1.2;
 }
 
-.stat span {
+.join-date {
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.9rem;
-  opacity: 0.8;
+  margin-top: 4px;
+  margin-bottom: 24px;
 }
 
-.edit-btn {
-  margin-top: 1.5rem;
-  padding: 0.7rem 2rem !important;
-  border-radius: 30px !important;
-  border: 2px solid white !important;
-  background: transparent !important;
-  color: white !important;
+.join-date mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* Stats Row */
+.stats-grid {
+  display: inline-flex;
+  align-items: center;
+  background: #f8fcfd; /* Very light blue bg */
+  padding: 12px 24px;
+  border-radius: 12px;
+  gap: 24px;
+  border: 1px solid rgba(2, 173, 215, 0.1);
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-box .value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #02add7; /* Brand Blue */
+}
+
+.stat-box .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #666;
   font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-.edit-btn:hover {
-  background: white !important;
-  color: #667eea !important;
+.divider {
+  width: 1px;
+  height: 30px;
+  background: #e0e0e0;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .top-row {
+    flex-direction: column;
+    align-items: center;
+    margin-top: -60px;
+  }
+  .actions {
+    margin-top: 16px;
+  }
+  .user-details {
+    text-align: center;
+  }
+  .join-date {
+    justify-content: center;
+  }
 }

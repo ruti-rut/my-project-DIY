@@ -9,7 +9,7 @@ import { ProjectCardComponent } from '../../project-card/project-card/project-ca
 
 @Component({
   selector: 'app-favorites-tab',
-  imports: [CommonModule, ProjectCardComponent, MatProgressSpinner],
+  imports: [CommonModule, ProjectCardComponent, MatProgressSpinner, MatIcon],
   templateUrl: './favorites-tab.component.html',
   styleUrl: './favorites-tab.component.css'
 })

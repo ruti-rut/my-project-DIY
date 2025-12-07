@@ -5,10 +5,12 @@ import { AvatarHelperService } from '../../../../services/avatar-helper.service'
 import { CommentService } from '../../../../services/comment.service';
 import { CommentFormComponent } from '../../../../shared/components/comment-form/comment-form/comment-form.component';
 import { Oauth2CallbackComponent } from '../../../../oauth2-callback/oauth2-callback.component';
+import { MatIcon } from "@angular/material/icon";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-project-comments',
-  imports: [CommonModule, CommentFormComponent,Oauth2CallbackComponent],
+  imports: [CommonModule, CommentFormComponent, Oauth2CallbackComponent, MatIcon, MatProgressSpinner],
   templateUrl: './project-comments.component.html',
   styleUrl: './project-comments.component.css'
 })

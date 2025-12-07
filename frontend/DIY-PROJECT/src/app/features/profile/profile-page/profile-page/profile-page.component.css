@@ -1,37 +1,57 @@
+/* Page Layout */
 .profile-container {
-  max-width: 1280px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem 1rem;
-  min-height: 80vh;
+  padding: 24px;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
 }
 
-.loading-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60vh;
-}
-
-.profile-tabs {
-  margin-top: 3rem;
-}
-
-.tab-count {
-  margin-left: 8px;
-  padding: 4px 10px;
-  background: #e3f2fd;
-  color: #1976d2;
+/* The Card holding the tabs */
+.content-tabs-card {
+  background: white;
   border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  min-height: 400px; /* Ensure it has some height even if empty */
 }
 
-:host ::ng-deep .mat-mdc-tab-labels {
-  justify-content: center;
-  gap: 4rem;
+.tab-body {
+  padding: 30px;
 }
 
-:host ::ng-deep .mat-mdc-tab .mdc-tab__text-label {
-  font-size: 1.2rem;
+/* --- Custom Tab Styling (Deep Selectors) --- */
+/* This makes the tabs look like "Creata" style (Green Active) */
+
+::ng-deep .creata-tabs .mat-mdc-tab-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 0 20px;
+  background: white;
+}
+
+/* Text style for inactive tabs */
+::ng-deep .creata-tabs .mdc-tab__text-label {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 1rem;
   font-weight: 500;
+  color: #888;
+  letter-spacing: 0.5px;
+}
+
+/* Text style for ACTIVE tab */
+::ng-deep .creata-tabs .mdc-tab--active .mdc-tab__text-label {
+  color: #00b38b !important; /* Brand Green */
+  font-weight: 700 !important;
+}
+
+/* The underline indicator */
+::ng-deep .creata-tabs .mat-mdc-tab-indicator .mdc-tab-indicator__content {
+  border-color: #00b38b !important;
+  border-top-width: 3px !important;
+  border-radius: 3px 3px 0 0;
+}
+
+/* Ripple color fix */
+::ng-deep .creata-tabs .mat-mdc-tab-ripple .mat-ripple-element {
+  background-color: rgba(0, 179, 139, 0.1);
 }

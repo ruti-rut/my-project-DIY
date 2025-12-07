@@ -1,59 +1,71 @@
-<div class="challenges-page">
-  <!-- כותרת + כפתור יצירה -->
-  <div class="header-section">
-    <div class="title-section">
-      <h1 class="page-title">Challenges DIY</h1>
-      <p class="page-subtitle">Join the challenge, create, and win prizes!</p>
+<div class="page-container">
+  
+  <!-- Header Section -->
+  <div class="arena-header">
+    <div class="text-content">
+      <h1 class="arena-title">The Arena</h1>
+      <p class="arena-subtitle">Compete with the community, showcase your skills, and win.</p>
     </div>
 
-    <button mat-fab color="accent" class="create-fab" routerLink="/add-challenge" title="צור אתגר חדש">
+    <!-- Modern "Pill" button instead of FAB for better visibility -->
+    <a routerLink="/add-challenge" class="btn-host-challenge">
       <mat-icon>add</mat-icon>
-    </button>
+      Host Challenge
+    </a>
   </div>
 
-  <!-- Loading -->
+  <!-- Loading State -->
   @if (loading) {
-    <div class="loading">
-      <mat-spinner diameter="50"></mat-spinner>
-      <p>Loading challenges...</p>
+    <div class="loading-state">
+      <mat-spinner diameter="40" class="custom-spinner"></mat-spinner>
+      <p>Loading active battles...</p>
     </div>
   }
 
-  <!-- רשימת אתגרים -->
+  <!-- Challenges Grid -->
   @if (!loading) {
     <div class="challenges-grid">
       @for (c of challenges; track c.id) {
-        <mat-card class="challenge-card">
+        <div class="arena-card">
+          
+          <!-- Image Section with Overlay -->
+          <div class="card-banner">
+            <img [src]="getImageUrl(c.picture)" [alt]="c.theme" class="bg-image">
+            <div class="status-badge">
+              <span class="pulse-dot"></span> Live
+            </div>
+            <div class="overlay-gradient"></div>
+          </div>
 
-          <!-- תמונת אתגר – בדיוק כמו שהיה אצלך! -->
-          <img 
-            [src]="getImageUrl(c.picture)" 
-            [alt]="c.theme"
-            class="challenge-image">
+          <!-- Content Section -->
+          <div class="card-body">
+            <h3 class="card-title">{{ c.theme }}</h3>
+            
+            <div class="meta-row">
+              <div class="meta-item">
+                <mat-icon class="icon-clock">schedule</mat-icon>
+                <span class="label">Ends:</span>
+                <span class="value">{{ formatDate(c.endDate) }}</span>
+              </div>
+            </div>
 
-          <!-- תוכן -->
-          <mat-card-content class="card-content">
-            <h3 class="challenge-title">{{ c.theme }}</h3>
-            <p class="challenge-date">
-              <mat-icon>event</mat-icon>
-             Ending at: {{ formatDate(c.endDate) }}
-            </p>
-          </mat-card-content>
-
-          <!-- כפתור פרטים -->
-          <mat-card-actions>
-            <button mat-raised-button color="primary" routerLink="/challenge/{{c.id}}">
-              <mat-icon>arrow_forward</mat-icon>
-              Details
-            </button>
-          </mat-card-actions>
-        </mat-card>
+            <div class="card-actions">
+              <button mat-flat-button class="btn-enter" routerLink="/challenge/{{c.id}}">
+                Enter Arena <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+          
+        </div>
       } @empty {
-        <!-- אין אתגרים -->
-        <div class="empty">
-          <mat-icon>flag</mat-icon>
-      <h3>No active challenges right now</h3>
-<p>Check back soon!</p>
+        <!-- Empty State -->
+        <div class="empty-state">
+          <div class="empty-icon-bg">
+            <mat-icon>emoji_events</mat-icon>
+          </div>
+          <h3>The Arena is Quiet</h3>
+          <p>No active challenges right now. Why not start one?</p>
+          <button mat-stroked-button color="primary" routerLink="/add-challenge">Create Challenge</button>
         </div>
       }
     </div>

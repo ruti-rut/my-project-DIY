@@ -1,82 +1,102 @@
-/* drafts-tab.component.css – עיצוב זהה ב-100% ל-my-projects-tab */
-
+/* --- Grid Layout --- */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
-  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 10px;
 }
 
-.project-item {
+.project-wrapper {
   position: relative;
   border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
+  isolation: isolate;
 }
 
-.project-item:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
-}
-
-/* תגית טיוטה – כתום בולט */
-.draft-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: #ff9800;
-  color: white;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: bold;
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* כפתורי עריכה ומחיקה – מופיעים ב-hover */
-.actions-overlay {
+/* --- Badge --- */
+.status-badge.draft {
   position: absolute;
   top: 12px;
   right: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  z-index: 5;
+  background: #ff9800; /* Orange */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* --- Overlay --- */
+.actions-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  border-radius: 16px;
+}
+
+.project-wrapper:hover .actions-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* --- Buttons --- */
+.fab-action.edit {
+  background: white;
+  color: #02add7;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.fab-action.delete {
+  background: white;
+  color: #f44336;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* --- Empty State --- */
+.loading-state, .empty-state {
+  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 8px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  opacity: 0;
-  transition: opacity 0.3s;
-  z-index: 20;
-}
-
-.project-item:hover .actions-overlay {
-  opacity: 1;
-}
-
-/* מצב ריק */
-.empty-state {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 4rem 2rem;
-  color: #666;
-}
-
-.empty-state .big {
-  font-size: 5rem;
-  width: 5rem;
-  height: 5rem;
-  opacity: 0.3;
-  margin-bottom: 1rem;
-}
-
-/* ספינר במרכז */
-.loading {
-  display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 300px;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.icon-circle {
+  width: 80px;
+  height: 80px;
+  background: #fff3e0; /* Light orange for drafts */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.icon-circle mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: #ff9800;
+}
+
+.btn-create {
+  margin-top: 16px;
+  background: linear-gradient(135deg, #02add7 0%, #00b38b 100%);
+  color: white;
+  border-radius: 50px;
+  padding: 0 32px;
 }

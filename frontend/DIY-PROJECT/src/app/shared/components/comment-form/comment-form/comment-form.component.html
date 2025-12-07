@@ -1,13 +1,39 @@
-<div class="comment-form">
+<div class="comment-form-card">
+  
+  <!-- 1. User Header -->
   <div class="user-preview">
-    @if (userAvatarUrl()) { <img [src]="userAvatarUrl()!" class="avatar">
-    } @else {
-    <div class="avatar-placeholder" [style.background-color]="avatarColor()">
-      {{ avatarInitial() }}
+    <div class="avatar-wrapper">
+      @if (userAvatarUrl()) {
+        <img [src]="userAvatarUrl()!" class="avatar-img" alt="User">
+      } @else {
+        <div class="avatar-placeholder" [style.background-color]="avatarColor()">
+          {{ avatarInitial() }}
+        </div>
+      }
     </div>
-    }
-    <span>{{ currentUser()?.userName }}</span>
+    <span class="username">{{ currentUser()?.userName || 'Guest' }}</span>
   </div>
-  <textarea [(ngModel)]="newComment" placeholder="Post a reply..." rows="3"></textarea>
-  <button (click)="submit()" [disabled]="!newComment.trim()">Comment</button>
+
+  <!-- 2. Text Area -->
+  <div class="input-wrapper">
+    <textarea 
+      [(ngModel)]="newComment" 
+      placeholder="What do you think? Share your thoughts..." 
+      rows="3"
+      class="comment-input">
+    </textarea>
+    <div class="focus-border"></div>
+  </div>
+
+  <!-- 3. Actions Footer -->
+  <div class="form-footer">
+    <button 
+      class="btn-submit" 
+      (click)="submit()" 
+      [disabled]="!newComment.trim()">
+      <mat-icon class="icon-send">send</mat-icon>
+      Post Comment
+    </button>
+  </div>
+
 </div>

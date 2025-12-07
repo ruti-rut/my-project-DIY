@@ -1,86 +1,80 @@
+/* Container */
 .bell-button {
   position: relative;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  transition: background-color 0.2s ease;
+  overflow: visible !important; /* Allow glow to spill out */
+  margin-right: 8px;
 }
 
-.bell-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+.icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* הפעמון עצמו */
+/* Icon Styles */
 .bell-icon {
-  font-size: 28px !important;
-  width: 28px !important;
-  height: 28px !important;
-  color: #e0e0e0;
-  transition: color 0.3s ease;
-  transform-origin: top center;
+  color: #fff; /* White in header */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* כשהמשתמש רשום – צבע כתום/זהב כמו באפליקציות אמיתיות */
+/* Subscribed State (Gradient Text) */
 .bell-icon.subscribed {
-  color: #ff6b35;
-  filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.5));
+  color: #fff;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
+  animation: gentle-swing 3s infinite ease-in-out;
 }
 
-/* אנימציית צלצול – הכי אמיתית שיש */
+/* Ringing Animation (When clicked) */
 .bell-icon.ringing {
-  animation: bell-ring 0.9s ease-in-out;
+  animation: bell-shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
 }
 
-/* אנימציית הגל שמתפשט */
-.ring-wave {
-  position: absolute;
-  inset: 4px;
-  border: 3px solid #ff6b35;
-  border-radius: 50%;
-  pointer-events: none;
-  animation: wave-expand 1s ease-out forwards;
-}
-
-/* נקודה אדומה מהבהבת */
+/* The Active Dot */
 .active-dot {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 11px;
-  height: 11px;
-  background: #f44336;
-  border: 2.5px solid white;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: #ff4081; /* Pink alert color */
   border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-  animation: pulse 2s infinite ease-in-out;
+  border: 2px solid white; /* Cutout effect */
 }
 
-/* === כל האנימציות === */
-@keyframes bell-ring {
-  0%   { transform: rotate(0deg); }
-  10%  { transform: rotate(16deg); }
-  20%  { transform: rotate(-14deg); }
-  30%  { transform: rotate(12deg); }
-  40%  { transform: rotate(-10deg); }
-  50%  { transform: rotate(8deg); }
-  60%  { transform: rotate(-6deg); }
-  70%  { transform: rotate(4deg); }
-  80%  { transform: rotate(-2deg); }
-  100% { transform: rotate(0deg); }
+/* The Pulse Ring (Glow) */
+.pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  animation: ripple-out 2s infinite;
+  pointer-events: none;
 }
 
-@keyframes wave-expand {
-  from {
-    transform: scale(0.5);
-    opacity: 0.8;
-  }
-  to {
-    transform: scale(2);
-    opacity: 0;
-  }
+/* Animations */
+@keyframes bell-shake {
+  0% { transform: rotate(0); }
+  15% { transform: rotate(15deg); }
+  30% { transform: rotate(-15deg); }
+  45% { transform: rotate(10deg); }
+  60% { transform: rotate(-10deg); }
+  75% { transform: rotate(5deg); }
+  85% { transform: rotate(-5deg); }
+  100% { transform: rotate(0); }
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.2); }
+@keyframes ripple-out {
+  0% { width: 0; height: 0; opacity: 0.8; }
+  100% { width: 40px; height: 40px; opacity: 0; }
+}
+
+@keyframes gentle-swing {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
 }

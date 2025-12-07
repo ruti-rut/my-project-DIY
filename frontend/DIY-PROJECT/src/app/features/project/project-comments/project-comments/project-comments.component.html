@@ -1,32 +1,52 @@
-<div class="comments-section">
-  <h2>Comments</h2>
+<div class="comments-wrapper">
+  
+  <h2 class="comments-title">
+    Discussion <span class="count">({{ comments().length }})</span>
+  </h2>
 
-  <app-comment-form [projectId]="projectId" (commentAdded)="onCommentAdded()"></app-comment-form>
+  <!-- Form -->
+  <div class="form-container">
+    <app-comment-form [projectId]="projectId" (commentAdded)="onCommentAdded()"></app-comment-form>
+  </div>
 
-  @if (loading()) {
-    <p>Loading comments...</p>
-  } @else if (comments().length > 0) {
-    @for (comment of comments(); track comment.id) {
-    <div class="comment">
-      <div class="user">
-        @if (comment.user.profilePicture) {
-            <img [src]="'data:image/jpeg;base64,' + comment.user.profilePicture" class="avatar">
-        } 
-        @else if (comment.user.profilePicturePath) { 
-            <img [src]="'http://localhost:8080' + comment.user.profilePicturePath" class="avatar">
-        } 
-        @else {
-            <div class="avatar-placeholder" [style.background-color]="getColor(comment.user.userName)">
-              {{ getInitial(comment.user.userName) }}
+  <!-- List -->
+  <div class="comments-list">
+    @if (loading()) {
+      <p class="loading-text">Loading comments...</p>
+    } @else if (comments().length > 0) {
+      
+      @for (comment of comments(); track comment.id) {
+        <div class="comment-item">
+          
+          <!-- Avatar -->
+          <div class="comment-avatar">
+            @if (comment.user.profilePicture) {
+              <img [src]="'data:image/jpeg;base64,' + comment.user.profilePicture" class="c-avatar">
+            } @else if (comment.user.profilePicturePath) {
+              <img [src]="'http://localhost:8080' + comment.user.profilePicturePath" class="c-avatar">
+            } @else {
+              <div class="c-avatar placeholder" [style.background-color]="getColor(comment.user.userName)">
+                {{ getInitial(comment.user.userName) }}
+              </div>
+            }
+          </div>
+
+          <!-- Content -->
+          <div class="comment-content">
+            <div class="c-header">
+              <strong class="c-name">{{ comment.user.userName }}</strong>
+              <span class="c-date">{{ comment.createdAt }}</span>
             </div>
-        }
-        <strong>{{ comment.user.userName }}</strong>
+            <p class="c-text">{{ comment.content }}</p>
+          </div>
+
+        </div>
+      }
+
+    } @else {
+      <div class="empty-state">
+        <p>No comments yet. Be the first to say something!</p>
       </div>
-      <p>{{ comment.content }}</p>
-      <small>{{ comment.createdAt }}</small>
-    </div>
-}
-  } @else {
-    <p class="no-comments">"No comments yet – be the first to respond!"</p>
-  }
+    }
+  </div>
 </div>

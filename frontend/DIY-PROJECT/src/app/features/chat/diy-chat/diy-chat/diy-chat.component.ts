@@ -5,10 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
 import { ChatService } from '../../../../services/chat.service';
 import { MessageBubbleComponent } from '../../../../shared/components/message-bubble/message-bubble/message-bubble.component';
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: 'app-diy-chat',
-  imports: [FormsModule, MessageBubbleComponent],
+  imports: [FormsModule, MessageBubbleComponent, MatIcon],
   templateUrl: './diy-chat.component.html',
   styleUrl: './diy-chat.component.css'
 })
