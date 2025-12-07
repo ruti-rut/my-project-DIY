@@ -1,47 +1,66 @@
 <div class="auth-wrapper">
-  <mat-card class="auth-card">
-    <mat-card-title>התחברות</mat-card-title>
+  <div class="auth-card">
+    
+    <!-- Branding Header -->
+    <div class="auth-header">
+      <div class="brand-icon">
+        <mat-icon>auto_awesome</mat-icon>
+      </div>
+      <h1 class="auth-title">Welcome Back</h1>
+      <p class="auth-subtitle">Continue your creative journey</p>
+    </div>
 
     @if (isLoading()) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar mode="indeterminate" class="custom-loader"></mat-progress-bar>
     }
 
-    <mat-card-content>
+    <div class="card-body">
       <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
 
         <mat-form-field appearance="outline">
           <mat-label>Email or Username</mat-label>
           <input matInput formControlName="identifier" type="text" required>
-          <mat-error *ngIf="loginForm.get('identifier')?.hasError('required')">
-            This field is required </mat-error>
-          <mat-error
-            *ngIf="loginForm.get('identifier')?.hasError('email') && !loginForm.get('identifier')?.hasError('required')">
-            Please enter a valid email address </mat-error>
-        </mat-form-field> <mat-form-field appearance="outline">
+          <mat-icon matSuffix>person_outline</mat-icon> <!-- Icon added -->
+          @if (loginForm.get('identifier')?.hasError('required')) {
+            <mat-error>Field required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
           <mat-label>Password</mat-label>
           <input matInput formControlName="password" type="password" required>
+          <mat-icon matSuffix>lock_outline</mat-icon> <!-- Icon added -->
         </mat-form-field>
 
         @if (errorMessage()) {
-        <p class="error-message">{{ errorMessage() }}</p>
+          <div class="error-box">
+            <mat-icon style="font-size: 16px; height: 16px; width: 16px; vertical-align: middle;">error</mat-icon> 
+            {{ errorMessage() }}
+          </div>
         }
 
-        <button mat-flat-button color="primary" type="submit" [disabled]="loginForm.invalid || isLoading()">
-          Sign in
+        <button mat-flat-button class="btn-primary" type="submit" [disabled]="loginForm.invalid || isLoading()">
+          Sign In
         </button>
 
       </form>
 
-      <mat-divider class="divider"></mat-divider>
+      <!-- Stylish Divider -->
+      <div class="divider-container">
+        <div class="divider-line"></div>
+        <span class="divider-text">OR</span>
+        <div class="divider-line"></div>
+      </div>
 
       <button mat-stroked-button class="google-btn" (click)="authService.signInWithGoogle()">
         <mat-icon>public</mat-icon>
-Sign in with google      </button>
+        Continue with Google
+      </button>
 
-    </mat-card-content>
+    </div>
 
-    <mat-card-footer class="auth-footer">
-      <p>Not registered yet? <a routerLink="/sign-up">Create account</a></p>
-    </mat-card-footer>
-  </mat-card>
+    <div class="auth-footer">
+      <p>New to Creata? <a routerLink="/sign-up" class="auth-link">Create Account</a></p>
+    </div>
+  </div>
 </div>

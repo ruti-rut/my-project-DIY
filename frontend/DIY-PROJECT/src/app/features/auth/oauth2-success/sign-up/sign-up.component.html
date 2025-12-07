@@ -1,51 +1,61 @@
 <div class="auth-wrapper">
-  <mat-card class="auth-card">
-    <mat-card-title>Sign up</mat-card-title>
+  <div class="auth-card">
+    
+    <!-- Branding Header -->
+    <div class="auth-header">
+      <div class="brand-icon">
+        <mat-icon>rocket_launch</mat-icon>
+      </div>
+      <h1 class="auth-title">Join Creata</h1>
+      <p class="auth-subtitle">Start building your projects today</p>
+    </div>
 
     @if (isLoading()) {
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     }
 
-    <mat-card-content>
+    <div class="card-body">
       <form [formGroup]="signupForm" (ngSubmit)="onSignupSubmit()">
         
         <mat-form-field appearance="outline">
-          <mat-label>Username</mat-label>
+          <mat-label>Choose Username</mat-label>
           <input matInput formControlName="userName" required>
+          <mat-icon matSuffix>badge</mat-icon>
           
           @if (signupForm.get('userName')?.hasError('minlength')) {
-            <mat-error>The username must be at least 3 characters long</mat-error>
+            <mat-error>Minimum 3 characters</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
+          <mat-label>Email Address</mat-label>
           <input matInput formControlName="mail" type="email" required>
+          <mat-icon matSuffix>mail_outline</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Password</mat-label>
+          <mat-label>Create Password</mat-label>
           <input matInput formControlName="password" type="password" required>
+          <mat-icon matSuffix>lock</mat-icon>
           
           @if (signupForm.get('password')?.hasError('minlength')) {
-            <mat-error>The password must be at least 6 characters long</mat-error>
+            <mat-error>Minimum 6 characters</mat-error>
           }
         </mat-form-field>
 
         @if (errorMessage()) {
-          <p class="error-message">{{ errorMessage() }}</p>
+          <div class="error-box">{{ errorMessage() }}</div>
         }
 
-        <button mat-flat-button color="accent" type="submit" [disabled]="signupForm.invalid || isLoading()">
-          Sign up
+        <button mat-flat-button class="btn-primary" type="submit" [disabled]="signupForm.invalid || isLoading()">
+          Create Account
         </button>
         
       </form>
+    </div>
 
-    </mat-card-content>
-
-    <mat-card-footer class="auth-footer">
-      <p>Already registered? <a routerLink="/sign-in">Sign In Now</a></p>
-    </mat-card-footer>
-  </mat-card>
+    <div class="auth-footer">
+      <p>Already a member? <a routerLink="/sign-in" class="auth-link">Log In</a></p>
+    </div>
+  </div>
 </div>

@@ -1,63 +1,103 @@
-<div class="challenge-details-page">
+<div class="page-container">
+
   @if (loading()) {
-  <div class="loading">
-    <mat-spinner diameter="60"></mat-spinner>
-  </div>
+    <div class="loader-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading the arena...</p>
+    </div>
   } @else if (challenge()) {
-  <div class="hero">
-    <img [src]="getImageUrl()" alt="{{ challenge()!.theme }}" class="hero-image">
-
-    <div class="hero-overlay">
-      <h1 class="title">{{ challenge()!.theme }}</h1>
-
-      <div class="status-chip">
-        <mat-chip
-          [color]="challenge()!.status === 'OPEN' ? 'primary' : challenge()!.status === 'UPCOMING' ? 'accent' : 'warn'"
-          selected>
+    
+    <!-- 1. Cinema Hero Banner -->
+    <div class="hero-section">
+      <img [src]="getImageUrl()" [alt]="challenge()!.theme" class="hero-bg-img">
+      <div class="hero-overlay"></div>
+      
+      <div class="hero-content">
+        <!-- Status Badge -->
+        <div class="status-badge" 
+             [class.open]="challenge()!.status === 'OPEN'"
+             [class.closed]="challenge()!.status === 'CLOSED'"
+             [class.upcoming]="challenge()!.status === 'UPCOMING'">
           @switch (challenge()!.status) {
-          @case ('OPEN') { Challenge is open for Submission }
-          @case ('UPCOMING') { Upcoming }
-          @case ('CLOSED') { Closed }
+            @case ('OPEN') { <mat-icon>lock_open</mat-icon> Open for Submissions }
+            @case ('UPCOMING') { <mat-icon>schedule</mat-icon> Starting Soon }
+            @case ('CLOSED') { <mat-icon>lock</mat-icon> Challenge Closed }
           }
-        </mat-chip>
+        </div>
+        
+        <h1 class="hero-title">{{ challenge()!.theme }}</h1>
       </div>
     </div>
-  </div>
 
-  <div class="content-section">
-    <div class="dates">
-      <p><mat-icon>event</mat-icon> Begins: {{ formatDate(challenge()!.startDate) }}</p>
-      <p><mat-icon>event_busy</mat-icon> Ends: {{ formatDate(challenge()!.endDate) }}</p>
+    <!-- 2. Main Content Container -->
+    <div class="details-container">
+      
+      <!-- Overlapping Info Card (Dates & Action) -->
+      <div class="info-card">
+        <div class="dates-row">
+          <div class="date-item">
+            <div class="date-label">Starts</div>
+            <div class="date-value">{{ formatDate(challenge()!.startDate) }}</div>
+          </div>
+          <div class="date-divider"></div>
+          <div class="date-item">
+            <div class="date-label">Deadline</div>
+            <div class="date-value highlight">{{ formatDate(challenge()!.endDate) }}</div>
+          </div>
+        </div>
+
+        @if (canSubmit()) {
+          <button mat-flat-button class="btn-submit-project" (click)="openSubmitDialog()">
+            <mat-icon>add_circle</mat-icon>
+            Submit Entry
+          </button>
+        } @else {
+           <!-- Optional: Message if they can't submit -->
+           <div class="cant-submit-msg">
+             {{ challenge()!.status === 'CLOSED' ? 'Submissions are closed' : 'Login to participate' }}
+           </div>
+        }
+      </div>
+
+      <!-- Challenge Description -->
+      <div class="description-section">
+        <h2 class="section-heading">The Brief</h2>
+        <div class="rich-text" [innerHTML]="challenge()!.content"></div>
+      </div>
+
+      <div class="divider-line"></div>
+
+      <!-- 3. Submissions Grid -->
+      <div class="submissions-section">
+        <div class="submissions-header">
+          <h2 class="section-heading">
+            Submissions <span class="count">({{ projects().length }})</span>
+          </h2>
+        </div>
+
+        @if (projectsLoading()) {
+          <div class="grid-loader">
+            <mat-spinner diameter="40"></mat-spinner>
+          </div>
+        } @else if (projects().length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">
+              <mat-icon>emoji_events</mat-icon>
+            </div>
+            <h3>Be the first challenger!</h3>
+            <p>No projects have been submitted to the arena yet.</p>
+            @if (canSubmit()) {
+              <button mat-stroked-button color="primary" (click)="openSubmitDialog()">Submit Now</button>
+            }
+          </div>
+        } @else {
+          <div class="projects-grid">
+            @for (project of projects(); track project.id) {
+              <app-project-card [project]="project" class="grid-item"></app-project-card>
+            }
+          </div>
+        }
+      </div>
     </div>
-
-    @if (canSubmit()) {
-    <button mat-fab extended color="primary" class="submit-btn" (click)="openSubmitDialog()">
-      <mat-icon>add</mat-icon>
-      Upload a project for a challenge
-    </button>
-    }
-
-    <div class="description" [innerHTML]="challenge()!.content"></div>
-
-    <h2 class="projects-title">
-      Submitted Projects (**{{ projects().length }}**)
-    </h2>
-
-    @if (projectsLoading()) {
-    <div class="loading">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
-    }
-    @else if (projects().length === 0) {
-    <p class="empty">No projects have been submitted yet... Be the first!</p>
-    } @else {
-    <div class="projects-grid">
-      @for (project of projects(); track project.id) {
-      <app-project-card [project]="project" />
-      }
-    </div>
-    }
-
-  </div>
   }
 </div>

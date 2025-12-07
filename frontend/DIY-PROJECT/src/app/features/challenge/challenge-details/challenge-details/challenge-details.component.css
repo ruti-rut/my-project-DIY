@@ -1,92 +1,250 @@
-.challenge-details-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px;
+/* --- Global Layout --- */
+.page-container {
+  min-height: 100vh;
+  background-color: #f9f9f9;
+  font-family: 'Poppins', sans-serif;
+  padding-bottom: 80px;
 }
 
-.hero {
+/* Loader */
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: #02add7;
+}
+
+/* --- 1. Hero Section --- */
+.hero-section {
   position: relative;
-  border-radius: 16px;
+  height: 350px;
+  width: 100%;
   overflow: hidden;
-  margin-bottom: 32px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.hero-image {
+.hero-bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 400px;
+  height: 100%;
   object-fit: cover;
 }
 
 .hero-overlay {
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
-  right: 0;
-  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
   color: white;
-  padding: 40px 24px 24px;
+  margin: 16px 0 0 0;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  letter-spacing: -1px;
 }
 
-.title {
-  font-size: 2.8rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.status-chip {
-  margin-top: 12px;
-}
-
-.content-section {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-}
-
-.dates p {
-  font-size: 1.1rem;
-  margin: 8px 0;
-  display: flex;
+/* Status Badge */
+.status-badge {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: white;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
 }
 
-.submit-btn {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 100;
+.status-badge.open { background: #00b38b; } /* Green */
+.status-badge.upcoming { background: #02add7; } /* Blue */
+.status-badge.closed { background: #f44336; } /* Red */
+
+.status-badge mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
-.description {
-  margin: 32px 0;
-  line-height: 1.8;
+/* --- 2. Details Container & Info Card --- */
+.details-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Floating Info Card (Overlap Effect) */
+.info-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px 32px;
+  margin-top: -50px; /* Pulls card up over the image */
+  position: relative;
+  z-index: 5;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.dates-row {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.date-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #999;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.date-value {
   font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
 }
 
-.projects-title {
+.date-value.highlight {
+  color: #02add7;
+}
+
+.date-divider {
+  width: 1px;
+  height: 40px;
+  background: #eee;
+}
+
+/* CTA Button */
+.btn-submit-project {
+  background: linear-gradient(135deg, #02add7 0%, #00b38b 100%);
+  color: white;
+  height: 50px;
+  padding: 0 32px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(2, 173, 215, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-submit-project:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(2, 173, 215, 0.4);
+}
+
+.cant-submit-msg {
+  font-weight: 600;
+  color: #999;
+  font-style: italic;
+}
+
+/* --- Description --- */
+.description-section {
+  padding: 50px 0;
+  max-width: 800px;
+}
+
+.section-heading {
   font-size: 1.8rem;
-  margin: 40px 0 20px;
+  font-weight: 800;
   color: #333;
+  margin-bottom: 20px;
+}
+
+.rich-text {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #555;
+}
+
+/* HTML inside description styling */
+.rich-text ::ng-deep p { margin-bottom: 1em; }
+.rich-text ::ng-deep strong { color: #02add7; }
+
+.divider-line {
+  height: 1px;
+  background: #eee;
+  margin-bottom: 50px;
+}
+
+/* --- 3. Submissions Grid --- */
+.submissions-header {
+  margin-bottom: 30px;
+}
+
+.count {
+  color: #00b38b;
+  font-weight: 500;
 }
 
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
+  gap: 30px;
 }
 
-.empty {
+/* Empty State */
+.empty-state {
   text-align: center;
-  color: #666;
-  font-size: 1.2rem;
-  padding: 40px;
+  padding: 60px 0;
+  background: white;
+  border-radius: 16px;
+  border: 2px dashed #eee;
 }
 
-.loading {
-  text-align: center;
-  padding: 60px;
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  background: #f0f8ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.empty-icon mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: #02add7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-title { font-size: 2rem; }
+  .info-card { flex-direction: column; align-items: stretch; text-align: center; margin-top: -30px;}
+  .dates-row { justify-content: space-around; margin-bottom: 20px; }
+  .date-divider { display: none; }
 }
