@@ -1,26 +1,82 @@
-<mat-toolbar color="primary" class="header-toolbar">
+<div class="footer-wrapper">
+  
+  <!-- Decorative Wave Top -->
+  <div class="wave-container">
+    <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+    </svg>
+  </div>
 
-  <a routerLink="/" class="logo" routerLinkActive="active">
-    <mat-icon>build</mat-icon>
-    <span class="logo-text">InstructaBuild</span>
-  </a>
-    <span class="spacer"></span>
+  <footer class="footer-content">
+    <div class="footer-grid">
+      
+      <!-- Column 1: Brand & Newsletter -->
+      <div class="col-brand">
+        <a routerLink="/" class="footer-logo">
+          <mat-icon>auto_awesome_mosaic</mat-icon>
+          <span>creata</span>
+        </a>
+        <p class="brand-desc">
+          The ultimate platform for DIY enthusiasts. Build, share, and challenge yourself to create something amazing today.
+        </p>
 
-  <a mat-button routerLinkActive="active"> About Us</a>
+        <div class="newsletter-box">
+          <label>Join our newsletter</label>
+          <div class="input-group">
+            <input type="email" placeholder="Enter your email" #emailInput>
+            <button (click)="subscribe(emailInput.value)">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
 
-  <span class="spacer"></span>
+      <!-- Column 2: Discover -->
+      <div class="col-links">
+        <h3>Discover</h3>
+        <ul>
+          <li><a routerLink="/projects-list">All Projects</a></li>
+          <li><a routerLink="/challenges">Live Challenges</a></li>
+          <li><a routerLink="/create-project">Start Creating</a></li>
+          <li><a routerLink="/diy-question">Spark AI Assistant</a></li>
+        </ul>
+      </div>
 
-  <a mat-button routerLink="/projects-list" routerLinkActive="active">
-    Projects
-  </a>
+      <!-- Column 3: Community & Support -->
+      <div class="col-links">
+        <h3>Community</h3>
+        <ul>
+          <li><a routerLink="/profile">My Profile</a></li>
+          <li><a routerLink="/leaderboard">Leaderboard</a></li> <!-- Idea for future -->
+          <li><a routerLink="/about">About Us</a></li>
+          <li><a routerLink="/contact">Contact Support</a></li>
+        </ul>
+      </div>
 
-  <a mat-button routerLink="/challenges" routerLinkActive="active">
-    Challenges
-  </a>
+      <!-- Column 4: Legal -->
+      <div class="col-links">
+        <h3>Legal</h3>
+        <ul>
+          <li><a routerLink="/privacy">Privacy Policy</a></li>
+          <li><a routerLink="/terms">Terms of Service</a></li>
+          <li><a routerLink="/cookies">Cookie Settings</a></li>
+          <li><a routerLink="/safety">Safety Guidelines</a></li>
+        </ul>
+      </div>
 
+    </div>
 
-  <!-- הקישור החדש לצ'אט DIY – יפה ומקצועי -->
-  <a mat-button routerLink="/diy-question" routerLinkActive="active">
-     AI Assistant
-  </a>
-</mat-toolbar>
+    <div class="footer-bottom">
+      <div class="copyright">
+        &copy; {{ currentYear() }} <strong>Creata</strong>. All rights reserved.
+      </div>
+      
+      <div class="social-links">
+        <a href="#" class="social-btn"><mat-icon>facebook</mat-icon></a>
+        <a href="#" class="social-btn"><i class="fa-brands fa-instagram"></i><!-- Use MatIcon if you don't have FA --> <mat-icon>photo_camera</mat-icon></a>
+        <a href="#" class="social-btn"><mat-icon>smart_display</mat-icon></a> <!-- YouTube -->
+        <a href="#" class="social-btn"><mat-icon>alternate_email</mat-icon></a>
+      </div>
+    </div>
+  </footer>
+</div>

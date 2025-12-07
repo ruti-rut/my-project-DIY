@@ -1,10 +1,11 @@
 <button 
+  mat-icon-button 
   (click)="toggle()" 
-  class="toggle-btn"
-  [attr.aria-label]="isDark ? 'עבור למצב בהיר' : 'עבור למצב כהה'">
+  class="theme-toggle"
+  [matTooltip]="isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
   
-  <span class="sun" [class.active]="!isDark">☀️</span>
-  <span class="moon" [class.active]="isDark">🌙</span>
-  
-  <div class="slider" [class.dark]="isDark"></div>
+  <mat-icon class="rotate-icon" [class.dark-active]="isDark()">
+    {{ isDark() ? 'dark_mode' : 'light_mode' }}
+  </mat-icon>
+
 </button>

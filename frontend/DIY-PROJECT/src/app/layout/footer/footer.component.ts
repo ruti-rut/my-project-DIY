@@ -1,43 +1,30 @@
-import { Component, inject } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatChip } from '@angular/material/chips';
-import { DailyBellComponent } from '../../shared/components/daily-bell/daily-bell/daily-bell.component';
-import { LoginButtonComponent } from '../../shared/components/login-button/login-button/login-button.component';
-import { UserProfileMenuComponent } from '../../shared/components/user-profile-menu/user-profile-menu/user-profile-menu.component';
-import { DarkModeToggleComponent } from "../../shared/components/dark-mode-toggle/dark-mode-toggle.component";
+import { RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-footer',
+  standalone: true,
   imports: [
-     CommonModule,
-    RouterLink,
-    RouterLinkActive,
-    // Material
-    MatToolbarModule,
-    MatIconModule,
+    CommonModule, 
+    RouterModule, 
+    MatIconModule, 
     MatButtonModule,
-    MatMenuModule,
-    MatChip,
-    // הילדים שהפרדנו
-    LoginButtonComponent,
-    UserProfileMenuComponent,
-    DailyBellComponent,
-    DarkModeToggleComponent
+    MatFormFieldModule,
+    MatInputModule
   ],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.css'
 })
 export class FooterComponent {
-
-  private authService = inject(AuthService);
+  currentYear = signal(new Date().getFullYear());
   
-  // חשיפה ישירה של ה-Signal ל-Template
-  currentUser = this.authService.currentUser;
+  // Dummy function for newsletter
+  subscribe(email: string) {
+    if(email) alert('Thanks for subscribing to the Creata newsletter!');
+  }
 }
-
