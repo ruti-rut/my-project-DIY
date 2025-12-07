@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UsersRegisterDTO } from '../../../../models/user.model';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CommonModule } from '@angular/common';
+import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: 'app-sign-up',
@@ -19,8 +20,7 @@ import { CommonModule } from '@angular/common';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-  MatProgressBarModule,RouterLink
-],
+    MatProgressBarModule, RouterLink, MatIcon],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
 })
