@@ -1,122 +1,151 @@
-/* header.css – עיצוב מלא, יפה ותקין */
-
-.header-toolbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  padding: 0 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-}
-
-/* מרווח יפה בין כל הפריטים */
-.header-toolbar > * {
-  margin: 0 4px;
-}
-
-/* הלוגו */
-.logo {
+/* --- 1. The Container (Gradient & Layout) --- */
+.creata-navbar {
+  /* The Gradient: Blue to Green */
+  background: linear-gradient(100deg, #02add7 0%, #00b38b 100%);
+  color: white;
+  height: 80px; /* Taller header is more modern */
+  padding: 0 32px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: inherit;
-  font-weight: 600;
-  font-size: 1.4rem;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: background-color 0.2s;
+  justify-content: space-between;
+  box-shadow: 0 10px 30px rgba(0, 179, 139, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  font-family: 'Poppins', 'Roboto', sans-serif; /* Ensure you have a nice font loaded */
 }
 
-.logo:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+/* --- 2. The Logo (creata) --- */
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: white;
+  margin-right: 40px;
+}
+
+.logo-icon-bg {
+  background: rgba(255, 255, 255, 0.2);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
 }
 
 .logo-text {
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.5px; /* Tighter tracking for modern look */
 }
 
-/* כפתורי הניווט (פרויקטים, אתגרים, הוסף פרויקט) */
-.header-toolbar a[mat-button] {
-  border-radius: 8px;
+/* --- 3. Central Navigation --- */
+.nav-center {
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.05); /* Very subtle pill behind nav */
+  padding: 5px;
+  border-radius: 50px;
+}
+
+/* Nav Links */
+.nav-center a[mat-button] {
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
-  transition: all 0.2s;
+  border-radius: 30px; /* Pill shape hover */
+  padding: 0 20px;
+  min-width: unset;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* הדגשה כשפעיל */
-.header-toolbar a[routerlinkactive="active"],
-.header-toolbar a.active {
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  font-weight: 600;
+.nav-center a[mat-button] mat-icon {
+  margin-right: 6px;
+  font-size: 20px;
 }
 
-/* כפתור "התחברות / הרשמה" – הכי חשוב! */
-.login-btn {
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  padding: 0 20px !important;
-  height: 40px !important;
-  min-width: 160px !important;
-  transition: all 0.3s ease !important;
+/* Hover & Active States */
+.nav-center a[mat-button]:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
 }
 
-/* צבע רקע יפה יותר לכפתור הראשי */
-.login-btn {
-  background-color: rgba(255, 255, 255, 0.18) !important;
+.nav-center a.active-link {
+  background: white;
+  color: #00b38b; /* Text turns green when active */
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.login-btn:hover {
-  background-color: rgba(255, 255, 255, 0.28) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* --- 4. Special AI "Spark" Styles --- */
+.ai-link {
+  position: relative;
 }
 
-/* אייקון בתוך הכפתור */
-.login-btn mat-icon {
-  margin-right: 8px;
+.magic-icon {
+  color: #ffd700; /* Gold icon for AI */
 }
 
-/* ה-spacer – **ללא** pointer-events: none!!! */
+.badge-dot {
+  position: absolute;
+  top: 8px;
+  right: 14px;
+  width: 6px;
+  height: 6px;
+  background-color: #ff4081; /* Pink alert dot */
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ff4081;
+}
+
+/* --- 5. Right Side Actions --- */
 .spacer {
   flex: 1 1 auto;
-  /* זה הכל – שום דבר לא חוסם קליקים */
 }
 
-/* וידוא מוחלט ששום דבר לא חוסם קליקים */
-.header-toolbar a,
-.header-toolbar button,
-.header-toolbar .login-btn,
-.header-toolbar .mat-button,
-.header-toolbar .mat-flat-button {
-  pointer-events: auto !important;
-  opacity: 1 !important;
-  cursor: pointer !important;
+.actions-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-/* תמיכה במוד dark אם תרצה בעתיד */
-@media (prefers-color-scheme: dark) {
-  .header-toolbar {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  }
+/* The "Craft" CTA Button */
+.btn-craft {
+  background: white;
+  color: #02add7; /* Blue text */
+  text-decoration: none;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 50px; /* Full Pill */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-/* רספונסיביות למובייל */
-@media (max-width: 768px) {
-  .header-toolbar {
-    padding: 0 8px;
-  }
-  
-  .logo-text {
-    display: none;
-  }
-  
-  .login-btn {
-    min-width: auto !important;
-    padding: 0 12px !important;
-  }
-  
-  .header-toolbar a[mat-button] {
-    padding: 0 8px;
-    font-size: 0.9rem;
-  }
+.btn-craft:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  color: #00b38b; /* Gradient shift effect on text hover */
+}
+
+.divider {
+  width: 1px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.user-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Responsive Hide */
+@media (max-width: 900px) {
+  .logo-text { display: none; }
+  .nav-center a[mat-button] span { display: none; } /* Show only icons on tablet */
+  .nav-center a[mat-button] mat-icon { margin: 0; }
 }

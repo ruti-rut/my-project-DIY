@@ -1,40 +1,57 @@
-<mat-toolbar color="primary" class="header-toolbar">
+<mat-toolbar class="creata-navbar">
 
-  <a routerLink="/" class="logo" routerLinkActive="active">
-    <mat-icon>build</mat-icon>
-    <span class="logo-text">InstructaBuild</span>
+  <!-- 1. The Brand -->
+  <a routerLink="/" class="brand-logo" routerLinkActive="active">
+    <div class="logo-icon-bg">
+      <mat-icon>auto_awesome_mosaic</mat-icon>
+    </div>
+    <span class="logo-text">creata</span>
   </a>
+
+  <!-- 2. Central Navigation (The "Hub") -->
+  <nav class="nav-center">
+    <a mat-button routerLink="/projects-list" routerLinkActive="active-link">
+      <mat-icon>travel_explore</mat-icon>
+      Discover
+    </a>
+
+    <a mat-button routerLink="/challenges" routerLinkActive="active-link">
+      <mat-icon>emoji_events</mat-icon>
+      Arena
+    </a>
+
+    <!-- The AI Feature: Renamed to 'Spark' -->
+    <a mat-button routerLink="/diy-question" class="ai-link" routerLinkActive="active-link">
+      <mat-icon class="magic-icon">auto_awesome</mat-icon>
+      Spark
+      <span class="badge-dot"></span>
+    </a>
+  </nav>
 
   <span class="spacer"></span>
 
-  <a mat-button routerLink="/projects-list" routerLinkActive="active">
-    <mat-icon>folder_open</mat-icon>
-    Projects
-  </a>
+  <!-- 3. Action Area -->
+  <div class="actions-group">
+    
+    <!-- The Primary Action Button (Pill Shape) -->
+    <a routerLink="/create-project" class="btn-craft">
+      <mat-icon>add</mat-icon>
+      Craft
+    </a>
 
-  <a mat-button routerLink="/challenges" routerLinkActive="active">
-    <mat-icon>flag</mat-icon>
-    Challenges
-  </a>
+    <div class="divider"></div>
 
-  <a mat-button routerLink="/create-project" routerLinkActive="active">
-    <mat-icon>add_box</mat-icon>
-    Upload Project
-  </a>
-  <!-- הקישור החדש לצ'אט DIY – יפה ומקצועי -->
-  <a mat-button routerLink="/diy-question" routerLinkActive="active">
-    <mat-icon svgIcon="chat-bubble" class="icon-small"></mat-icon>
-    Assistant AI
-    <mat-chip color="accent" selected class="new-badge">NEW</mat-chip>
-  </a>
-  
-@if (currentUser(); as user) {
-    <app-user-profile-menu [user]="user" />
-    <app-daily-bell />
-    <app-dark-mode-toggle></app-dark-mode-toggle>
-  } 
-  
-  @else { 
-    <app-login-button />
-  }
+    @if (currentUser(); as user) {
+      <div class="user-area">
+        <app-daily-bell />
+        <app-user-profile-menu [user]="user" />
+      </div>
+      <!-- Dark mode toggle hidden in menu or small here -->
+      <app-dark-mode-toggle class="mini-toggle"></app-dark-mode-toggle>
+    } 
+    @else {
+      <app-login-button />
+    }
+  </div>
+
 </mat-toolbar>

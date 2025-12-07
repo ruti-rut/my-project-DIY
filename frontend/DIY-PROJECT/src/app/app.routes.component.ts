@@ -85,6 +85,5 @@ loadComponent: () => import('./features/challenge/challenge-details/challenge-de
   },
 
 
-  // נתיב Fallback (ללא שינוי)
   { path: '**', redirectTo: '' }
 ];
